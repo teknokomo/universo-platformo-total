@@ -17,21 +17,54 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: TypeScript with Total.js Platform v5 (or NEEDS CLARIFICATION)  
+**Primary Dependencies**: Total.js Platform v5, Material UI (MUI), Passport.js, Supabase (or NEEDS CLARIFICATION)  
+**Storage**: Supabase (PostgreSQL-based) with future DBMS flexibility (or NEEDS CLARIFICATION)  
+**Testing**: Integration tests (framework TBD based on Total.js ecosystem) (or NEEDS CLARIFICATION)  
+**Target Platform**: Web application (fullstack Total.js) (or NEEDS CLARIFICATION)
+**Project Type**: monorepo/web (packages with -frt/-srv separation)  
+**Performance Goals**: [domain-specific, e.g., 1000 req/s, sub-200ms response time or NEEDS CLARIFICATION]  
+**Constraints**: [domain-specific, e.g., <200ms p95, Material UI component library, Supabase integration or NEEDS CLARIFICATION]  
+**Scale/Scope**: [domain-specific, e.g., 10k users, multiple packages, reusable components or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+**Principle I - Monorepo Package Architecture**:
+- [ ] Packages properly organized in `packages/` directory
+- [ ] Frontend/backend separation follows `-frt`/`-srv` naming convention
+- [ ] Each package contains root `base/` directory
+
+**Principle II - Technology Stack Standardization**:
+- [ ] Total.js Platform v5 used for fullstack development
+- [ ] TypeScript used for type safety
+- [ ] Material UI (MUI) used for frontend components
+- [ ] Total.js best practices followed (no legacy patterns from reference projects)
+
+**Principle III - Bilingual Documentation (NON-NEGOTIABLE)**:
+- [ ] English documentation created first
+- [ ] Russian translation planned as exact structural copy
+- [ ] README.md and README-RU.md pattern followed
+
+**Principle IV - Database Flexibility**:
+- [ ] Supabase implementation planned
+- [ ] Database access patterns allow future DBMS integration
+- [ ] Passport.js with Supabase connector for authentication
+
+**Principle V - Component-Based Frontend**:
+- [ ] Component reusability considered for similar entity structures
+- [ ] Material UI components utilized
+
+**Principle VI - Test-Driven Development**:
+- [ ] Integration tests planned for new functionality
+- [ ] Contract tests planned for inter-package communication
+- [ ] Test strategy defined in specification
+
+**Principle VII - Issue & PR Management**:
+- [ ] Issue created following `.github/instructions/github-issues.md`
+- [ ] Labels applied per `.github/instructions/github-labels.md`
+- [ ] Bilingual format prepared for Issue and PR
 
 ## Project Structure
 
@@ -51,48 +84,49 @@ specs/[###-feature]/
 <!--
   ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
   for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
+  real paths (e.g., packages/clusters-frt, packages/clusters-srv). The delivered 
+  plan must not include Option labels.
 -->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+# Default: Monorepo package structure (per Constitution Principle I)
+packages/
+├── {feature}-frt/           # Frontend package
+│   └── base/                # Base implementation
+│       ├── src/
+│       │   ├── components/  # Material UI components
+│       │   ├── pages/       # Page components
+│       │   └── services/    # Frontend services
+│       └── tests/
+│           ├── contract/    # Contract tests
+│           ├── integration/ # Integration tests
+│           └── unit/        # Unit tests
+│
+├── {feature}-srv/           # Backend package
+│   └── base/                # Base implementation
+│       ├── src/
+│       │   ├── models/      # Data models
+│       │   ├── services/    # Business logic
+│       │   └── api/         # API endpoints (Total.js)
+│       └── tests/
+│           ├── contract/    # Contract tests
+│           ├── integration/ # Integration tests
+│           └── unit/        # Unit tests
 
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+# [REMOVE IF UNUSED] Alternative: Shared functionality package
+packages/
+├── shared/                  # Shared utilities (if needed)
+│   └── base/
+│       └── src/
+│           ├── types/       # TypeScript types
+│           ├── utils/       # Utility functions
+│           └── constants/   # Shared constants
 ```
 
 **Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+directories captured above. Specify which packages will be created and their
+relationships. Note: All packages must follow -frt/-srv naming for frontend/backend
+separation per Constitution Principle I]
 
 ## Complexity Tracking
 
