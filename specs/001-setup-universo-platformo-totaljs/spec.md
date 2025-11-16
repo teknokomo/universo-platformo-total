@@ -7,26 +7,38 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
+**Note on Dependencies**: User stories are ordered by priority (P1 through P5). Lower priority stories depend on higher priority ones: P2 depends on P1 being complete, P3 depends on P1-P2, and so on. This dependency structure reflects the implementation order required to build the project foundation.
+
 ### User Story 1 - Repository Foundation Setup (Priority: P1)
 
 As a developer starting work on the Universo Platformo Total.js project, I need a properly initialized monorepo with PNPM workspace configuration, basic project structure, and essential documentation so that I can begin implementing features on a solid foundation.
 
 **Why this priority**: This is the foundation upon which all other work depends. Without proper repository setup, no development can proceed. It establishes the project structure, tooling, and conventions that will guide all future development.
 
+**Dependencies**: None (this is the first step)
+
 **Independent Test**: Can be fully tested by cloning the repository, running `pnpm install`, and verifying that the monorepo structure is correctly set up with working package management, and that all README files (English and Russian) are present and accurate.
 
 **Acceptance Scenarios**:
 
 1. **Given** an empty repository, **When** a developer clones it and runs `pnpm install`, **Then** all dependencies install successfully and the workspace configuration is properly recognized
-2. **Given** the initialized repository, **When** a developer views the root README files (README.md and README.ru.md), **Then** they find comprehensive documentation in both English and Russian with identical structure and content
+   - **Alternate Flow**: If PNPM is not installed, error message guides developer to https://pnpm.io/installation
+   
+2. **Given** the initialized repository, **When** a developer views the root README files (README.md and README-RU.md), **Then** they find comprehensive documentation in both English and Russian with identical structure and content
+   - **Alternate Flow**: If files are out of sync, validation process detects and reports structural differences
+   
 3. **Given** the monorepo structure, **When** a developer navigates to the packages directory, **Then** they find it properly structured with placeholder packages following the naming convention (e.g., `*-frt` for frontend, `*-srv` for backend)
+   
 4. **Given** the project configuration, **When** a developer runs linting or formatting commands, **Then** the tools execute successfully across all packages in the workspace
+   - **Alternate Flow**: If linting errors exist, they are clearly reported with file path and line number
 
 ---
 
 ### User Story 2 - GitHub Repository Management (Priority: P2)
 
 As a project maintainer, I need a well-organized GitHub repository with appropriate labels for issues and pull requests, and clear guidelines for contributions so that the team can efficiently manage and track work.
+
+**Dependencies**: Requires P1 (Repository Foundation) to be complete
 
 **Why this priority**: Good repository organization is essential for team collaboration and project management. It comes after basic setup but before feature implementation, as it establishes the workflow and conventions the team will follow.
 
@@ -44,15 +56,22 @@ As a project maintainer, I need a well-organized GitHub repository with appropri
 
 As a developer, I need properly configured TypeScript settings and Total.js framework setup so that I can write type-safe code using Total.js v5 best practices.
 
+**Dependencies**: Requires P1 (Repository Foundation) and P2 (GitHub Management) to be complete
+
 **Why this priority**: While essential for development, this can be configured after the basic repository structure is in place. It's needed before actual feature implementation begins.
 
 **Independent Test**: Can be fully tested by creating a sample TypeScript file in one of the packages, running the TypeScript compiler, and verifying that it compiles successfully with proper type checking and follows Total.js v5 conventions.
 
 **Acceptance Scenarios**:
 
-1. **Given** a properly configured TypeScript project, **When** a developer writes TypeScript code with type errors, **Then** the compiler catches and reports these errors appropriately
-2. **Given** the Total.js framework setup, **When** a developer creates a basic Total.js application structure, **Then** it follows Total.js v5 best practices and conventions
-3. **Given** the monorepo packages, **When** a developer imports types from one package into another, **Then** TypeScript correctly resolves and validates the types across packages
+1. **Given** a properly configured TypeScript project, **When** a developer writes TypeScript code with type errors, **Then** the compiler catches and reports these errors appropriately with file path and line number
+   - **Alternate Flow**: If TypeScript version is incompatible, error message indicates required version
+   
+2. **Given** the Total.js framework setup, **When** a developer creates a basic Total.js application structure, **Then** it follows Total.js v5 best practices from official documentation
+   - **Alternate Flow**: If Total.js is not properly installed, error message provides installation guidance
+   
+3. **Given** the monorepo packages, **When** a developer imports types from one package into another using path aliases, **Then** TypeScript correctly resolves and validates the types across packages
+   - **Alternate Flow**: If circular dependencies exist, build fails with clear error message indicating the dependency cycle
 
 ---
 
@@ -60,15 +79,22 @@ As a developer, I need properly configured TypeScript settings and Total.js fram
 
 As a developer, I need basic Supabase integration setup with authentication configuration so that future features can leverage database and auth capabilities.
 
+**Dependencies**: Requires P1-P3 to be complete (especially P3 for TypeScript configuration)
+
 **Why this priority**: Database integration is needed for feature implementation but can be configured after the core project structure is established. It's set up with abstraction to allow for future DBMS expansion.
 
-**Independent Test**: Can be fully tested by configuring Supabase credentials, running a connection test, and verifying that the authentication setup (Passport.js with Supabase connector) can successfully initialize.
+**Independent Test**: Can be fully tested by configuring Supabase credentials in .env file, running a connection test, and verifying that the authentication setup (Passport.js with Supabase connector) can successfully initialize.
 
 **Acceptance Scenarios**:
 
-1. **Given** Supabase credentials, **When** the application initializes, **Then** it successfully connects to the Supabase instance
-2. **Given** the authentication configuration, **When** Passport.js initializes with the Supabase strategy, **Then** the authentication middleware is properly configured
-3. **Given** the database abstraction layer, **When** reviewing the code structure, **Then** it's clear how to add support for additional database systems in the future
+1. **Given** Supabase credentials in .env, **When** the application initializes, **Then** it successfully connects to the Supabase instance and logs connection success
+   - **Alternate Flow**: If .env is missing, application fails with clear message to copy .env.example to .env
+   - **Alternate Flow**: If credentials are invalid, error message indicates which variable is incorrect and how to obtain valid credentials
+   
+2. **Given** the authentication configuration, **When** Passport.js initializes with the Supabase strategy, **Then** the authentication middleware is properly configured and JWT validation works
+   - **Alternate Flow**: If JWT_SECRET is missing, application fails with clear error message
+   
+3. **Given** the database abstraction layer, **When** reviewing the code structure, **Then** interfaces clearly define CRUD operations and adapter implementation pattern is documented
 
 ---
 
@@ -76,25 +102,36 @@ As a developer, I need basic Supabase integration setup with authentication conf
 
 As a frontend developer, I need Material-UI (MUI) integrated into the frontend packages so that I can build consistent, professional user interfaces following the established design system.
 
+**Dependencies**: Requires P1-P3 to be complete (TypeScript and build configuration needed for MUI)
+
 **Why this priority**: UI framework integration is necessary for building features but comes after core infrastructure is in place. It can be tested independently by creating sample components.
 
 **Independent Test**: Can be fully tested by creating a sample frontend component using MUI components, running the development server, and verifying that MUI styles and theming work correctly.
 
 **Acceptance Scenarios**:
 
-1. **Given** a frontend package with MUI installed, **When** a developer imports and uses MUI components, **Then** they render correctly with proper styling
-2. **Given** the MUI theme configuration, **When** the application loads, **Then** the theme is consistently applied across all MUI components
-3. **Given** a frontend component, **When** it uses MUI's responsive design features, **Then** the component adapts correctly to different screen sizes
+1. **Given** a frontend package with MUI installed, **When** a developer imports and uses MUI components, **Then** they render correctly with proper styling and no console errors
+   - **Alternate Flow**: If MUI is not properly installed, import errors clearly indicate missing package
+   
+2. **Given** the MUI theme configuration, **When** the application loads, **Then** the theme is consistently applied across all MUI components following the custom theme settings
+   - **Alternate Flow**: If theme configuration is missing, MUI uses default theme but logs warning about missing customization
+   
+3. **Given** a frontend component, **When** it uses MUI's responsive design features, **Then** the component adapts correctly to different screen sizes (mobile, tablet, desktop)
 
 ---
 
 ### Edge Cases
 
-- What happens when a developer tries to install dependencies without PNPM installed? (Error message should guide them to install PNPM)
-- How does the system handle when Supabase credentials are missing or invalid? (Clear error messages with guidance on where to configure credentials)
-- What happens when trying to add a new package that doesn't follow the naming convention? (Linting or validation should warn about convention violations)
-- How does the build process handle TypeScript compilation errors across multiple packages? (Build should fail fast with clear indication of which package has errors)
-- What happens when documentation files (English vs Russian) get out of sync? (Should have a validation check that can detect content mismatches)
+- What happens when a developer tries to install dependencies without PNPM installed? (Error message should guide them to install PNPM with installation URL)
+- How does the system handle when Supabase credentials are missing or invalid? (Clear error messages with guidance on where to configure credentials, which environment variables are required)
+- What happens when trying to add a new package that doesn't follow the naming convention? (Linting or validation should warn about convention violations, documentation should explain the naming standard)
+- How does the build process handle TypeScript compilation errors across multiple packages? (Build should fail fast with clear indication of which package has errors, including file path and line number)
+- What happens when documentation files (English vs Russian) get out of sync? (Manual validation process should detect mismatches in structure, number of sections, or line count)
+- How does the system handle circular dependencies between packages in the monorepo? (PNPM workspace should detect and report circular dependency errors, build process should fail with clear error message)
+- What happens when two packages depend on conflicting versions of the same dependency? (PNPM hoisting strategy should be configured to handle version conflicts, error messages should indicate which packages have conflicts)
+- How does the application behave when Node.js version is incompatible with Total.js v5? (Should check Node.js version on startup and display error with required version)
+- What happens when .env file is missing on first startup? (Application should fail gracefully with message to copy .env.example to .env and configure values)
+- How does authentication handle expired JWT tokens? (Should return 401 status with clear error message, frontend should redirect to login or refresh token)
 
 ## Requirements *(mandatory)*
 
@@ -102,33 +139,56 @@ As a frontend developer, I need Material-UI (MUI) integrated into the frontend p
 
 **Repository Structure & Package Management**
 
-- **FR-001**: Project MUST be configured as a monorepo using PNPM workspace functionality
+- **FR-001**: Project MUST be configured as a monorepo using PNPM workspace functionality with a `pnpm-workspace.yaml` file defining package locations
+- **FR-001a**: The `pnpm-workspace.yaml` MUST specify `packages/*` pattern and configure shared dependency hoisting strategy
 - **FR-002**: All packages MUST reside in a `packages/` directory at the repository root
-- **FR-003**: Packages requiring both frontend and backend MUST be split into separate packages (e.g., `packages/clusters-frt` and `packages/clusters-srv`)
-- **FR-004**: Each package MUST contain a `base/` directory at its root to support future multiple implementations
-- **FR-005**: Root directory MUST contain `package.json` with workspace configuration for PNPM
+- **FR-003**: Packages requiring both frontend and backend MUST be split into separate packages following naming convention: `[feature]-frt` (frontend) and `[feature]-srv` (backend). Examples: `clusters-frt`/`clusters-srv`, `metaverses-frt`/`metaverses-srv`
+- **FR-003a**: The separation into frontend and backend packages enables independent deployment, scaling, and versioning of each layer
+- **FR-004**: Each package MUST contain a `base/` directory at its root containing the primary implementation. This structure supports future alternative technology stack implementations in sibling directories (e.g., `base/` for Total.js, future `react/` for React version)
+- **FR-005**: Root directory MUST contain `package.json` with workspace configuration for PNPM, including private:true flag and scripts for workspace-wide operations
+- **FR-005a**: Root `package.json` MUST define workspace-level scripts for common operations: `build:all`, `test:all`, `lint:all`, `format:all`
 - **FR-006**: Project MUST use PNPM as the package manager (not npm or yarn)
+- **FR-006a**: Package inter-dependencies within the monorepo MUST use workspace protocol (`workspace:*`) to reference sibling packages
+- **FR-006b**: Packages without frontend/backend split (shared utilities, common types) MAY use single package naming without suffix (e.g., `shared-common`, `shared-types`)
 
 **Documentation Requirements**
 
-- **FR-007**: All README files MUST be created in both English (README.md) and Russian (README.ru.md) versions
-- **FR-008**: Russian documentation MUST be an exact copy of English content in terms of structure and line count, translated to Russian
-- **FR-009**: Root README files MUST describe the project purpose, relationship to Universo Platformo React, and basic setup instructions
-- **FR-010**: Each package MUST have its own README.md and README.ru.md explaining the package's purpose and usage
+- **FR-007**: All README files MUST be created in both English (README.md) and Russian (README-RU.md) versions
+- **FR-008**: Russian documentation MUST be an exact copy of English content in terms of structure and line count, translated to Russian. Structural parity means: same number of headings, same list structure, same code block placement
+- **FR-008a**: Documentation workflow MUST follow this sequence: (1) Create English version, (2) Review and approve English version, (3) Create Russian translation, (4) Verify structural parity between versions
+- **FR-008b**: A manual validation process MUST be established to verify EN/RU parity by comparing: number of headings, number of list items, number of code blocks, and overall line count (±5 lines tolerance for translation differences)
+- **FR-009**: Root README files MUST include these sections: Project Overview, Relationship to Universo Platformo React, Technology Stack, Prerequisites, Installation Instructions, Project Structure, Getting Started, Contributing Guidelines, and License
+- **FR-010**: Each package MUST have its own README.md and README-RU.md with these sections: Package Purpose, Features, Installation, Usage Examples, API Reference (if applicable), Configuration, and Contributing
+- **FR-010a**: Code MUST include TypeScript JSDoc comments for all exported functions, classes, and interfaces. Comments MUST be in English only
 
 **Technology Stack**
 
-- **FR-011**: Project MUST use Total.js Framework version 5 as the full-stack platform
-- **FR-012**: All code MUST be written in TypeScript (not JavaScript)
-- **FR-013**: Frontend packages MUST use Material-UI (MUI) as the UI component library
-- **FR-014**: Backend authentication MUST use Passport.js with appropriate strategy connectors
-- **FR-015**: Project MUST support Supabase as the primary database system
+- **FR-011**: Project MUST use Total.js Framework version 5 (minimum v5.0.0) as the full-stack platform
+- **FR-011a**: Project MUST specify Node.js version requirement of >=18.0.0 for compatibility with Total.js v5 and modern TypeScript features
+- **FR-011b**: Total.js integration with TypeScript MUST follow the official Total.js TypeScript guide at https://docs.totaljs.com/total5/40840001/ (or latest documentation)
+- **FR-012**: All code MUST be written in TypeScript (minimum v5.0.0, recommended ^5.3.0)
+- **FR-013**: Frontend packages MUST use Material-UI (MUI) version ^5.14.0 or later from @mui/material package
+- **FR-013a**: MUI theme configuration MUST be created using createTheme() with custom color palette, typography, and component style overrides following Material Design principles
+- **FR-013b**: A shared theme configuration package SHOULD be created for consistent theming across frontend packages
+- **FR-014**: Backend authentication MUST use Passport.js (^0.7.0 or later) with JWT strategy for stateless authentication
+- **FR-014a**: Passport.js MUST be configured with Supabase integration using @supabase/supabase-js client for user verification
+- **FR-014b**: Authentication flow MUST support: user registration, login, logout, token refresh, and session validation
+- **FR-015**: Project MUST support Supabase as the primary database system using @supabase/supabase-js client (^2.38.0 or later)
 
 **Database & Authentication**
 
-- **FR-016**: Database integration MUST be designed with abstraction to allow future support for multiple DBMS beyond Supabase
-- **FR-017**: Authentication system MUST integrate Passport.js with Supabase connector
-- **FR-018**: Database configuration MUST be externalized (not hardcoded) to support different environments
+- **FR-016**: Database integration MUST be designed with abstraction layer (Repository or Adapter pattern) to allow future support for multiple DBMS beyond Supabase
+- **FR-016a**: Database abstraction layer MUST define interfaces for CRUD operations that can be implemented by different database adapters (Supabase, PostgreSQL, MongoDB, etc.)
+- **FR-016b**: Adding support for a new DBMS MUST only require: (1) Creating new adapter class implementing database interfaces, (2) Registering adapter in dependency injection container, (3) Updating configuration
+- **FR-017**: Authentication system MUST integrate Passport.js with Supabase connector using @supabase/supabase-js for user authentication and verification
+- **FR-017a**: Authentication configuration MUST include: JWT secret key, token expiration time, refresh token rotation strategy, and Supabase project URL and anon key
+- **FR-018**: Database configuration MUST be externalized using environment variables with .env file support (using dotenv package or Total.js config system)
+- **FR-018a**: Required environment variables MUST include: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY (for admin operations), JWT_SECRET, JWT_EXPIRATION
+- **FR-018b**: Environment variable naming MUST follow convention: UPPERCASE_WITH_UNDERSCORES for all configuration values
+- **FR-018c**: A .env.example file MUST be provided with all required variables (with placeholder values) and MUST be committed to repository
+- **FR-018d**: Actual .env file MUST be added to .gitignore to prevent credential commits
+- **FR-018e**: Database connection errors MUST provide clear error messages indicating: which environment variable is missing or invalid, how to configure it, and where to find configuration documentation
+- **FR-018f**: Database connection error handling MUST implement: initial connection retry logic (3 attempts with exponential backoff), graceful degradation with clear error messages, and connection pool health monitoring
 
 **GitHub Repository Management**
 
@@ -138,17 +198,52 @@ As a frontend developer, I need Material-UI (MUI) integrated into the frontend p
 
 **Build & Development Configuration**
 
-- **FR-022**: Project MUST have TypeScript configuration (tsconfig.json) following Total.js v5 best practices
-- **FR-023**: Project MUST include code formatting and linting tools configured for TypeScript
-- **FR-024**: Each package MUST have its own build configuration appropriate to its type (frontend/backend)
-- **FR-025**: Monorepo MUST support building all packages or individual packages
+- **FR-022**: Project MUST have TypeScript configuration (tsconfig.json) following Total.js v5 best practices with these compiler options: target: ES2022, module: ESNext, moduleResolution: bundler, strict: true, esModuleInterop: true, skipLibCheck: true, forceConsistentCasingInFileNames: true
+- **FR-022a**: TypeScript configuration MUST include path aliases for monorepo packages using paths mapping: "@packages/*": ["./packages/*/base/src"] for convenient cross-package imports
+- **FR-022b**: Each package MUST have its own tsconfig.json extending from root tsconfig.json with package-specific include/exclude patterns and outDir configuration
+- **FR-022c**: TypeScript compilation MUST output to package-specific dist/ directories which MUST be added to .gitignore
+- **FR-023**: Project MUST include ESLint (^8.0.0) configured for TypeScript using @typescript-eslint/parser and @typescript-eslint/eslint-plugin
+- **FR-023a**: Project MUST include Prettier (^3.0.0) for code formatting with configuration file (.prettierrc) defining: printWidth: 100, semi: true, singleQuote: true, trailingComma: 'es5', tabWidth: 2
+- **FR-023b**: ESLint and Prettier configurations MUST be shared across all packages through root configuration files
+- **FR-023c**: Pre-commit hooks SHOULD be configured using husky and lint-staged to automatically run linting and formatting on staged files
+- **FR-024**: Each package MUST have its own build configuration in package.json with "build" script that compiles TypeScript to JavaScript
+- **FR-024a**: Frontend packages MUST include development server configuration (using Total.js or Vite) with hot module replacement (HMR) support
+- **FR-024b**: Backend packages MUST include development server startup script with auto-restart on file changes (using Total.js watch mode or nodemon)
+- **FR-025**: Monorepo MUST support building all packages with root-level script `pnpm build:all` that executes builds in correct dependency order
+- **FR-025a**: Individual packages MUST be buildable using `pnpm --filter [package-name] build` command
+- **FR-025b**: Build process MUST fail fast with clear indication of which package has errors including file path and error message
+- **FR-025c**: A root-level `clean` script MUST be provided to remove all dist/ and build/ directories from all packages
+- **FR-025d**: Development workflow MUST support watch mode where TypeScript compilation runs automatically on file changes
 
 **Project Organization Standards**
 
-- **FR-026**: Project MUST NOT include a `docs/` directory (documentation will be in a separate repository)
+- **FR-026**: Project MUST NOT include a `docs/` directory (documentation will be in a separate repository in the future)
 - **FR-027**: Project MUST NOT pre-create AI agent configuration files (user will create these as needed)
-- **FR-028**: Package naming MUST follow the convention: `[feature-name]-frt` for frontend and `[feature-name]-srv` for backend
-- **FR-029**: Project structure MUST be inspired by Universo Platformo React but adapted to Total.js best practices, not directly copying any problematic patterns
+- **FR-028**: Package naming MUST follow the convention: `[feature-name]-frt` for frontend and `[feature-name]-srv` for backend. This convention MUST be used consistently throughout all documentation and code
+- **FR-029**: Project structure MUST be inspired by Universo Platformo React conceptual patterns (monorepo, package structure, entity relationships) but implemented using Total.js v5 best practices according to official documentation at https://docs.totaljs.com/
+- **FR-029a**: Specific patterns to AVOID from reference implementation: legacy Flowise code patterns, incomplete refactoring artifacts, undocumented workarounds, and any code marked with "TODO: refactor" comments
+- **FR-029b**: A monitoring process SHOULD be established to track new features added to universo-platformo-react repository and create issues for implementing equivalent features in this project using Total.js stack
+
+**Security Requirements**
+
+- **FR-030**: All sensitive credentials (API keys, database passwords, JWT secrets) MUST be stored in environment variables and NEVER committed to the repository
+- **FR-030a**: The .gitignore file MUST include patterns for: .env, .env.local, .env.*.local, *.key, *.pem, and any credential files
+- **FR-030b**: JWT tokens MUST have expiration time (recommended: 1 hour for access tokens, 7 days for refresh tokens) and MUST be validated on every protected endpoint
+- **FR-030c**: Passwords MUST be hashed using bcrypt (or Supabase built-in hashing) before storage, never stored in plain text
+- **FR-030d**: All API endpoints that access user data MUST implement authentication and authorization checks
+- **FR-030e**: The application MUST validate and sanitize all user inputs to prevent injection attacks (SQL injection, XSS, command injection)
+
+**Development Environment Requirements**
+
+- **FR-031**: Development environment MUST support minimum system requirements: 8GB RAM, 4 CPU cores, 10GB free disk space
+- **FR-031a**: PNPM installation in under 5 minutes MUST be achievable on a standard development machine with adequate internet connection
+- **FR-031b**: Development environment setup documentation MUST include: Node.js installation guide, PNPM installation steps, Supabase account setup, and environment variable configuration
+
+**Performance Requirements**
+
+- **FR-032**: TypeScript compilation for all packages SHOULD complete in under 2 minutes on a standard development machine
+- **FR-032a**: Development server hot reload SHOULD reflect changes in under 3 seconds after file save
+- **FR-032b**: Initial project setup (clone + pnpm install) SHOULD complete in under 5 minutes as specified in SC-001
 
 ### Key Entities
 
@@ -171,46 +266,61 @@ As a frontend developer, I need Material-UI (MUI) integrated into the frontend p
 
 ### Measurable Outcomes
 
-- **SC-001**: Developer can clone the repository, run package installation, and have all dependencies installed successfully in under 5 minutes
-- **SC-002**: All README files exist in both English and Russian with 100% content parity (same number of sections, same structure)
-- **SC-003**: Code compilation succeeds across all packages with zero errors when running the build command
-- **SC-004**: Project structure inspection reveals proper separation of frontend and backend packages with each containing a base/ directory
-- **SC-005**: 100% of required GitHub issue labels are created and match the descriptions in .github/instructions/github-labels.md
-- **SC-006**: New developer can read the root README and understand the project purpose, its relationship to Universo Platformo React, and how to get started within 10 minutes
-- **SC-007**: Database connection test succeeds when valid credentials are provided
-- **SC-008**: Sample UI component can be created and rendered without styling or import errors
-- **SC-009**: Workspace build commands execute correctly across all packages (both recursive and individual package builds)
-- **SC-010**: Code formatting and linting tools run successfully across the entire codebase with consistent results
+- **SC-001**: Developer can clone the repository, run `pnpm install`, and have all dependencies installed successfully in under 5 minutes on a machine with adequate internet connection
+- **SC-002**: All README files exist in both English (README.md) and Russian (README-RU.md) with 100% structural parity: same number of headings, same number of list items, same number of code blocks, and line count within ±5 lines
+- **SC-003**: Code compilation using `pnpm build:all` succeeds across all packages with zero TypeScript errors and exits with status code 0
+- **SC-004**: Project structure inspection reveals proper separation of frontend (-frt suffix) and backend (-srv suffix) packages with each containing a base/ directory at package root
+- **SC-005**: 100% of required GitHub issue labels from `.github/instructions/github-labels.md` are created in the repository with matching names, colors, and descriptions
+- **SC-006**: New developer can read the root README sections (Overview, Prerequisites, Installation, Getting Started) and successfully complete initial setup without external help in under 30 minutes
+- **SC-007**: Database connection test succeeds when valid Supabase credentials are provided in .env file, returning success status without errors or warnings
+- **SC-008**: Sample MUI component can be created in a frontend package and rendered without import errors, missing style warnings, or theme configuration errors
+- **SC-009**: Workspace build commands execute successfully: `pnpm build:all` builds all packages, `pnpm --filter [package-name] build` builds individual package
+- **SC-010**: Code quality tools run successfully: ESLint produces zero errors on all code, Prettier check passes on all files, TypeScript compiler produces zero errors
+- **SC-011**: All required environment variables are documented in .env.example with descriptive comments, and actual .env file is properly ignored by git
+- **SC-012**: TypeScript compilation completes for all packages in under 2 minutes on a standard development machine (8GB RAM, 4 core CPU)
+- **SC-013**: Development server starts successfully for both frontend and backend packages with no fatal errors, and responds to health check within 10 seconds
 
 ## Assumptions
 
 This specification is based on the following assumptions:
 
-1. **Development Environment**: Developers have Node.js (version compatible with Total.js v5) and can install PNPM
-2. **Supabase Access**: The project will have access to a Supabase instance (project URL and API keys will be provided separately)
-3. **Total.js Version**: Total.js Platform version 5 is stable and its TypeScript support is production-ready
-4. **Existing Reference**: Universo Platformo React repository (https://github.com/teknokomo/universo-platformo-react) is accessible for reference of conceptual structure
-5. **Package Scope**: Initial setup will create placeholder packages for demonstration; actual feature packages will be added in subsequent work
-6. **Authentication Strategy**: Passport.js has a working Supabase strategy connector available (or we'll create one if needed)
-7. **MUI Compatibility**: Material-UI (MUI) works well with Total.js frontend structure
-8. **Language Support**: All documentation will be in English and Russian only (no other languages at this time)
-9. **GitHub Permissions**: The team has appropriate permissions to create labels and configure the GitHub repository
-10. **Future Extensibility**: While focusing on Supabase initially, the architecture should not prevent future DBMS additions
+1. **Development Environment**: Developers have Node.js >=18.0.0 installed and can install PNPM globally (minimum PNPM v8.0.0)
+2. **Supabase Access**: The project will have access to a Supabase instance (project URL and API keys will be provided separately via environment variables)
+3. **Total.js Version**: Total.js Platform version 5 (minimum v5.0.0) is stable and its TypeScript support is production-ready for use in this project. Reference: https://docs.totaljs.com/
+4. **Existing Reference**: Universo Platformo React repository (https://github.com/teknokomo/universo-platformo-react) is accessible for reference of conceptual structure and will remain available throughout development
+5. **Package Scope**: Initial setup will create minimal starter packages demonstrating structure; actual feature packages (Clusters, Metaverses, etc.) will be added in subsequent feature implementations
+6. **Authentication Strategy**: Passport.js with JWT strategy will be integrated with Supabase Auth API using @supabase/supabase-js client library for user authentication
+7. **MUI Compatibility**: Material-UI (MUI) v5.x is compatible with Total.js frontend architecture and can be integrated without major architectural changes
+8. **Language Support**: All documentation will be in English and Russian only (no other languages at this time). UI text localization is out of scope for initial setup
+9. **GitHub Permissions**: The team has appropriate permissions to create labels, configure repository settings, and manage issues/PRs in the GitHub repository
+10. **Future Extensibility**: While focusing on Supabase initially, the architecture will use abstraction layers (Repository/Adapter patterns) that do not prevent future DBMS additions
+11. **Development Machine**: Standard development environment has minimum 8GB RAM, 4 CPU cores, 10GB free disk space, and adequate internet connection for package downloads
+12. **TypeScript Experience**: Development team has working knowledge of TypeScript and modern JavaScript (ES2022+) features
 
 ## Dependencies
 
 - **External Dependencies**:
   - Universo Platformo React repository (for conceptual reference): https://github.com/teknokomo/universo-platformo-react
-  - Total.js Framework v5 documentation and best practices
-  - PNPM package manager installation
+  - Total.js Framework v5 documentation: https://docs.totaljs.com/
+  - TypeScript documentation: https://www.typescriptlang.org/docs/
+  - Material-UI (MUI) documentation: https://mui.com/
+  - Supabase documentation: https://supabase.com/docs
+  - PNPM package manager: https://pnpm.io/
+  - Node.js >=18.0.0
   - Supabase instance availability
   - GitHub repository access and permissions
 
 - **Documentation Dependencies**:
-  - `.github/instructions/github-labels.md` - for label definitions
-  - `.github/instructions/github-issues.md` - for issue creation guidelines  
-  - `.github/instructions/github-pr.md` - for pull request guidelines
-  - `.github/instructions/i18n-docs.md` - for bilingual documentation standards
+  - `.github/instructions/github-labels.md` - for label definitions and application rules
+  - `.github/instructions/github-issues.md` - for issue creation guidelines and templates
+  - `.github/instructions/github-pr.md` - for pull request guidelines and required format
+  - `.github/instructions/i18n-docs.md` - for bilingual documentation standards and workflow
+
+- **Technical Documentation References**:
+  - Total.js v5 TypeScript guide: https://docs.totaljs.com/total5/40840001/
+  - Total.js v5 best practices: https://docs.totaljs.com/ (main documentation)
+  - PNPM workspace documentation: https://pnpm.io/workspaces
+  - TypeScript tsconfig reference: https://www.typescriptlang.org/tsconfig
 
 ## Out of Scope
 

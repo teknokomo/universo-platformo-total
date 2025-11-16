@@ -1,26 +1,29 @@
 <!--
 SYNC IMPACT REPORT - Constitution Update
-Version Change: 0.0.0 → 1.0.0 (Initial Constitution)
+Version Change: 1.0.0 → 1.1.0 (Enhanced Technical Specifications)
 Principles Added:
-  1. Monorepo Package Architecture
-  2. Technology Stack Standardization
-  3. Bilingual Documentation (NON-NEGOTIABLE)
-  4. Database Flexibility with Supabase First
-  5. Component-Based Frontend with Material UI
-  6. Test-Driven Development
-  7. Issue & PR Management Standards
-Sections Added:
-  - Core Principles (7 principles defined)
-  - Technical Standards (Technology stack, project structure)
-  - Development Workflow (Issue management, PR process, documentation workflow)
-  - Governance (Amendment process, compliance requirements)
+  8. Security-First Development (NEW)
+Principles Enhanced:
+  II. Technology Stack Standardization - Added specific version requirements for all dependencies
+Sections Updated:
+  - Technology Stack Requirements - Added minimum versions and additional tools (ESLint, Prettier)
+  - Core Principles - Added Security-First Development principle with security requirements
+Changes Made:
+  - Added Node.js minimum version requirement (>=18.0.0)
+  - Added specific version minimums for all major dependencies
+  - Added ESLint and Prettier to required tooling
+  - Added comprehensive security principle covering credentials, authentication, and input validation
 Templates Status:
-  ✅ plan-template.md - Reviewed, compatible with constitution
-  ✅ spec-template.md - Reviewed, compatible with constitution
-  ✅ tasks-template.md - Reviewed, compatible with constitution
+  ✅ plan-template.md - Compatible with enhanced constitution
+  ✅ spec-template.md - Compatible with enhanced constitution
+  ✅ tasks-template.md - Compatible with enhanced constitution
+Impact on Existing Work:
+  - Specification in specs/001-setup-universo-platformo-totaljs/ already incorporates these enhanced requirements
+  - Future implementations must include security requirements from principle VIII
 Follow-up TODOs:
-  - None (all placeholders filled with concrete values)
+  - None (all enhancements properly documented)
 -->
+
 
 # Universo Platformo Total Constitution
 
@@ -68,17 +71,26 @@ ALL Issues and Pull Requests MUST follow standardized formats defined in `.githu
 
 **Rationale**: Standardized Issue and PR management creates clear audit trails, enables project tracking, and ensures all stakeholders can understand changes regardless of language preference. Linking PRs to Issues maintains traceability from requirement to implementation.
 
+### VIII. Security-First Development
+
+ALL sensitive credentials (API keys, database passwords, JWT secrets) MUST be stored in environment variables and NEVER committed to the repository. The .gitignore MUST include patterns for credential files (.env, *.key, *.pem). JWT tokens MUST have expiration times and be validated on every protected endpoint. Passwords MUST be hashed before storage. All user inputs MUST be validated and sanitized to prevent injection attacks.
+
+**Rationale**: Security is paramount in modern web applications. Protecting user data and system credentials prevents unauthorized access and data breaches. Following security best practices from the beginning is easier and more effective than retrofitting security later. Environment-based configuration enables secure deployment across different environments without exposing credentials in code.
+
 ## Technical Standards
 
 ### Technology Stack Requirements
 
 **MUST USE**:
-- Total.js Platform v5 (fullstack framework)
-- TypeScript (primary language)
-- PNPM (package management)
-- Material UI / MUI (frontend components)
-- Supabase (primary database)
-- Passport.js with Supabase connector (authentication)
+- Total.js Platform v5 (minimum v5.0.0)
+- TypeScript (minimum v5.0.0, recommended ^5.3.0)
+- Node.js (minimum v18.0.0 for Total.js v5 compatibility)
+- PNPM (minimum v8.0.0 for package management)
+- Material UI / MUI (v5.14.0 or later)
+- Supabase (primary database with @supabase/supabase-js ^2.38.0)
+- Passport.js (v0.7.0 or later with JWT strategy for authentication)
+- ESLint (^8.0.0 with TypeScript support)
+- Prettier (^3.0.0 for code formatting)
 
 **MUST NOT**:
 - Copy legacy code patterns from incomplete reference implementations
@@ -163,4 +175,4 @@ Any architectural complexity MUST be justified against Constitution principles. 
 
 The development team MUST monitor the universo-platformo-react reference repository and implement new features as they appear, adapted to Total.js technology stack while maintaining Constitution compliance.
 
-**Version**: 1.0.0 | **Ratified**: 2025-11-15 | **Last Amended**: 2025-11-15
+**Version**: 1.1.0 | **Ratified**: 2025-11-15 | **Last Amended**: 2025-11-16
