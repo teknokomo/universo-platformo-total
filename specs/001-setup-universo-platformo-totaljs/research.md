@@ -3,7 +3,18 @@
 **Feature**: 001-setup-universo-platformo-totaljs  
 **Phase**: Phase 0 - Research  
 **Date**: 2025-11-17  
+**Updated**: 2025-11-17 (Web Research + Context7 Integration)  
 **Purpose**: Resolve all "NEEDS CLARIFICATION" items from Technical Context and establish concrete technology choices for Total.js Platform v5 implementation
+
+---
+
+## Research Methodology
+
+This research combines:
+- **Web Search**: Best practices from industry sources for Total.js v5, TypeScript, monorepo patterns
+- **Context7 Documentation**: Official Total.js v5 and Framework5 documentation
+- **Comparative Analysis**: Patterns from universo-platformo-react adapted for Total.js
+- **Community Best Practices**: Modern JavaScript/TypeScript ecosystem standards
 
 ---
 
@@ -22,26 +33,146 @@ This document addresses the following unknowns from the Technical Context:
 
 ## 1. Database ORM Selection
 
-### Decision: Use Total.js Flow with Custom Repository Pattern
+### Decision: Use Total.js DBMS with Custom Repository Pattern
 
-**Rationale**:
-- Total.js Platform v5 provides native database abstraction through Total.js Flow
-- Total.js Flow supports multiple databases (PostgreSQL, MongoDB, MySQL) natively
-- Using Total.js native tools ensures better integration with the framework
-- TypeORM is not officially recommended for Total.js v5 according to documentation
+**Rationale** (validated by Context7 documentation):
+- Total.js Platform v5 provides native database abstraction through `DBMS()` API
+- Total.js supports multiple databases (PostgreSQL, MongoDB, MySQL) natively
+- Using Total.js native tools ensures better framework integration
+- TypeORM is not recommended for Total.js v5 (different architecture paradigm)
+- QueryBuilder pattern is built into Total.js
+
+**Total.js DBMS API** (from Context7):
+Total.js provides a fluent QueryBuilder API:
+```javascript
+// Query examples from Total.js documentation
+var db = DBMS();
+
+// Find with conditions
+db.find('tbl_users')
+  .where('active', true)
+  .where('age', '>', 18)
+  .callback(function(err, response) {
+    // Handle results
+  });
+
+// Search with ILIKE (case-insensitive)
+builder.search('name', 'John', '*'); // throughout text
+builder.search('email', 'example', 'beg'); // at beginning
+
+// User ID filtering
+builder.userid(userId);
+
+// Custom SQL injection
+builder.query('custom_field = 123');
+
+// Read by ID with error handling
+await DATA.read('tbl_todo')
+  .id(model.id)
+  .error(404)
+  .promise($);
+
+// Insert with promise
+await DATA.insert('tbl_todo', model).promise($);
+```
 
 **Implementation Approach**:
-- Use Total.js `DBMS()` API for database operations
-- Implement Repository pattern manually on top of Total.js DBMS
-- Create adapter interfaces for future DBMS switching
-- Use Total.js schema definitions for data validation
+1. **Use Total.js `DBMS()` API** for all database operations
+2. **Implement Repository pattern** manually on top of Total.js DBMS:
+   - Create `BaseRepository` class with common CRUD operations
+   - Each entity gets specific repository (e.g., `UserRepository`)
+   - Repositories encapsulate Total.js DBMS calls
+3. **Create adapter interfaces** for future DBMS switching:
+   - Define `IDatabaseAdapter` interface
+   - Implement `SupabaseAdapter` using Total.js DBMS
+   - Future: Create adapters for other databases
+4. **Use Total.js schema definitions** for data validation (NEWACTION input validation)
+
+**Repository Pattern Example**:
+```typescript
+// BaseRepository.ts
+export abstract class BaseRepository<T> {
+  constructor(protected tableName: string) {}
+
+  async findById(id: string): Promise<T | null> {
+    const db = DBMS();
+    return await db.find(this.tableName)
+      .where('id', id)
+      .first()
+      .promise();
+  }
+
+  async findAll(filters?: any): Promise<T[]> {
+    const db = DBMS();
+    const query = db.find(this.tableName);
+    
+    if (filters) {
+      Object.keys(filters).forEach(key => {
+        query.where(key, filters[key]);
+      });
+    }
+    
+    return await query.promise();
+  }
+
+  async create(data: Partial<T>): Promise<T> {
+    return await DATA.insert(this.tableName, data).promise();
+  }
+
+  async update(id: string, data: Partial<T>): Promise<T> {
+    return await DATA.update(this.tableName)
+      .id(id)
+      .set(data)
+      .promise();
+  }
+
+  async delete(id: string): Promise<void> {
+    await DATA.remove(this.tableName)
+      .id(id)
+      .promise();
+  }
+}
+
+// UserRepository.ts
+export class UserRepository extends BaseRepository<User> {
+  constructor() {
+    super('tbl_users');
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    const db = DBMS();
+    return await db.find(this.tableName)
+      .where('email', email)
+      .first()
+      .promise();
+  }
+}
+```
+
+**Supabase Integration**:
+Total.js DBMS can connect to PostgreSQL (Supabase's database):
+```javascript
+// In Total.js configuration
+DBMS().connection({
+  type: 'postgresql',
+  host: process.env.SUPABASE_DB_HOST,
+  port: 5432,
+  user: process.env.SUPABASE_DB_USER,
+  password: process.env.SUPABASE_DB_PASSWORD,
+  database: process.env.SUPABASE_DB_NAME
+});
+```
 
 **Alternatives Considered**:
-- **TypeORM**: Popular but adds unnecessary complexity; not aligned with Total.js patterns
-- **Prisma**: Modern ORM but introduces different mental model from Total.js
-- **Raw SQL**: Too low-level; violates Constitution Principle X
+- **TypeORM**: Popular but adds complexity; not aligned with Total.js patterns; requires decorators
+- **Prisma**: Modern ORM but introduces different mental model; another dependency layer
+- **Raw SQL**: Too low-level; violates Constitution Principle X (Data Access Patterns)
+- **Supabase JS Client**: Good for simple queries but doesn't integrate with Total.js patterns
 
-**Reference**: Total.js v5 documentation on databases: https://docs.totaljs.com/total5/40814001/
+**References**: 
+- Total.js DBMS documentation: https://docs.totaljs.com/total5/
+- Total.js QueryBuilder: https://github.com/totaljs/framework5/blob/main/docs/globals.md
+- Total.js Actions: https://github.com/totaljs/framework5/blob/main/docs/actions.md
 
 ---
 
@@ -75,27 +206,142 @@ This document addresses the following unknowns from the Technical Context:
 
 ### Decision: Use Vitest for All Testing Layers
 
-**Rationale**:
+**Rationale** (confirmed by web research):
 - Vitest is fast, modern, and has excellent TypeScript support
-- Native ESM support aligns with Total.js v5 module system
+- Native ESM support aligns with Total.js v5 and modern Node.js
 - Compatible with Total.js project structure
 - Unified testing framework for unit, integration, and E2E tests
-- Built-in coverage reporting
-- Compatible with existing ecosystem (similar API to Jest)
+- Built-in coverage reporting (uses c8)
+- Compatible with existing ecosystem (Jest-compatible API)
+- Multi-project support perfect for monorepos
+
+**Testing Strategy Best Practices** (from web research):
+
+**1. Unit Testing**:
+- **Framework**: Vitest with Jest-compatible API
+- **Pattern**: AAA (Arrange, Act, Assert)
+- **Coverage Target**: 70% code coverage
+- **Best Practices**:
+  - Mock external dependencies (databases, APIs)
+  - Use beforeEach/afterEach for setup/teardown
+  - Keep tests isolated (no shared state)
+  - Test both success and error paths
+  - Make tests readable and descriptive
+
+**2. Integration Testing**:
+- **Framework**: Vitest + Supertest or MSW
+- **Coverage Target**: 60% of API endpoints
+- **Best Practices**:
+  - Test inter-module communication
+  - Use test database or in-memory data store
+  - Mock external services (3rd party APIs)
+  - Test "happy path" and edge cases
+  - Ensure test independence (no execution order dependency)
+
+**3. E2E Testing**:
+- **Framework**: Playwright (recommended over Cypress for Total.js)
+- **Coverage**: Critical user paths only
+- **Best Practices**:
+  - Focus on business-critical journeys
+  - Run in CI/CD pipelines
+  - Use fixtures for test data
+  - Mock authentication for controlled environment
+
+**Monorepo Configuration** (from web research):
+
+Root `vitest.config.ts`:
+```typescript
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    projects: [
+      'packages/*',        // Each package is a project
+      '!packages/excluded' // Exclude non-test packages
+    ],
+  },
+})
+```
+
+Package-level `vitest.config.ts`:
+```typescript
+import { defineConfig } from 'vitest/config'
+import tsconfigPaths from 'vite-tsconfig-paths'
+
+export default defineConfig({
+  plugins: [tsconfigPaths()], // Resolve TypeScript path aliases
+  test: {
+    environment: 'node', // or 'jsdom' for frontend tests
+    coverage: {
+      provider: 'c8',
+      reporter: ['text', 'json', 'html'],
+      lines: 70,
+      branches: 70,
+      functions: 70,
+      statements: 70
+    }
+  }
+})
+```
+
+**API Integration Testing with Vitest + MSW**:
+```typescript
+import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw'
+import { beforeAll, afterAll, afterEach, describe, test, expect } from 'vitest'
+
+const server = setupServer()
+
+beforeAll(() => server.listen())
+afterAll(() => server.close())
+afterEach(() => server.resetHandlers())
+
+describe('API endpoint', () => {
+  test('returns expected data', async () => {
+    server.use(
+      http.get('/api/foo', () => HttpResponse.json({ foo: 'bar' }))
+    )
+    const response = await fetch('/api/foo')
+    const data = await response.json()
+    expect(data).toEqual({ foo: 'bar' })
+  })
+})
+```
+
+**API Integration Testing with Vitest + Supertest**:
+```typescript
+import request from 'supertest'
+import { app } from '../src/app' // Total.js app
+
+describe('Total.js API Integration', () => {
+  it('should respond with JSON', async () => {
+    const res = await request(app)
+      .get('/api/users')
+      .expect(200)
+    expect(res.body).toHaveProperty('users')
+  })
+})
+```
 
 **Implementation Approach**:
-- Install Vitest in each package (`pnpm add -D vitest`)
-- Configure vitest.config.ts in each package and root
-- Use Vitest for unit tests (70% coverage target)
-- Use Vitest with Supertest for integration tests (60% API endpoint coverage)
-- Use Playwright + Vitest for E2E tests (critical paths only)
+- Install Vitest in each package: `pnpm add -D vitest`
+- Install MSW for API mocking: `pnpm add -D msw`
+- Install Supertest for HTTP testing: `pnpm add -D supertest @types/supertest`
+- Configure vitest.config.ts in root and each package
+- Use `vite-tsconfig-paths` plugin for path alias resolution
+- Set up coverage thresholds (70% unit, 60% integration)
+- Use Playwright for E2E tests (critical paths only)
 
 **Alternatives Considered**:
-- **Jest**: Mature but slower; ESM support still evolving
-- **Total.js Testing**: Native but less documentation and tooling
-- **Mocha + Chai**: Older stack; more configuration needed
+- **Jest**: Mature but slower; ESM support still evolving; heavier configuration
+- **Total.js Testing**: Native but less documentation and tooling; not TypeScript-first
+- **Mocha + Chai**: Older stack; requires more configuration; less modern features
 
-**Reference**: Vitest documentation: https://vitest.dev/
+**References**: 
+- Vitest documentation: https://vitest.dev/
+- Vitest monorepo guide: https://vitest.dev/guide/projects
+- MSW documentation: https://mswjs.io/
+- JavaScript testing best practices: https://github.com/goldbergyoni/javascript-testing-best-practices
 
 ---
 
@@ -126,34 +372,103 @@ This document addresses the following unknowns from the Technical Context:
 
 ## 5. Total.js Best Practices for Monorepo
 
-### Research Findings: Total.js + Monorepo Patterns
+### Research Findings: Monorepo Structure Best Practices
 
-**Total.js Project Structure**:
-Total.js v5 follows a modular structure that can be adapted to monorepo:
+**Key Findings from Web Research**:
 
+1. **Directory Organization** (Industry Standard):
+```
+totaljs-monorepo/
+├── packages/
+│   ├── api/            # Total.js (backend) project
+│   ├── web/            # Frontend app (React/MUI)
+│   ├── shared/         # Shared TypeScript code (types, utils)
+│   ├── services/       # Additional microservices
+│   └── ...
+├── .github/            # GitHub Actions/workflows
+├── docker-compose.yml  # Container orchestration
+├── package.json        # Root tooling/dev scripts
+├── tsconfig.json       # Root TypeScript config (project references)
+├── pnpm-workspace.yaml # PNPM workspace definition
+└── ...
+```
+
+2. **Tooling Recommendations** (Web Research):
+- **pnpm** for package management (speed, disk efficiency)
+- **Changesets** for versioning and publishing (if needed)
+- **ESLint/Prettier** for linting and formatting
+- **TypeScript project references** for scalable type checking
+
+3. **Total.js Project Structure** (from Context7):
 ```
 /packages/[package-name]/base/
-├── index.js                # Entry point (will be compiled from TypeScript)
+├── index.js                # Entry point (compiled from TypeScript)
 ├── definitions/            # Global definitions and settings
-├── controllers/            # API endpoints
+├── controllers/            # API endpoints (ROUTE, NEWACTION)
 ├── models/                 # Data schemas
-├── public/                 # Static files (for frontend packages)
-└── views/                  # Views (for server-rendered pages if needed)
+├── public/                 # Static files
+└── views/                  # Views (if server-rendered)
+```
+
+4. **Total.js Routing Patterns** (from Context7):
+```javascript
+// From Total.js documentation
+exports.install = function() {
+    // View routing
+    ROUTE('GET /');
+    ROUTE('GET /', 'view_name');
+
+    // REST API with authorization ("+" requires auth)
+    ROUTE('+GET    /api/users/        --> Users/query');
+    ROUTE('+GET    /api/users/{id}/   --> Users/read');
+    ROUTE('+POST   /api/users/        --> Users/insert');
+    ROUTE('+PUT    /api/users/{id}/   --> Users/update');
+    ROUTE('+PATCH  /api/users/{id}/   --> Users/patch');
+    ROUTE('+DELETE /api/users/        --> Users/remove');
+
+    // Custom routing
+    ROUTE('GET /', custom_action);
+};
+```
+
+5. **Total.js Action Pattern** (NEWACTION - from Context7):
+```javascript
+// Modern Total.js v5 pattern for API endpoints
+NEWACTION('Todo|read', {
+    name: 'Read a specific task',
+    input: '*id:UID',
+    route: '+API ?',
+    action: async function($, model) {
+        let response = await DATA.read('tbl_todo')
+            .id(model.id)
+            .error(404)
+            .promise($);
+        $.callback(response);
+    }
+});
 ```
 
 **Adaptation for Our Monorepo**:
 1. Each package follows Total.js structure inside `base/src/`
 2. Frontend packages use React/Material UI instead of Total.js views
-3. Backend packages use Total.js controllers for API endpoints
-4. Shared packages provide utilities for both frontend and backend
+3. Backend packages use Total.js `NEWACTION` or `ROUTE` for API endpoints
+4. Shared packages provide utilities, types, and common code
+5. Use PNPM catalog for centralized dependency management
+6. Use TypeScript project references for inter-package type sharing
 
 **Key Practices**:
-- Use Total.js `ROUTE()` for defining API endpoints
+- Use Total.js `ROUTE()` or `NEWACTION()` for defining API endpoints
 - Use Total.js schemas for data validation
-- Use Total.js workers for heavy operations
-- Use Total.js flow for business logic composition
+- Use Total.js `DBMS()` API for database operations
+- Use Total.js `controller.authorize()` for authentication middleware
+- Use Total.js workers for heavy operations (future)
+- Use Total.js FlowStream for business logic composition (future)
 
-**Reference**: Total.js v5 documentation: https://docs.totaljs.com/total5/
+**References**: 
+- Total.js v5 documentation: https://docs.totaljs.com/total5/
+- Total.js Framework 5: https://github.com/totaljs/framework5
+- Monorepo best practices: https://monorepo.tools/
+- TypeScript monorepo guide: https://maxrohde.com/2021/11/20/the-ultimate-guide-to-typescript-monorepos/
 
 ---
 
@@ -161,25 +476,92 @@ Total.js v5 follows a modular structure that can be adapted to monorepo:
 
 ### Research Findings: TypeScript with Total.js v5
 
-**Official Approach**:
-- Total.js v5 supports TypeScript natively
-- Use `tsc` for compilation or Total.js can handle `.ts` files directly
-- Configure tsconfig.json with `"module": "ESNext"` and `"target": "ES2022"`
-- Use ES modules (`import`/`export`) not CommonJS
+**Important Discovery from Web Research**:
+Total.js v5 is **NOT officially designed for TypeScript-first development**. The framework:
+- Is written in JavaScript and optimized for direct JavaScript development
+- Does NOT provide built-in TypeScript decorators, types, or integration packages
+- Philosophy emphasizes independence from external tooling and simplicity
+- Documentation and community confirm minimal official TypeScript support
 
-**Implementation Strategy**:
-1. Root `tsconfig.json` with shared compiler options
-2. Each package extends root config with package-specific settings
-3. Path aliases for cross-package imports: `@packages/*`
-4. Compile TypeScript in each package to `dist/` directory
-5. Use `.js` in Total.js entry points that import from `dist/`
+**However, TypeScript Integration IS Possible**:
+Total.js can be used with TypeScript by treating it like any Node.js JavaScript project:
+1. Install TypeScript as a development dependency
+2. Configure `tsconfig.json` with appropriate settings
+3. Compile TypeScript to JavaScript
+4. Run Total.js with the compiled JavaScript output
+5. Write custom type definitions for Total.js APIs (framework doesn't ship with `.d.ts` files)
 
-**Type Definitions**:
+**Recommended TypeScript Configuration** (from web research):
+```json
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "NodeNext",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "outDir": "dist",
+    "declaration": false,
+    "sourceMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}
+```
+
+**TypeScript Project References for Monorepo** (from web research):
+Root `tsconfig.json`:
+```json
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/api" },
+    { "path": "./packages/web" },
+    { "path": "./packages/shared" }
+  ]
+}
+```
+
+Package-level `tsconfig.json`:
+```json
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "references": [
+    { "path": "../shared" }
+  ]
+}
+```
+
+**Implementation Strategy (Revised)**:
+1. **Acceptance**: Total.js is NOT TypeScript-first; we adapt TypeScript to it
+2. **Custom Types**: Create comprehensive type definitions for Total.js APIs in `@types/totaljs`
+3. **Compilation Pipeline**: Always compile `.ts` → `.js` before running Total.js
+4. **Path Aliases**: Use `vite-tsconfig-paths` or similar for resolving TypeScript path aliases
+5. **Type Safety**: Expect to use `any` for some Total.js framework APIs without types
+6. **No Decorators**: Unlike NestJS, Total.js doesn't support TypeScript decorators; use functional patterns
+
+**Type Definitions Strategy**:
 - Install `@types/node` for Node.js types
 - Install `@types/passport` and `@types/passport-jwt` for auth
-- Create custom type definitions for Total.js APIs in `shared-common/base/src/types/`
+- Create custom type definitions for Total.js in `packages/shared-types/base/src/`:
+  - `totaljs-globals.d.ts` - Global functions (ROUTE, NEWACTION, DBMS, etc.)
+  - `totaljs-controller.d.ts` - Controller instance type
+  - `totaljs-schema.d.ts` - Schema definition types
+  - `totaljs-flow.d.ts` - FlowStream types
 
-**Reference**: Total.js TypeScript guide: https://docs.totaljs.com/total5/40840001/
+**References**: 
+- Total.js v5 documentation: https://docs.totaljs.com/total5/
+- Total.js Framework 5 GitHub: https://github.com/totaljs/framework5
+- TypeScript tsconfig best practices: https://www.totaltypescript.com/tsconfig-cheat-sheet
 
 ---
 
@@ -187,37 +569,115 @@ Total.js v5 follows a modular structure that can be adapted to monorepo:
 
 ### Research Findings: Frontend Strategy
 
-**Approach**: Hybrid Architecture
-- **Backend packages**: Pure Total.js for API endpoints
-- **Frontend packages**: React + Material UI for UI components
-- **Communication**: REST API between frontend and backend
+**Important Discovery from Web Research**:
+Total.js Platform v5 has its own UI component library (300+ web components) and is designed for vanilla JavaScript/HTML apps. Material UI is React-based. These are fundamentally different approaches.
 
-**Frontend Package Structure**:
+**Hybrid Architecture Decision**:
+- **Backend packages**: Pure Total.js for API endpoints
+- **Frontend packages**: React + Material UI for UI components (separate from Total.js UI)
+- **Communication**: REST API between React frontend and Total.js backend
+- **No Direct Integration**: Material UI and Total.js UI are separate ecosystems
+
+**Total.js UI Components** (from web research):
+- 300+ reusable web components (jComponent library)
+- Uses `<ui-bind>` for data binding (similar to React state)
+- Path-based data management system
+- CDN-hosted, MIT licensed
+- Great for simple Total.js-only SPAs
+
+**Material UI v5 Integration** (recommended approach):
+Since we're using React + MUI, completely separate from Total.js UI:
+
+1. **Frontend Package Structure**:
 ```
 packages/[feature]-frt/base/
 ├── src/
 │   ├── components/         # React + MUI components
 │   ├── pages/              # Page components
-│   ├── services/           # API client services
+│   ├── services/           # API client services (call Total.js backend)
 │   ├── hooks/              # Custom React hooks
+│   ├── theme/              # MUI theme configuration
 │   └── App.tsx             # Main app component
 ├── public/                 # Static assets
-└── index.html              # Entry HTML
+├── index.html              # Entry HTML
+└── vite.config.ts          # Vite configuration
 ```
 
-**Build Setup**:
-- Use Vite for frontend package builds (fast, ESM-native)
-- Configure Vite to work with Total.js backend
-- Serve frontend from Total.js static file serving in development
-- Separate deployment of frontend build in production
+2. **MUI v5 Styling** (from web research):
+- Material UI v5 uses **Emotion** for styling (not JSS)
+- Use `ThemeProvider` for consistent theming
+- Create shared theme in `packages/shared-ui/base/src/theme.ts`
+- Pass theme to all frontend packages
 
-**MUI Theme**:
-- Create `shared-ui` package with MUI theme configuration
-- Use `createTheme()` for consistent styling
-- Export theme for use in all frontend packages
+3. **Build Setup**:
+- Use **Vite** for frontend package builds (fast, ESM-native, great for React)
+- Configure Vite proxy to Total.js backend in development
+- Vite dev server on port 5173, Total.js API on port 8000
+- Production: Build React app, serve static files from Total.js or CDN
 
-**Reference**: 
-- Material UI documentation: https://mui.com/
+**Data Exchange Pattern**:
+```
+React (MUI) Frontend ←→ REST API ←→ Total.js Backend
+     (Port 5173)          (HTTP)      (Port 8000)
+```
+
+**Example Vite Config for Development**:
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true
+      }
+    }
+  }
+});
+```
+
+**MUI Theme Setup**:
+```typescript
+// packages/shared-ui/base/src/theme.ts
+import { createTheme } from '@mui/material/styles';
+
+export const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+  typography: {
+    fontFamily: 'Arial, sans-serif',
+  },
+});
+```
+
+**Component Integration Examples**:
+- **Forms**: Use MUI `<TextField>`, `<Button>` components
+- **Data Tables**: Use MUI `<DataGrid>` or `<Table>` with data from Total.js API
+- **Dialogs**: Use MUI `<Dialog>`, `<Snackbar>` for notifications
+- **Navigation**: Use MUI `<AppBar>`, `<Drawer>` for layout
+
+**Best Practices** (from web research):
+- **Separation of Concerns**: Use Total.js ONLY for backend logic; use React+MUI for ALL frontend
+- **API-First**: Design RESTful APIs in Total.js that React consumes
+- **No Mixing**: Don't try to use Total.js UI components with React - choose one approach
+- **Component Distribution**: Bundle React/MUI as static resources
+- **Development Workflow**: Run Vite dev server + Total.js backend simultaneously
+
+**References**: 
+- Total.js Components: https://www.totaljs.com/components/
+- Total.js jComponent: https://github.com/totaljs/jComponent
+- Material UI v5: https://mui.com/material-ui/
+- Material UI examples: https://mui.com/material-ui/getting-started/example-projects/
 - Vite documentation: https://vitejs.dev/
 
 ---
@@ -226,34 +686,125 @@ packages/[feature]-frt/base/
 
 ### Research Findings: Passport.js + Supabase + Total.js
 
-**Integration Pattern**:
-1. **Supabase Auth** for user management and authentication
-2. **Passport.js with JWT strategy** for stateless authentication
-3. **Total.js middleware** for route protection
-4. **Row Level Security (RLS)** at database layer
+**Best Practices from Web Research**:
 
-**Flow**:
+**1. Password Security**:
+- Always hash passwords with bcrypt before storage
+- Use salt (bcrypt.genSalt(10)) to protect against rainbow tables
+- Never store plain text passwords
+- Validate on login with bcrypt.compare()
+
+**2. JWT Token Security**:
+- Use strong algorithms: HS256 (symmetric) or RS256 (asymmetric)
+- Include minimal data in payload (id, role, issued time)
+- Set short lifespans: 15-30 minutes for access tokens
+- Use longer-lived refresh tokens (7 days) stored securely
+- Always use HTTPS for token transmission
+- Store in HTTP-only cookies (web) to prevent XSS attacks
+
+**3. Passport.js JWT Strategy Configuration**:
+```javascript
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+
+const opts = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET
+};
+
+passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
+  const user = await User.findById(jwt_payload.id);
+  if (user) return done(null, user);
+  else return done(null, false);
+}));
 ```
-User → Frontend → API (Total.js)
-                   ↓
-            Passport.js JWT verify
-                   ↓
-            Extract user context
-                   ↓
-            Set RLS context (user_id)
-                   ↓
-            Supabase query (RLS enforced)
+
+**4. Total.js Authorization** (from Context7):
+```javascript
+// controller.authorize() method for securing actions
+controller.authorize(function(req, res, callback) {
+  // Custom authorization logic
+  // Improved version automatically assigns controller.user
+  callback(null, true); // Allow access
+});
 ```
+
+**Integration Pattern**:
+1. **Supabase Auth** for user management and Row Level Security (RLS)
+2. **Passport.js with JWT strategy** for stateless authentication
+3. **Total.js middleware** (`controller.authorize()`) for route protection
+4. **Row Level Security (RLS)** at database layer for defense-in-depth
+
+**Authentication Flow**:
+```
+User → Login Request → Total.js API
+                           ↓
+                    Validate Credentials
+                           ↓
+                    Generate JWT (15min) + Refresh Token (7d)
+                           ↓
+                    Return Tokens to Client
+                           ↓
+User → Authenticated Request (Bearer Token)
+                           ↓
+                    Passport.js JWT verify
+                           ↓
+                    Extract user context (controller.user)
+                           ↓
+                    Set Supabase RLS context (user_id)
+                           ↓
+                    Supabase query (RLS enforced at DB)
+```
+
+**Token Generation Best Practices**:
+```javascript
+const jwt = require('jsonwebtoken');
+
+// Access token (short-lived)
+const accessToken = jwt.sign(
+  { id: user._id, role: user.role },
+  process.env.JWT_SECRET,
+  { expiresIn: '15m' }
+);
+
+// Refresh token (long-lived)
+const refreshToken = jwt.sign(
+  { id: user._id, type: 'refresh' },
+  process.env.REFRESH_SECRET,
+  { expiresIn: '7d' }
+);
+```
+
+**Error Handling Best Practices**:
+- Provide generic error messages to users ("Invalid credentials")
+- Log detailed errors for developers with full context
+- Differentiate expired vs invalid tokens in logs (not to users)
+- Implement rate limiting on login attempts
+
+**Security Checklist** (from web research):
+- ✅ Hash passwords with bcrypt + salt
+- ✅ Short-lived JWT tokens (15-30 min)
+- ✅ Refresh token mechanism
+- ✅ HTTPS everywhere
+- ✅ HTTP-only cookies for web clients
+- ✅ Row Level Security (RLS) at database
+- ✅ Rate limiting on authentication endpoints
+- ✅ Token revocation on logout
+- ✅ No sensitive data in JWT payload
+- ✅ Audit logging for auth events
 
 **Implementation**:
-- Middleware in `shared-auth` package
-- JWT tokens issued on login with 1-hour expiration
-- Refresh tokens with 7-day expiration
-- Supabase client initialized with user JWT for RLS
+- Middleware in `packages/shared-auth/base/src/`
+- JWT tokens issued on login with 15-minute expiration
+- Refresh tokens with 7-day expiration stored in HTTP-only cookies
+- Supabase client initialized with user JWT for RLS enforcement
+- Total.js `controller.authorize()` for protected routes
 
-**Reference**: 
-- Passport.js documentation: http://www.passportjs.org/
-- Supabase Auth documentation: https://supabase.com/docs/guides/auth
+**References**: 
+- Passport.js JWT guide: http://www.passportjs.org/packages/passport-jwt/
+- Node.js authentication best practices: https://dev.to/sushantrahate/nodejs-authentication-best-practices-and-key-strategies-1npj
+- Avoiding JWT pitfalls: https://moldstud.com/articles/p-avoiding-common-pitfalls-when-using-jwt-with-passportjs-essential-tips-for-developers
+- Supabase Auth: https://supabase.com/docs/guides/auth
 
 ---
 
@@ -338,25 +889,137 @@ REFRESH_TOKEN_EXPIRATION=7d
 
 | Component | Technology Choice | Rationale |
 |-----------|------------------|-----------|
-| **Database ORM** | Total.js DBMS + Custom Repository Pattern | Native Total.js integration, flexibility |
-| **Build Tool** | PNPM Workspaces + Total.js Native | Simple, sufficient for initial phase |
-| **Testing Framework** | Vitest | Modern, fast, excellent TypeScript support |
-| **Frontend Build** | Vite | Fast, ESM-native, great DX |
+| **Database ORM** | Total.js DBMS + Custom Repository Pattern | Native Total.js integration, QueryBuilder API, flexibility |
+| **Build Tool** | PNPM Workspaces + Total.js Native | Simple, sufficient for initial phase, monorepo support |
+| **Testing Framework** | Vitest + MSW/Supertest | Modern, fast, excellent TypeScript support, monorepo-friendly |
+| **Frontend Build** | Vite | Fast, ESM-native, great DX, React support |
 | **Rate Limiting** | Total.js Cache (Memory) → Redis (Future) | Simple start, scalable path |
 | **Logging** | Total.js Logger (JSON format) | Built-in, structured logging support |
-| **Auth** | Passport.js + JWT + Supabase Auth | Standard pattern, Supabase integration |
+| **Auth** | Passport.js + JWT + Supabase Auth + RLS | Standard pattern, secure, Supabase integration |
+| **TypeScript** | Standard tsc compilation (not Total.js native) | Realistic approach given Total.js is JS-first |
+| **Frontend UI** | React + Material UI v5 (separate from Total.js) | Modern, component-rich, separate from backend |
+
+---
+
+## Key Insights from Web Research
+
+### Critical Findings:
+
+1. **Total.js is NOT TypeScript-First**:
+   - Framework is written in JavaScript, optimized for JS development
+   - NO built-in TypeScript support, decorators, or type definitions
+   - TypeScript CAN be used but requires manual type definitions
+   - Must compile TS → JS before running Total.js
+
+2. **Total.js UI vs Material UI**:
+   - Total.js has its own 300+ component library (jComponent)
+   - Material UI is React-based, completely separate ecosystem
+   - Decision: Use React+MUI for frontend, Total.js only for backend API
+   - No mixing - these are different paradigms
+
+3. **Monorepo Best Practices**:
+   - Use PNPM for package management (speed, disk efficiency)
+   - Use TypeScript project references for inter-package types
+   - Use `vite-tsconfig-paths` for path alias resolution
+   - Vitest multi-project config for monorepo testing
+
+4. **Testing Strategy**:
+   - Vitest is the modern choice (fast, ESM-native, TypeScript-friendly)
+   - MSW for API mocking in tests
+   - Supertest for HTTP integration tests
+   - AAA pattern (Arrange, Act, Assert) for clarity
+   - 70% unit coverage, 60% integration coverage targets
+
+5. **Authentication Security**:
+   - Always hash passwords with bcrypt + salt
+   - Short-lived JWT (15-30 min) + long-lived refresh tokens (7 days)
+   - HTTP-only cookies for web clients (prevent XSS)
+   - Row Level Security (RLS) at database for defense-in-depth
+   - Rate limiting on auth endpoints
+   - HTTPS everywhere
+
+6. **Total.js DBMS QueryBuilder**:
+   - Built-in fluent API for database queries
+   - Support for PostgreSQL (Supabase), MongoDB, MySQL
+   - ILIKE for case-insensitive search
+   - Promise-based API
+   - Can wrap in Repository pattern for abstraction
+
+### Architecture Implications:
+
+**Frontend-Backend Separation**:
+```
+┌─────────────────────────────────┐
+│  React + Material UI Frontend   │  (Port 5173)
+│  (Vite dev server)              │
+└────────────┬────────────────────┘
+             │ HTTP/REST API
+             ↓
+┌─────────────────────────────────┐
+│  Total.js Backend API           │  (Port 8000)
+│  (NEWACTION, ROUTE, DBMS)       │
+└────────────┬────────────────────┘
+             │ SQL
+             ↓
+┌─────────────────────────────────┐
+│  Supabase PostgreSQL            │
+│  (RLS enabled)                  │
+└─────────────────────────────────┘
+```
+
+**TypeScript Compilation Flow**:
+```
+Source (.ts) → tsc → JavaScript (.js) → Total.js Runtime
+   ↓
+Custom Types (@types/totaljs)
+```
+
+**Testing Architecture**:
+```
+Unit Tests (Vitest)
+   ↓
+Integration Tests (Vitest + MSW/Supertest)
+   ↓
+E2E Tests (Playwright)
+```
 
 ---
 
 ## Next Steps (Phase 1)
 
-With all technical decisions resolved, proceed to Phase 1:
-1. Create `data-model.md` - Define entity structures for setup phase
-2. Create `contracts/` - API contract definitions (if applicable)
-3. Create `quickstart.md` - Developer onboarding guide
-4. Update agent context via `update-agent-context.sh copilot`
-5. Re-evaluate Constitution Check with concrete decisions
+With all technical decisions resolved and validated through web research and Context7:
+
+1. ✅ **research.md** - Complete with web research findings
+2. 📝 **data-model.md** - Define entity structures for setup phase
+3. 📝 **contracts/** - API contract definitions
+4. 📝 **quickstart.md** - Developer onboarding guide with updated patterns
+5. 📝 **Update agent context** - Run `update-agent-context.sh copilot`
+6. 📝 **Re-evaluate Constitution Check** - Verify alignment with updated decisions
 
 ---
 
-**Status**: ✅ Research Complete - All NEEDS CLARIFICATION items resolved
+## References & Sources
+
+### Official Documentation:
+- Total.js v5: https://docs.totaljs.com/total5/
+- Total.js Framework 5: https://github.com/totaljs/framework5
+- Total.js Components: https://www.totaljs.com/components/
+- Material UI v5: https://mui.com/
+- Vitest: https://vitest.dev/
+- Supabase: https://supabase.com/docs
+
+### Best Practices Guides:
+- TypeScript Monorepo Guide: https://maxrohde.com/2021/11/20/the-ultimate-guide-to-typescript-monorepos/
+- JavaScript Testing Best Practices: https://github.com/goldbergyoni/javascript-testing-best-practices
+- Node.js Authentication Best Practices: https://dev.to/sushantrahate/nodejs-authentication-best-practices-and-key-strategies-1npj
+- Monorepo Tools: https://monorepo.tools/
+- TypeScript TSConfig: https://www.totaltypescript.com/tsconfig-cheat-sheet
+
+### Research Date:
+- Initial research: 2025-11-17
+- Web research update: 2025-11-17
+- Context7 integration: 2025-11-17
+
+---
+
+**Status**: ✅ Research Complete - All NEEDS CLARIFICATION items resolved with web research validation and Context7 documentation
