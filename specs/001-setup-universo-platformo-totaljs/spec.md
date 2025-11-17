@@ -128,10 +128,16 @@ As a frontend developer, I need Material-UI (MUI) integrated into the frontend p
 - How does the build process handle TypeScript compilation errors across multiple packages? (Build should fail fast with clear indication of which package has errors, including file path and line number)
 - What happens when documentation files (English vs Russian) get out of sync? (Manual validation process should detect mismatches in structure, number of sections, or line count)
 - How does the system handle circular dependencies between packages in the monorepo? (PNPM workspace should detect and report circular dependency errors, build process should fail with clear error message)
-- What happens when two packages depend on conflicting versions of the same dependency? (PNPM hoisting strategy should be configured to handle version conflicts, error messages should indicate which packages have conflicts)
+- What happens when two packages depend on conflicting versions of the same dependency? (PNPM catalog enforces consistent versions; conflicts should be resolved by updating catalog or justifying override in package README)
 - How does the application behave when Node.js version is incompatible with Total.js v5? (Should check Node.js version on startup and display error with required version)
 - What happens when .env file is missing on first startup? (Application should fail gracefully with message to copy .env.example to .env and configure values)
 - How does authentication handle expired JWT tokens? (Should return 401 status with clear error message, frontend should redirect to login or refresh token)
+- What happens when rate limit is exceeded for a user? (API returns 429 Too Many Requests with Retry-After header indicating seconds until limit resets)
+- How does the system handle database connection failures during operation? (Should implement retry logic with exponential backoff up to 3 attempts, then return 503 Service Unavailable with clear error message)
+- What happens when RLS policies deny access to a resource? (Database query returns empty result or access denied error; API returns 403 Forbidden with message "Access denied to resource")
+- How does pagination handle invalid offset values (negative or beyond total count)? (Returns empty array with proper pagination headers showing no results; does not error)
+- What happens when API receives malformed JSON in request body? (Returns 400 Bad Request with validation error details mapping field names to specific error messages)
+- How does the system behave when Redis (rate limiter) is unavailable? (Should degrade gracefully: log warning, skip rate limiting temporarily, continue serving requests)
 
 ## Requirements *(mandatory)*
 
@@ -150,6 +156,8 @@ As a frontend developer, I need Material-UI (MUI) integrated into the frontend p
 - **FR-006**: Project MUST use PNPM as the package manager (not npm or yarn)
 - **FR-006a**: Package inter-dependencies within the monorepo MUST use workspace protocol (`workspace:*`) to reference sibling packages
 - **FR-006b**: Packages without frontend/backend split (shared utilities, common types) MAY use single package naming without suffix (e.g., `shared-common`, `shared-types`)
+- **FR-006c**: Project MUST use PNPM catalog feature in `pnpm-workspace.yaml` to define centralized versions for all shared dependencies across packages. This ensures version consistency and simplifies dependency management across the monorepo
+- **FR-006d**: Package-specific dependency versions MAY override catalog versions only with explicit justification documented in package README
 
 **Documentation Requirements**
 
@@ -180,8 +188,14 @@ As a frontend developer, I need Material-UI (MUI) integrated into the frontend p
 - **FR-016**: Database integration MUST be designed with abstraction layer (Repository or Adapter pattern) to allow future support for multiple DBMS beyond Supabase
 - **FR-016a**: Database abstraction layer MUST define interfaces for CRUD operations that can be implemented by different database adapters (Supabase, PostgreSQL, MongoDB, etc.)
 - **FR-016b**: Adding support for a new DBMS MUST only require: (1) Creating new adapter class implementing database interfaces, (2) Registering adapter in dependency injection container, (3) Updating configuration
+- **FR-016c**: If using an ORM (TypeORM or equivalent), all database access MUST go through repository pattern. Raw SQL queries are prohibited unless justified for performance with documented rationale
+- **FR-016d**: Database entities MUST be registered in a central registry file that exports all entity classes for ORM initialization. Each package containing entities MUST export its entities array
+- **FR-016e**: Database migrations MUST be organized per-package in `src/database/migrations/` directory and exported as arrays. A central migration registry MUST combine all package migrations for execution
 - **FR-017**: Authentication system MUST integrate Passport.js with Supabase connector using @supabase/supabase-js for user authentication and verification
 - **FR-017a**: Authentication configuration MUST include: JWT secret key, token expiration time, refresh token rotation strategy, and Supabase project URL and anon key
+- **FR-017b**: Authentication MUST implement Row Level Security (RLS) pattern where database policies enforce access control, not application code. Middleware MUST set RLS context (user ID) for each authenticated request
+- **FR-017c**: Authentication middleware chain MUST follow this order: (1) JWT token verification, (2) RLS context initialization, (3) Rate limiting check, (4) Route handler execution
+- **FR-017d**: Authorization MUST support role-based access control with at least these roles: Owner (full CRUD), Admin (CRUD on sub-resources), Editor (create/update), Viewer (read-only)
 - **FR-018**: Database configuration MUST be externalized using environment variables with .env file support (using dotenv package or Total.js config system)
 - **FR-018a**: Required environment variables MUST include: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY (for admin operations), JWT_SECRET, JWT_EXPIRATION
 - **FR-018b**: Environment variable naming MUST follow convention: UPPERCASE_WITH_UNDERSCORES for all configuration values
@@ -214,6 +228,23 @@ As a frontend developer, I need Material-UI (MUI) integrated into the frontend p
 - **FR-025b**: Build process MUST fail fast with clear indication of which package has errors including file path and error message
 - **FR-025c**: A root-level `clean` script MUST be provided to remove all dist/ and build/ directories from all packages
 - **FR-025d**: Development workflow MUST support watch mode where TypeScript compilation runs automatically on file changes
+- **FR-025e**: Project SHOULD use Turbo (or equivalent build orchestration tool compatible with Total.js) for intelligent caching and parallel builds across packages. Build tool MUST respect package dependencies and build in correct order
+
+**API Design Patterns**
+
+- **FR-033**: All REST API list endpoints MUST implement pagination with standard query parameters: `limit` (1-1000, default: 100), `offset` (min: 0, default: 0), `sortBy` (default: 'updated'), `sortOrder` ('asc' | 'desc', default: 'desc')
+- **FR-033a**: Paginated responses MUST include these headers: `X-Pagination-Limit`, `X-Pagination-Offset`, `X-Total-Count`, `X-Pagination-Has-More` (boolean indicating if more records exist)
+- **FR-034**: All API endpoints MUST return errors in standardized schema with these fields: `error` (error type), `message` (user-facing description), `statusCode` (HTTP status), `timestamp` (ISO 8601), `path` (request path), `details` (optional validation details object)
+- **FR-034a**: Validation errors (400) MUST include a `details` object mapping field names to error messages for client-side form handling
+- **FR-035**: API resource hierarchies MUST be reflected in URL structure following RESTful nesting: `/unik/:unikId/spaces/:spaceId/canvases/:canvasId`. Nested resources imply ownership and access scoping
+- **FR-035a**: Public access endpoints (if any) MUST use separate route prefix like `/public/` to clearly distinguish from authenticated endpoints
+
+**Rate Limiting & Performance**
+
+- **FR-036**: All authenticated API endpoints MUST implement rate limiting to prevent abuse. Rate limits MUST differentiate between read operations (more permissive) and write operations (more restrictive)
+- **FR-036a**: Rate limiting SHOULD use Redis-based distributed limiter for multi-instance deployments. Configuration: Read endpoints 100 requests/minute, Write endpoints 60 requests/minute per user
+- **FR-036b**: Rate limit responses MUST include headers: `X-RateLimit-Limit` (total allowed), `X-RateLimit-Remaining` (requests left), `X-RateLimit-Reset` (Unix timestamp when limit resets)
+- **FR-036c**: When rate limit is exceeded, endpoint MUST return 429 Too Many Requests with `Retry-After` header indicating seconds until limit reset
 
 **Project Organization Standards**
 
@@ -232,6 +263,23 @@ As a frontend developer, I need Material-UI (MUI) integrated into the frontend p
 - **FR-030c**: Passwords MUST be hashed using bcrypt (or Supabase built-in hashing) before storage, never stored in plain text
 - **FR-030d**: All API endpoints that access user data MUST implement authentication and authorization checks
 - **FR-030e**: The application MUST validate and sanitize all user inputs to prevent injection attacks (SQL injection, XSS, command injection)
+
+**Testing Strategy**
+
+- **FR-037**: Project MUST define testing layers with minimum coverage targets: Unit tests (70% code coverage), Integration tests (60% of API endpoints), E2E tests (critical user paths only)
+- **FR-037a**: Unit tests MUST be written using a testing framework compatible with Total.js (e.g., Jest, Vitest). Each package MUST have its own test suite runnable independently
+- **FR-037b**: Integration tests MUST validate: database operations with test database, API endpoint responses with mocked authentication, inter-package communication contracts
+- **FR-037c**: Test databases MUST use isolated instances (Docker containers or in-memory databases) to prevent pollution of development data
+- **FR-037d**: All tests MUST be runnable via `pnpm test:all` (runs all packages) and `pnpm --filter [package-name] test` (runs single package)
+- **FR-037e**: CI/CD pipeline MUST enforce test passage before merge. Failing tests MUST block PR merging
+
+**Observability & Monitoring**
+
+- **FR-038**: All backend services MUST emit structured JSON logs for centralized aggregation with these fields: timestamp (ISO 8601), level (info/warn/error), service (service name), userId (if authenticated), path (request path), method (HTTP method), statusCode, duration (ms), message
+- **FR-038a**: Application MUST expose metrics endpoint (e.g., `/metrics`) with at least these metrics: `http_requests_total` (counter), `http_request_duration_seconds` (histogram), `database_query_duration_seconds` (histogram), `rate_limit_hits_total` (counter)
+- **FR-038b**: All async operations (database queries, external API calls) SHOULD support distributed tracing using OpenTelemetry or compatible instrumentation
+- **FR-038c**: Error logging MUST capture: stack trace, request context (headers, body), user ID, timestamp, and correlation ID for tracing related logs
+- **FR-038d**: Performance-critical operations (API responses, database queries) MUST be instrumented with timing measurements logged at INFO level
 
 **Development Environment Requirements**
 
@@ -262,6 +310,42 @@ As a frontend developer, I need Material-UI (MUI) integrated into the frontend p
 - Specifies package locations and shared dependencies
 - Enables cross-package development and building
 
+**Data Model Hierarchy** (for future feature implementation)
+
+The following entity hierarchy will be implemented in future features but is documented here for architectural planning:
+
+```
+User (Supabase Auth)
+  │
+  ├── Unik (Workspace) - Top-level container for user's work
+  │     │
+  │     ├── Space - Logical grouping of related canvases
+  │     │     ├── Canvas - Individual workflow, scene, or experience
+  │     │     │     └── Version - Versioned snapshots of canvas state
+  │     │     └── ...
+  │     │
+  │     ├── Tools (shared across workspace)
+  │     ├── Credentials (shared authentication)
+  │     └── Variables (shared configuration)
+  │
+  └── Metaverse - Thematic collection of spaces
+        ├── Section - Organizational unit within metaverse
+        │     └── Entity - Individual interactive element
+        └── ...
+
+Cluster (for infrastructure management)
+  ├── Domain - Grouping of related resources
+  │     └── Resource - Individual infrastructure component
+  └── ...
+```
+
+**Hierarchy Design Principles**:
+1. **Workspace Isolation**: Top-level containers (Unik, Cluster) are isolated per user unless explicitly shared
+2. **Resource Sharing**: Tools, credentials, and variables are shared across all spaces within a workspace
+3. **Version Control**: Primary content entities (Canvas) MUST support versioning with rollback capability
+4. **Public Access**: Individual resources MAY be made public via separate API endpoints without authentication
+5. **Role-Based Access**: Each hierarchy level enforces role-based permissions (Owner > Admin > Editor > Viewer)
+
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
@@ -279,6 +363,13 @@ As a frontend developer, I need Material-UI (MUI) integrated into the frontend p
 - **SC-011**: All required environment variables are documented in .env.example with descriptive comments, and actual .env file is properly ignored by git
 - **SC-012**: TypeScript compilation completes for all packages in under 2 minutes on a standard development machine (8GB RAM, 4 core CPU)
 - **SC-013**: Development server starts successfully for both frontend and backend packages with no fatal errors, and responds to health check within 10 seconds
+- **SC-014**: PNPM catalog is defined in `pnpm-workspace.yaml` with centralized versions for all major shared dependencies (TypeScript, MUI, testing frameworks, etc.)
+- **SC-015**: Database entity registration system is functional: entities can be added to packages and properly exported to central registry for ORM initialization
+- **SC-016**: Authentication middleware chain executes in correct order: JWT verification → RLS context → rate limiting → route handler, verifiable through middleware logging
+- **SC-017**: API error responses follow standardized schema with all required fields (error, message, statusCode, timestamp, path), validated by sample endpoint tests
+- **SC-018**: Rate limiting is operational: exceeding configured limits returns 429 status with proper rate limit headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
+- **SC-019**: Structured JSON logging is active: all HTTP requests produce log entries with required fields (timestamp, level, service, userId, path, method, statusCode, duration)
+- **SC-020**: Test suite runs successfully: `pnpm test:all` executes all package tests and reports overall pass/fail status with coverage metrics if configured
 
 ## Assumptions
 
@@ -289,13 +380,19 @@ This specification is based on the following assumptions:
 3. **Total.js Version**: Total.js Platform version 5 (minimum v5.0.0) is stable and its TypeScript support is production-ready for use in this project. Reference: https://docs.totaljs.com/
 4. **Existing Reference**: Universo Platformo React repository (https://github.com/teknokomo/universo-platformo-react) is accessible for reference of conceptual structure and will remain available throughout development
 5. **Package Scope**: Initial setup will create minimal starter packages demonstrating structure; actual feature packages (Clusters, Metaverses, etc.) will be added in subsequent feature implementations
-6. **Authentication Strategy**: Passport.js with JWT strategy will be integrated with Supabase Auth API using @supabase/supabase-js client library for user authentication
+6. **Authentication Strategy**: Passport.js with JWT strategy will be integrated with Supabase Auth API using @supabase/supabase-js client library for user authentication. Row Level Security (RLS) will be enforced at database level
 7. **MUI Compatibility**: Material-UI (MUI) v5.x is compatible with Total.js frontend architecture and can be integrated without major architectural changes
 8. **Language Support**: All documentation will be in English and Russian only (no other languages at this time). UI text localization is out of scope for initial setup
 9. **GitHub Permissions**: The team has appropriate permissions to create labels, configure repository settings, and manage issues/PRs in the GitHub repository
 10. **Future Extensibility**: While focusing on Supabase initially, the architecture will use abstraction layers (Repository/Adapter patterns) that do not prevent future DBMS additions
 11. **Development Machine**: Standard development environment has minimum 8GB RAM, 4 CPU cores, 10GB free disk space, and adequate internet connection for package downloads
 12. **TypeScript Experience**: Development team has working knowledge of TypeScript and modern JavaScript (ES2022+) features
+13. **ORM Choice**: Project will use an ORM (TypeORM or Total.js equivalent) for database access. Choice will be documented with rationale for Total.js compatibility
+14. **Redis Availability**: Redis instance is available for distributed rate limiting in production. Development environment may use in-memory fallback
+15. **Testing Framework**: Testing framework will be compatible with Total.js and TypeScript (Jest, Vitest, or Total.js native testing tools)
+16. **Build Orchestration**: Turbo or equivalent tool compatible with Total.js will be used for monorepo build management. If Total.js has native tooling, that may be preferred
+17. **API Design**: REST API will follow standard HTTP conventions. WebSocket/real-time features are future considerations using Total.js native capabilities
+18. **Observability Stack**: Structured logging will use standard JSON format compatible with common log aggregators (ELK, Grafana Loki). Metrics endpoint will follow Prometheus format if possible
 
 ## Dependencies
 
