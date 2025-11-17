@@ -1,27 +1,42 @@
 <!--
 SYNC IMPACT REPORT - Constitution Update
-Version Change: 1.0.0 → 1.1.0 (Enhanced Technical Specifications)
+Version Change: 1.1.0 → 1.2.0 (Architectural Patterns from Reference Implementation)
 Principles Added:
-  8. Security-First Development (NEW)
+  9. Dependency Management & Consistency (NEW)
+  10. Data Access Patterns (NEW)
+  11. API Consistency & Standards (NEW)
+  12. Observability & Operational Excellence (NEW)
 Principles Enhanced:
-  II. Technology Stack Standardization - Added specific version requirements for all dependencies
+  VI. Test-Driven Development - Added specific coverage targets (70% unit, 60% integration)
+  VIII. Security-First Development - Added Row Level Security (RLS) requirement
 Sections Updated:
-  - Technology Stack Requirements - Added minimum versions and additional tools (ESLint, Prettier)
-  - Core Principles - Added Security-First Development principle with security requirements
+  - Core Principles - Added four new principles based on universo-platformo-react analysis
+  - Test-Driven Development - Added measurable coverage targets and CI/CD enforcement
+  - Security-First Development - Enhanced with RLS database-level access control
 Changes Made:
-  - Added Node.js minimum version requirement (>=18.0.0)
-  - Added specific version minimums for all major dependencies
-  - Added ESLint and Prettier to required tooling
-  - Added comprehensive security principle covering credentials, authentication, and input validation
+  - Added PNPM catalog requirement for centralized dependency management
+  - Added build orchestration tool requirement (Turbo or equivalent)
+  - Added ORM repository pattern as mandatory data access method
+  - Added central entity and migration registry requirements
+  - Added API pagination, error schema, and rate limiting standards
+  - Added structured logging and metrics endpoint requirements
+  - Added specific test coverage percentages (70% unit, 60% integration)
+  - Added RLS enforcement at database layer
 Templates Status:
   ✅ plan-template.md - Compatible with enhanced constitution
   ✅ spec-template.md - Compatible with enhanced constitution
   ✅ tasks-template.md - Compatible with enhanced constitution
 Impact on Existing Work:
-  - Specification in specs/001-setup-universo-platformo-totaljs/ already incorporates these enhanced requirements
-  - Future implementations must include security requirements from principle VIII
+  - Specification in specs/001-setup-universo-platformo-totaljs/ has been updated with new requirements
+  - ARCHITECTURE-COMPARISON.md created documenting analysis of universo-platformo-react
+  - Future implementations must follow new patterns: catalog dependencies, ORM repositories, API standards, observability
 Follow-up TODOs:
-  - None (all enhancements properly documented)
+  - Verify Total.js compatibility with proposed ORM (TypeORM or alternative)
+  - Document Total.js-specific adaptations for each pattern in ADRs
+  - Update IMPROVEMENT-SUMMARY.md after implementation begins
+Reference:
+  - Analysis based on universo-platformo-react v0.38.0-alpha
+  - Full comparison in specs/001-setup-universo-platformo-totaljs/ARCHITECTURE-COMPARISON.md
 -->
 
 
@@ -61,9 +76,9 @@ Frontend interfaces MUST be built using component-based architecture with Materi
 
 ### VI. Test-Driven Development
 
-Features MUST include appropriate testing. Integration tests are REQUIRED for new functionality, contract changes, and inter-package communication. Tests MUST be written before implementation when specified in feature requirements. Test coverage MUST validate both success and error scenarios.
+Features MUST include appropriate testing with defined coverage targets: Unit tests (70% code coverage), Integration tests (60% of API endpoints), E2E tests (critical user paths). Integration tests are REQUIRED for new functionality, contract changes, and inter-package communication. Tests MUST be written before implementation when specified in feature requirements. Test coverage MUST validate both success and error scenarios. CI/CD pipeline MUST enforce test passage before merge.
 
-**Rationale**: Testing ensures reliability and prevents regressions as the platform evolves. Integration tests are particularly critical in a package-based architecture where components must interact correctly. TDD when specified ensures requirements are properly validated.
+**Rationale**: Testing ensures reliability and prevents regressions as the platform evolves. Integration tests are particularly critical in a package-based architecture where components must interact correctly. TDD when specified ensures requirements are properly validated. Defined coverage targets provide measurable quality gates.
 
 ### VII. Issue & PR Management Standards
 
@@ -73,9 +88,33 @@ ALL Issues and Pull Requests MUST follow standardized formats defined in `.githu
 
 ### VIII. Security-First Development
 
-ALL sensitive credentials (API keys, database passwords, JWT secrets) MUST be stored in environment variables and NEVER committed to the repository. The .gitignore MUST include patterns for credential files (.env, *.key, *.pem). JWT tokens MUST have expiration times and be validated on every protected endpoint. Passwords MUST be hashed before storage. All user inputs MUST be validated and sanitized to prevent injection attacks.
+ALL sensitive credentials (API keys, database passwords, JWT secrets) MUST be stored in environment variables and NEVER committed to the repository. The .gitignore MUST include patterns for credential files (.env, *.key, *.pem). JWT tokens MUST have expiration times and be validated on every protected endpoint. Passwords MUST be hashed before storage. All user inputs MUST be validated and sanitized to prevent injection attacks. Database access MUST enforce Row Level Security (RLS) policies at the database layer, not application code.
 
-**Rationale**: Security is paramount in modern web applications. Protecting user data and system credentials prevents unauthorized access and data breaches. Following security best practices from the beginning is easier and more effective than retrofitting security later. Environment-based configuration enables secure deployment across different environments without exposing credentials in code.
+**Rationale**: Security is paramount in modern web applications. Protecting user data and system credentials prevents unauthorized access and data breaches. Following security best practices from the beginning is easier and more effective than retrofitting security later. Environment-based configuration enables secure deployment across different environments without exposing credentials in code. RLS provides defense-in-depth by enforcing access control even if application bugs bypass checks.
+
+### IX. Dependency Management & Consistency
+
+ALL shared dependencies MUST be defined in PNPM catalog within `pnpm-workspace.yaml` to enforce version consistency across packages. Package-specific dependency overrides MAY be used only with explicit justification documented in the package README. Build orchestration tools (Turbo or Total.js equivalent) MUST be used to manage builds across the monorepo with intelligent caching and parallel execution.
+
+**Rationale**: Centralized dependency management prevents version conflicts and reduces maintenance burden. Consistent versions ensure reproducible builds and avoid subtle bugs from version mismatches. Build orchestration improves developer productivity by caching unchanged packages and building in parallel while respecting dependencies.
+
+### X. Data Access Patterns
+
+ALL database access MUST go through ORM repositories (TypeORM or Total.js equivalent). Raw SQL queries are prohibited unless justified for performance with documented rationale. Database entities MUST be registered in a central registry. Migrations MUST be organized per-package and combined in a central migration registry for execution.
+
+**Rationale**: Repository pattern provides consistent data access, enables testing with mocked repositories, and simplifies switching database backends. Central entity registration ensures all entities are known to the ORM for relationship management and migration generation. Per-package migrations maintain package independence while central registration ensures correct execution order.
+
+### XI. API Consistency & Standards
+
+ALL REST API list endpoints MUST implement pagination with standard parameters and headers. ALL API endpoints MUST return errors in standardized schema. ALL authenticated endpoints MUST enforce rate limiting. Resource hierarchies MUST be reflected in URL structure following RESTful nesting patterns.
+
+**Rationale**: Consistent API design improves developer experience, enables generic client-side handling of lists and errors, and prevents abuse through rate limiting. RESTful URL hierarchy makes authorization scoping natural and URLs self-documenting.
+
+### XII. Observability & Operational Excellence
+
+ALL backend services MUST emit structured JSON logs for centralized aggregation. Applications MUST expose metrics endpoints for monitoring. Performance-critical operations MUST be instrumented with timing measurements. Error logging MUST capture full context including stack traces and request details.
+
+**Rationale**: Observability is essential for operating production systems. Structured logs enable querying and alerting. Metrics provide operational visibility into system health. Detailed error context accelerates debugging and reduces mean time to resolution. Building observability from the start is easier than retrofitting later.
 
 ## Technical Standards
 
@@ -175,4 +214,4 @@ Any architectural complexity MUST be justified against Constitution principles. 
 
 The development team MUST monitor the universo-platformo-react reference repository and implement new features as they appear, adapted to Total.js technology stack while maintaining Constitution compliance.
 
-**Version**: 1.1.0 | **Ratified**: 2025-11-15 | **Last Amended**: 2025-11-16
+**Version**: 1.2.0 | **Ratified**: 2025-11-15 | **Last Amended**: 2025-11-17
