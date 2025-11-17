@@ -11,16 +11,27 @@ Initialize and set up Universo Platformo Total.js as a monorepo project using PN
 
 ## Technical Context
 
-**Language/Version**: TypeScript v5.3.0+ with Total.js Platform v5 (minimum v5.0.0)  
+**Language/Version**: TypeScript v5.3.0+ with Total.js Platform v5 (minimum v5.0.0)
+
+**CRITICAL FINDING from Web Research (2025-11-17)**:
+Total.js v5 is NOT TypeScript-first. The framework is designed for JavaScript and requires manual TypeScript integration:
+- Must compile TypeScript → JavaScript before running Total.js
+- No built-in type definitions for Total.js APIs
+- Requires custom type definitions (`@types/totaljs`)
+- TypeScript project references recommended for monorepo
+- See research.md §6 for detailed TypeScript integration strategy
+
 **Primary Dependencies**: 
-- Total.js Platform v5 (fullstack framework)
-- TypeScript v5.3.0+
-- Material UI (MUI) v5.14.0+
+- Total.js Platform v5 (fullstack framework - **JavaScript-first**)
+- TypeScript v5.3.0+ (manual integration via compilation)
+- Material UI (MUI) v5.14.0+ (React-based, **separate from Total.js UI**)
 - Passport.js v0.7.0+ with JWT strategy
 - Supabase client v2.38.0+ (@supabase/supabase-js)
 - PNPM v8.0.0+ (package manager)
 - Vitest (testing framework - resolved in research.md)
-- Vite (frontend build tool - resolved in research.md)
+- Vite (frontend build tool for React - resolved in research.md)
+- MSW (API mocking for tests - resolved in research.md)
+- Supertest (HTTP integration tests - resolved in research.md)
 
 **Storage**: Supabase (PostgreSQL-based) as primary database with abstraction layer (Repository/Adapter pattern) for future DBMS flexibility
 
@@ -44,12 +55,16 @@ Initialize and set up Universo Platformo Total.js as a monorepo project using PN
 
 **Constraints**: 
 - Must follow Total.js v5 best practices (official documentation)
-- Material UI component library for all frontend components
+- **TypeScript Integration**: Manual compilation required (Total.js is JS-first, not TS-native)
+- **Frontend Separation**: Material UI (React) is completely separate from Total.js backend
+- **Architecture**: React+Vite frontend ↔ REST API ↔ Total.js backend (see research.md §7)
+- Material UI component library for all frontend components (React-based)
 - Supabase integration with Row Level Security (RLS) at database layer
 - Bilingual documentation (English + Russian) - NON-NEGOTIABLE
 - No separate docs/ directory (will be external)
 - No pre-created AI agent files (user creates as needed)
 - Minimum 8GB RAM, 4 CPU cores for development environment
+- **Custom Type Definitions**: Must create `@types/totaljs` package (framework doesn't ship types)
 
 **Scale/Scope**: 
 - Initial setup phase: repository structure, basic packages, configuration
@@ -118,18 +133,28 @@ Initialize and set up Universo Platformo Total.js as a monorepo project using PN
 
 **GATE STATUS - Initial (Pre-Phase 0)**: ✅ PASS - All principles addressed in specification. Research phase needed to resolve Total.js-specific implementation details.
 
-**GATE STATUS - Post-Phase 1 Re-evaluation**: ✅ PASS - All technical decisions resolved in research.md:
-- ORM: Total.js DBMS with custom Repository pattern (research.md §1)
-- Build Tool: PNPM Workspaces with Total.js native build (research.md §2)
-- Testing: Vitest for all testing layers (research.md §3)
-- Performance targets defined (research.md §4)
-- Total.js best practices identified (research.md §5-11)
+**GATE STATUS - Post-Phase 1 Re-evaluation**: ✅ PASS - All technical decisions resolved in research.md with web research validation:
+- **ORM**: Total.js DBMS() API with custom Repository pattern (research.md §1)
+- **Build Tool**: PNPM Workspaces with Total.js native build (research.md §2)
+- **Testing**: Vitest + MSW/Supertest for all testing layers (research.md §3)
+- **Performance targets** defined (research.md §4)
+- **Total.js best practices** identified from Context7 documentation (research.md §5)
+- **TypeScript Integration**: Manual compilation strategy, NOT native (research.md §6)
+- **Frontend Architecture**: React+MUI completely separate from Total.js (research.md §7)
+- **Authentication**: Passport.js + JWT + bcrypt + RLS (research.md §8)
 - Data model defined with 3 system entities (data-model.md)
 - API contracts created for health endpoints (contracts/)
 - Quickstart guide completed (quickstart.md)
 - Agent context updated (.github/agents/copilot-instructions.md)
 
-All Constitution principles remain satisfied with concrete implementation decisions.
+**Key Insights from Web Research**:
+- Total.js is JavaScript-first; TypeScript requires manual integration
+- Material UI (React) and Total.js UI are separate ecosystems; using React+MUI for frontend
+- Vitest with multi-project config recommended for monorepo testing
+- JWT tokens: 15-30 min expiration + HTTP-only cookies for security
+- All research validated against official documentation and industry best practices
+
+All Constitution principles remain satisfied with concrete, validated implementation decisions.
 
 ## Project Structure
 
@@ -151,6 +176,14 @@ specs/[###-feature]/
 # Repository Root Structure
 /
 ├── packages/                     # All feature packages (per Constitution Principle I)
+│   ├── shared-types/             # TypeScript type definitions for Total.js (CRITICAL)
+│   │   └── base/
+│   │       └── src/
+│   │           ├── totaljs-globals.d.ts    # ROUTE, NEWACTION, DBMS, etc.
+│   │           ├── totaljs-controller.d.ts # Controller instance types
+│   │           ├── totaljs-schema.d.ts     # Schema definitions
+│   │           └── totaljs-flow.d.ts       # FlowStream types
+│   │
 │   ├── shared-common/            # Shared utilities and common code
 │   │   └── base/
 │   │       ├── src/
@@ -175,7 +208,7 @@ specs/[###-feature]/
 │   │       │   └── migrations/   # Migration registry
 │   │       └── tests/
 │   │
-│   └── shared-ui/                # Shared MUI theme and components
+│   └── shared-ui/                # Shared MUI theme and components (React)
 │       └── base/
 │           ├── src/
 │           │   ├── theme/        # MUI theme configuration
