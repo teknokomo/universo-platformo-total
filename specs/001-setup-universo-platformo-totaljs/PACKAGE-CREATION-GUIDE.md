@@ -1,12 +1,35 @@
 # Package Creation Guide
 
-**Version**: 1.0.0  
+**Version**: 1.1.0  
 **Last Updated**: 2025-11-17  
 **Status**: Reference Implementation Guide
 
 ## Overview
 
 This guide provides step-by-step instructions for creating new packages in the Universo Platformo Total.js monorepo. Following these standards ensures consistency, maintainability, and proper integration with the overall architecture.
+
+**CRITICAL**: ALL functionality MUST be implemented as packages within the `packages/` directory. Implementation outside of packages is ABSOLUTELY PROHIBITED. Each package MUST be designed for future extraction to a separate repository.
+
+**Reference**: This guide follows the modular package architecture of Universo Platformo React (https://github.com/teknokomo/universo-platformo-react).
+
+---
+
+## Core Principles
+
+### Modular Architecture (NON-NEGOTIABLE)
+
+1. **Package Independence**: Each package is a self-contained module that can operate independently
+2. **Future Extraction**: Packages will be gradually extracted to separate repositories as the project matures
+3. **Workspace Protocol**: All inter-package dependencies use `workspace:*` protocol
+4. **No Root Code**: Feature code MUST NOT exist at repository root (only config/docs allowed)
+5. **Documentation Required**: Each package MUST document its extraction strategy
+
+### Package Design Goals
+
+- **Maintainability**: Easy to understand, modify, and test independently
+- **Portability**: Can be moved to separate repository with minimal changes
+- **Isolation**: Minimal coupling with other packages
+- **Testability**: Comprehensive test coverage with isolated test suites
 
 ---
 
@@ -491,6 +514,27 @@ describe('GET /api/v1/{feature}', () => {
 
 Brief description of package purpose and functionality.
 
+## Package Information
+
+**Status**: [Alpha/Beta/Stable]  
+**Type**: [Frontend/Backend/Shared]  
+**Dependencies**: List key dependencies on other packages
+
+## Future Extraction Strategy
+
+This package is designed to be extracted to a separate repository in the future as part of the Universo Platformo ecosystem growth.
+
+**Extraction Readiness**:
+- Current coupling level: [Low/Medium/High]
+- Dependencies on workspace packages: List packages using workspace:* protocol
+- External dependencies: List external npm packages
+- Migration path: Brief description of steps needed for extraction
+
+**When this package becomes standalone**:
+- It will be published as `@universo/{feature}-frt` to npm
+- Workspace dependencies will be replaced with versioned npm dependencies
+- Repository URL will be: https://github.com/teknokomo/universo-{feature}-frt
+
 ## Installation
 
 ```bash
@@ -547,7 +591,7 @@ Please refer to the root CONTRIBUTING.md for contribution guidelines.
 See root LICENSE file.
 ```
 
-**README-RU.md** (Russian translation with identical structure)
+**README-RU.md** (Russian translation with identical structure including extraction strategy section)
 
 ---
 
@@ -678,12 +722,28 @@ Ensure `tsconfig.json` includes:
 
 Before submitting PR:
 
+**Modular Architecture Compliance**:
+- [ ] Package is located in `packages/` directory (MANDATORY)
+- [ ] NO feature code exists outside of packages/ (zero tolerance)
 - [ ] Package follows naming convention (`{feature}-frt` or `{feature}-srv`)
 - [ ] `base/` directory structure is correct
+- [ ] Package is designed for future extraction to separate repository
+
+**Extraction Strategy Documentation**:
+- [ ] README includes "Future Extraction Strategy" section
+- [ ] Package status documented (Alpha/Beta/Stable)
+- [ ] Coupling level assessed (Low/Medium/High)
+- [ ] Dependencies on workspace packages listed
+- [ ] Migration path to standalone repository described
+
+**Technical Requirements**:
 - [ ] All shared dependencies use `catalog:` references
 - [ ] Entities are exported to central registry
 - [ ] Migrations are exported to central migration array
+- [ ] Inter-package dependencies use workspace:* protocol
 - [ ] README.md and README-RU.md are structurally identical
+
+**Quality Checks**:
 - [ ] Tests pass: `pnpm test`
 - [ ] Build succeeds: `pnpm build`
 - [ ] Linting passes: `pnpm lint`
@@ -693,11 +753,13 @@ Before submitting PR:
 
 ## Additional Resources
 
-- [Constitution](../../../.specify/memory/constitution.md) - Core principles
-- [Specification](./spec.md) - Detailed requirements
-- [Architecture Comparison](./ARCHITECTURE-COMPARISON.md) - Pattern analysis
+- [Constitution](../../../.specify/memory/constitution.md) - Core principles (v1.3.0 - Strengthened modular requirements)
+- [Specification](./spec.md) - Detailed requirements with FR-000 modular architecture enforcement
+- [Architecture Comparison](./ARCHITECTURE-COMPARISON.md) - Pattern analysis from universo-platformo-react
+- [Universo Platformo React](https://github.com/teknokomo/universo-platformo-react) - Reference implementation
 
 ---
 
 **Version History**:
+- **1.1.0** (2025-11-17): Added modular architecture enforcement, extraction strategy requirements, compliance checklist
 - **1.0.0** (2025-11-17): Initial package creation guide based on universo-platformo-react analysis

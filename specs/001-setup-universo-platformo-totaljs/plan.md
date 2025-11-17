@@ -76,10 +76,14 @@ Total.js v5 is NOT TypeScript-first. The framework is designed for JavaScript an
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-**Principle I - Monorepo Package Architecture**:
+**Principle I - Monorepo Package Architecture (NON-NEGOTIABLE)**:
 - [x] Packages properly organized in `packages/` directory (will be created)
 - [x] Frontend/backend separation follows `-frt`/`-srv` naming convention (planned)
 - [x] Each package contains root `base/` directory (planned structure)
+- [x] Future package extraction to separate repos documented (per Constitution v1.3.0)
+- [x] NO feature code outside packages/ except allowed config/docs (per FR-000)
+- [x] Reference to universo-platformo-react documented (per FR-000c)
+- [x] Code review checklist includes modular architecture compliance (per Constitution)
 
 **Principle II - Technology Stack Standardization**:
 - [x] Total.js Platform v5 used for fullstack development (specified)

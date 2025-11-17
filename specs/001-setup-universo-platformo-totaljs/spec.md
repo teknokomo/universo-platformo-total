@@ -141,13 +141,32 @@ As a frontend developer, I need Material-UI (MUI) integrated into the frontend p
 
 ## Requirements *(mandatory)*
 
+### Critical Architectural Requirements
+
+**MODULAR ARCHITECTURE (NON-NEGOTIABLE)**:
+
+- **FR-000**: ALL functionality MUST be implemented in modular packages within the `packages/` directory. Implementation of features outside of `packages/` is ABSOLUTELY PROHIBITED, with ONLY the following exceptions:
+  - Root package.json, pnpm-workspace.yaml, tsconfig.json (workspace configuration)
+  - .eslintrc, .prettierrc, .gitignore (tooling configuration)
+  - README.md, README-RU.md (repository documentation)
+  - .github/ directory (GitHub configuration)
+  - .specify/ directory (specification workflow)
+  - specs/ directory (feature specifications)
+  - .vscode/ directory (editor configuration)
+
+- **FR-000a**: This modular architecture is MANDATORY because packages are designed to be gradually extracted into separate repositories as the project evolves. Non-modular implementation prevents this planned evolution and creates unacceptable technical debt.
+
+- **FR-000b**: All code reviews MUST verify that no feature code exists outside of `packages/` directory. Pull requests that violate this requirement MUST be rejected.
+
+- **FR-000c**: This project follows the modular package architecture of Universo Platformo React (https://github.com/teknokomo/universo-platformo-react), which serves as the conceptual reference for package organization and structure.
+
 ### Functional Requirements
 
 **Repository Structure & Package Management**
 
 - **FR-001**: Project MUST be configured as a monorepo using PNPM workspace functionality with a `pnpm-workspace.yaml` file defining package locations
 - **FR-001a**: The `pnpm-workspace.yaml` MUST specify `packages/*` pattern and configure shared dependency hoisting strategy
-- **FR-002**: All packages MUST reside in a `packages/` directory at the repository root
+- **FR-002**: All packages MUST reside in a `packages/` directory at the repository root. **CRITICAL**: ALL feature functionality MUST be implemented within packages - no business logic, UI components, API routes, or feature code may exist at the repository root or in any directory outside of `packages/`
 - **FR-003**: Packages requiring both frontend and backend MUST be split into separate packages following naming convention: `[feature]-frt` (frontend) and `[feature]-srv` (backend). Examples: `clusters-frt`/`clusters-srv`, `metaverses-frt`/`metaverses-srv`
 - **FR-003a**: The separation into frontend and backend packages enables independent deployment, scaling, and versioning of each layer
 - **FR-004**: Each package MUST contain a `base/` directory at its root containing the primary implementation. This structure supports future alternative technology stack implementations in sibling directories (e.g., `base/` for Total.js, future `react/` for React version)
@@ -155,6 +174,8 @@ As a frontend developer, I need Material-UI (MUI) integrated into the frontend p
 - **FR-005a**: Root `package.json` MUST define workspace-level scripts for common operations: `build:all`, `test:all`, `lint:all`, `format:all`
 - **FR-006**: Project MUST use PNPM as the package manager (not npm or yarn)
 - **FR-006a**: Package inter-dependencies within the monorepo MUST use workspace protocol (`workspace:*`) to reference sibling packages
+- **FR-006a1**: Each package MUST be designed as a self-contained, independently maintainable module that can be extracted to a separate repository in the future. This is a CORE design principle, not an optional feature. Package extraction will occur as the project matures.
+- **FR-006a2**: Package READMEs MUST document the extraction strategy including: package purpose, external dependencies, inter-package dependencies, and migration path to standalone repository
 - **FR-006b**: Packages without frontend/backend split (shared utilities, common types) MAY use single package naming without suffix (e.g., `shared-common`, `shared-types`)
 - **FR-006c**: Project MUST use PNPM catalog feature in `pnpm-workspace.yaml` to define centralized versions for all shared dependencies across packages. This ensures version consistency and simplifies dependency management across the monorepo
 - **FR-006d**: Package-specific dependency versions MAY override catalog versions only with explicit justification documented in package README
@@ -251,9 +272,12 @@ As a frontend developer, I need Material-UI (MUI) integrated into the frontend p
 - **FR-026**: Project MUST NOT include a `docs/` directory (documentation will be in a separate repository in the future)
 - **FR-027**: Project MUST NOT pre-create AI agent configuration files (user will create these as needed)
 - **FR-028**: Package naming MUST follow the convention: `[feature-name]-frt` for frontend and `[feature-name]-srv` for backend. This convention MUST be used consistently throughout all documentation and code
+- **FR-028a**: **MODULAR ARCHITECTURE ENFORCEMENT**: All feature implementations MUST be located in `packages/` directory. Code reviews MUST reject PRs that place feature code outside of packages. Linting rules SHOULD be configured to detect and warn about violations of package structure.
+- **FR-028b**: Each package MUST include a README documenting: (1) Package purpose and scope, (2) Dependencies on other packages, (3) Strategy for future extraction to separate repository, (4) Current status and maturity level
 - **FR-029**: Project structure MUST be inspired by Universo Platformo React conceptual patterns (monorepo, package structure, entity relationships) but implemented using Total.js v5 best practices according to official documentation at https://docs.totaljs.com/
 - **FR-029a**: Specific patterns to AVOID from reference implementation: legacy Flowise code patterns, incomplete refactoring artifacts, undocumented workarounds, and any code marked with "TODO: refactor" comments
 - **FR-029b**: A monitoring process SHOULD be established to track new features added to universo-platformo-react repository and create issues for implementing equivalent features in this project using Total.js stack
+- **FR-029c**: **REFERENCE PROJECT STUDY**: Before implementing any feature, developers MUST study the equivalent implementation in universo-platformo-react (https://github.com/teknokomo/universo-platformo-react) to understand: (1) Package structure and separation, (2) Entity relationships and hierarchies, (3) Shared component patterns, (4) Inter-package communication contracts
 
 **Security Requirements**
 
@@ -354,6 +378,8 @@ Cluster (for infrastructure management)
 - **SC-002**: All README files exist in both English (README.md) and Russian (README-RU.md) with 100% structural parity: same number of headings, same number of list items, same number of code blocks, and line count within ±5 lines
 - **SC-003**: Code compilation using `pnpm build:all` succeeds across all packages with zero TypeScript errors and exits with status code 0
 - **SC-004**: Project structure inspection reveals proper separation of frontend (-frt suffix) and backend (-srv suffix) packages with each containing a base/ directory at package root
+- **SC-004a**: **MODULAR ARCHITECTURE VERIFICATION**: Automated verification confirms that 100% of feature code resides within `packages/` directory, with NO business logic, UI components, or API routes at repository root (excluding explicitly allowed config/docs files)
+- **SC-004b**: Each package README includes extraction strategy documentation with all required sections: purpose, dependencies, extraction path, status
 - **SC-005**: 100% of required GitHub issue labels from `.github/instructions/github-labels.md` are created in the repository with matching names, colors, and descriptions
 - **SC-006**: New developer can read the root README sections (Overview, Prerequisites, Installation, Getting Started) and successfully complete initial setup without external help in under 30 minutes
 - **SC-007**: Database connection test succeeds when valid Supabase credentials are provided in .env file, returning success status without errors or warnings
