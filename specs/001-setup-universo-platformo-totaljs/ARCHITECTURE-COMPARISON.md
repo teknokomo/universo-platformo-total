@@ -400,6 +400,287 @@ Uses: Husky + lint-staged for pre-commit enforcement
 
 ---
 
+#### 21. **Template Package System**
+
+**What it is**: Reusable package templates for rapid feature development.
+
+**In Reference Repo**:
+- `packages/TEMPLATE-README.md` - Standard package README template
+- `packages/TEMPLATE-README-GUIDE.md` - Guide for creating package READMEs
+- Template packages for common patterns (MMO, Quiz, etc.)
+
+**Gap**: No templates or package creation guides in current spec.
+
+**Recommendation**: Create template packages and guides as part of initial setup to accelerate future development.
+
+---
+
+#### 22. **Environment Variable Documentation Pattern**
+
+**What it is**: Comprehensive .env.example files with comments explaining each variable.
+
+**In Reference Repo** (packages/flowise-server/.env.example):
+```bash
+# Server Configuration
+PORT=3000                    # API server port
+HOST=0.0.0.0                # Bind address (0.0.0.0 for Docker)
+
+# Database Configuration
+SUPABASE_URL=               # Your Supabase project URL
+SUPABASE_ANON_KEY=          # Public anon key
+SUPABASE_SERVICE_ROLE_KEY=  # Service role key (keep secret!)
+```
+
+**Gap**: Current spec mentions .env.example but doesn't specify documentation standards.
+
+**Recommendation**: Add .env documentation standards with comment requirements for each variable.
+
+---
+
+#### 23. **Package README Structure Standard**
+
+**What it is**: Consistent README structure across all packages.
+
+**In Reference Repo**:
+Each package README contains:
+1. Package Name & Description
+2. Features list
+3. Installation instructions
+4. Usage examples with code
+5. API reference (if applicable)
+6. Configuration options
+7. Contributing guidelines
+8. License
+
+**Gap**: Current spec mentions package READMEs but doesn't define standard structure.
+
+**Recommendation**: Add package README template and structure requirements.
+
+---
+
+#### 24. **Build Artifact Structure**
+
+**What it is**: Standardized output directory structure for compiled code.
+
+**In Reference Repo**:
+```
+packages/{name}/base/
+├── src/          # Source TypeScript
+├── dist/         # Compiled output
+│   ├── index.js  # CJS build
+│   └── index.mjs # ESM build
+├── build/        # Alternative build output
+└── tests/        # Test files
+```
+
+**Gap**: Current spec mentions dist/ in gitignore but doesn't define output structure.
+
+**Recommendation**: Add build artifact structure specification.
+
+---
+
+#### 25. **Cross-Package Type Sharing**
+
+**What it is**: Shared TypeScript types package for consistency across packages.
+
+**In Reference Repo**:
+- `packages/universo-types` - Shared type definitions
+- `packages/universo-utils` - Shared utility functions
+- Imported by both frontend and backend packages
+
+**Gap**: Current spec mentions shared packages but doesn't define which types/utilities to share.
+
+**Recommendation**: Add shared types and utils packages to initial setup.
+
+---
+
+#### 26. **API Client Package Pattern**
+
+**What it is**: Separate package for API client to enable external consumption.
+
+**In Reference Repo**:
+- `packages/universo-api-client` - TypeScript API client
+- Type-safe API calls
+- Can be published to npm separately
+
+**Gap**: Not mentioned in current spec.
+
+**Recommendation**: Consider API client package for future external integrations.
+
+---
+
+#### 27. **Analytics Integration Architecture**
+
+**What it is**: Separate analytics package for metrics and tracking.
+
+**In Reference Repo**:
+- `packages/analytics-frt` - Frontend analytics integration
+- Modular analytics adapter pattern
+- Separate from core business logic
+
+**Gap**: Not mentioned in current spec.
+
+**Recommendation**: Document analytics as optional/future feature with architectural guidance.
+
+---
+
+#### 28. **Profile Management System**
+
+**What it is**: User profile as separate domain package.
+
+**In Reference Repo**:
+- `packages/profile-frt` + `packages/profile-srv`
+- User settings, preferences, avatar management
+- Separate from authentication
+
+**Gap**: Not mentioned in current spec.
+
+**Recommendation**: Add profile management to future features list with clear separation from auth.
+
+---
+
+#### 29. **Space Builder/Canvas Editor Pattern**
+
+**What it is**: Visual node-based editor system (similar to Flowise/n8n).
+
+**In Reference Repo**:
+- `packages/space-builder-frt` + `packages/space-builder-srv`
+- ReactFlow-based node editor
+- Node palette, connections, execution engine
+- UPDL (Universo Pattern Description Language) as data format
+
+**Gap**: Not mentioned in current spec (likely future feature).
+
+**Recommendation**: Document as major future feature requiring significant architectural planning.
+
+---
+
+#### 30. **Dependency Version Lock Strategy**
+
+**What it is**: Strategic dependency pinning and override management.
+
+**In Reference Repo** (package.json):
+```json
+{
+  "pnpm": {
+    "overrides": {
+      "axios": "1.7.9",           // Security fix
+      "typeorm": "0.3.6",         // Compatibility
+      "zod": "3.25.76"            // Version consistency
+    }
+  }
+}
+```
+
+**Gap**: Current spec doesn't mention dependency override strategy.
+
+**Recommendation**: Add dependency management section with override justification requirements.
+
+---
+
+## Summary of Findings
+
+### Critical Gaps Requiring Immediate Action
+
+1. **PNPM Catalog** - Already added to constitution (✅ Resolved)
+2. **Build Orchestration** - Already considered in research.md (✅ Resolved)
+3. **ORM/Repository Pattern** - Already addressed in research.md (✅ Resolved)
+4. **Rate Limiting** - Needs to be added to spec ⚠️
+5. **API Standards (Pagination, Errors)** - Needs to be added to spec ⚠️
+6. **RLS Middleware Chain** - Needs to be added to spec ⚠️
+7. **Observability (Logging, Metrics)** - Needs to be added to spec ⚠️
+
+### Patterns Well-Covered
+
+1. Monorepo structure ✅
+2. Package naming conventions ✅
+3. TypeScript usage ✅
+4. Bilingual documentation ✅
+5. GitHub management ✅
+
+### Future Considerations (Out of Scope for Initial Setup)
+
+1. Publication system (UPDL converters)
+2. Multiplayer architecture (Colyseus/WebSockets)
+3. Space Builder/Canvas Editor
+4. Advanced analytics
+5. UI internationalization (beyond docs)
+
+---
+
+## Recommended Actions
+
+### Phase 1: Update Constitution (✅ COMPLETED)
+
+The constitution has been updated with the following additions:
+- **Principle IX**: Dependency Management & Consistency (PNPM catalog, Turbo)
+- **Principle X**: Data Access Patterns (ORM repositories)
+- **Principle XI**: API Consistency & Standards (pagination, errors, rate limiting)
+- **Principle XII**: Observability & Operational Excellence (logging, metrics)
+
+### Phase 2: Update Specification (⚠️ IN PROGRESS)
+
+Need to add the following functional requirements:
+1. Rate limiting requirements (FR-036)
+2. API pagination standards (FR-033)
+3. API error schema (FR-034)
+4. RLS middleware chain (FR-017b, FR-017c)
+5. Observability requirements (FR-038)
+
+**Status**: These have been added to spec.md in the current version.
+
+### Phase 3: Update Plan & Research (✅ COMPLETED)
+
+- Research.md already addresses ORM choice, build tools, testing
+- Plan.md references all constitution principles
+- Technical context is comprehensive
+
+### Phase 4: Create Templates & Guides (📋 TODO)
+
+After initial setup, create:
+1. Package README template
+2. Package creation guide
+3. .env.example template with documentation standards
+4. Shared types package structure
+
+---
+
+## Total.js Adaptations Required
+
+The following patterns from universo-platformo-react need adaptation for Total.js:
+
+1. **Express → Total.js Routing**: Adapt middleware chain to Total.js patterns
+2. **TypeORM → Total.js DBMS**: Use Total.js native database abstraction
+3. **React → Total.js Frontend**: Adapt MUI integration for Total.js views
+4. **Turbo → PNPM + Total.js Build**: Leverage Total.js native build capabilities
+5. **Passport.js → Total.js Auth**: Integrate Passport.js with Total.js auth system
+6. **Redis Rate Limiting → Total.js Cache**: Start with Total.js cache, migrate to Redis later
+
+All adaptations should be documented in ADRs (Architecture Decision Records) as they are implemented.
+
+---
+
+## Conclusion
+
+The current specifications and constitution have been significantly enhanced to capture the architectural patterns from universo-platformo-react. Key patterns around dependency management, data access, API standards, and observability have been added to the constitution. The specification now includes comprehensive functional requirements for all critical patterns.
+
+**Next Steps**:
+1. Validate that all added requirements are achievable with Total.js v5
+2. Document Total.js-specific implementations in research.md or ADRs
+3. Proceed with implementation following the enhanced specifications
+4. Create package templates after initial setup is functional
+
+**Approval Status**: ✅ Ready for implementation phase
+
+---
+
+**Document Version**: 2.0  
+**Last Updated**: 2025-11-17  
+**Reviewed By**: AI Agent (Deep Analysis)  
+**Next Review**: After Phase 1 implementation complete
+
+---
+
 ## Priority Matrix
 
 ### Must Have (P1) - Core Architecture
