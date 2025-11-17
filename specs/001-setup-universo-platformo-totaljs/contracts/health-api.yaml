@@ -1,0 +1,250 @@
+openapi: 3.0.3
+info:
+  title: Universo Platformo Total - Health Check API
+  version: 1.0.0
+  description: |
+    Health check and system status API for Universo Platformo Total.
+    Provides endpoints to check application health, readiness, and system information.
+  
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server
+  - url: https://api.universo.pro/v1
+    description: Production server (future)
+
+tags:
+  - name: Health
+    description: Health check endpoints
+
+paths:
+  /health:
+    get:
+      summary: Basic health check
+      description: Returns simple health status. No authentication required.
+      operationId: getHealth
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Application is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - timestamp
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy]
+                    example: healthy
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2025-11-17T06:00:00Z'
+                  uptime:
+                    type: integer
+                    description: Application uptime in seconds
+                    example: 3600
+        '503':
+          description: Application is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /health/ready:
+    get:
+      summary: Readiness check
+      description: |
+        Returns readiness status indicating if the application is ready to accept traffic.
+        Checks database connectivity, cache availability, etc.
+        No authentication required.
+      operationId: getReadiness
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Application is ready
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - checks
+                properties:
+                  status:
+                    type: string
+                    enum: [ready, not_ready]
+                    example: ready
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2025-11-17T06:00:00Z'
+                  checks:
+                    type: object
+                    properties:
+                      database:
+                        type: string
+                        enum: [ok, failed]
+                        example: ok
+                      cache:
+                        type: string
+                        enum: [ok, failed]
+                        example: ok
+        '503':
+          description: Application is not ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /health/live:
+    get:
+      summary: Liveness check
+      description: |
+        Returns liveness status indicating if the application process is alive.
+        Used by Kubernetes/Docker for liveness probes.
+        No authentication required.
+      operationId: getLiveness
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Application is alive
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                properties:
+                  status:
+                    type: string
+                    enum: [alive]
+                    example: alive
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2025-11-17T06:00:00Z'
+
+  /status:
+    get:
+      summary: Detailed system status
+      description: |
+        Returns detailed system information including version, environment, and statistics.
+        Requires authentication. Only accessible to admin users.
+      operationId: getStatus
+      tags:
+        - Health
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: System status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - version
+                  - environment
+                  - timestamp
+                properties:
+                  version:
+                    type: string
+                    example: '1.0.0'
+                  environment:
+                    type: string
+                    enum: [development, staging, production]
+                    example: development
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2025-11-17T06:00:00Z'
+                  uptime:
+                    type: integer
+                    description: Application uptime in seconds
+                    example: 3600
+                  node_version:
+                    type: string
+                    example: 'v18.17.0'
+                  totaljs_version:
+                    type: string
+                    example: '5.0.0'
+                  memory:
+                    type: object
+                    properties:
+                      used_mb:
+                        type: number
+                        example: 128.5
+                      total_mb:
+                        type: number
+                        example: 512.0
+                  stats:
+                    type: object
+                    properties:
+                      requests_total:
+                        type: integer
+                        example: 1500
+                      requests_per_second:
+                        type: number
+                        example: 15.5
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from authentication endpoint
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+        - message
+        - statusCode
+        - timestamp
+        - path
+      properties:
+        error:
+          type: string
+          description: Error type identifier
+          example: not_ready
+        message:
+          type: string
+          description: Human-readable error message
+          example: Database connection failed
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 503
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp in ISO 8601 format
+          example: '2025-11-17T06:00:00Z'
+        path:
+          type: string
+          description: Request path where error occurred
+          example: /api/v1/health/ready
+        details:
+          type: object
+          description: Additional error details (optional)
+          additionalProperties: true
