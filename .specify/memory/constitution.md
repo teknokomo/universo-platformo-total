@@ -1,5 +1,46 @@
 <!--
 SYNC IMPACT REPORT - Constitution Update
+Version Change: 1.2.0 → 1.3.0 (Strengthened Modular Architecture Requirements)
+
+Principles Enhanced:
+  I. Monorepo Package Architecture - Made NON-NEGOTIABLE, added explicit prohibitions and future extraction requirement
+
+Sections Updated:
+  - Reference Implementation - NEW section referencing universo-platformo-react
+  - Monorepo Package Architecture - Strengthened with explicit prohibitions against non-modular code
+  - Project Structure Standards - Added ENFORCEMENT subsection with 6 concrete rules
+  - Compliance Requirements - Added Modular Architecture Compliance Checklist
+
+Changes Made:
+  - Added prominent reference to universo-platformo-react at beginning of document
+  - Made Principle I NON-NEGOTIABLE (elevated to same status as Bilingual Documentation)
+  - Added explicit prohibition: "IT IS ABSOLUTELY PROHIBITED to implement functionality outside of packages/"
+  - Listed specific exceptions (root config files, docs, .github, .specify, specs)
+  - Added "Future Extraction" requirement: packages designed for independent repos
+  - Added 6-point ENFORCEMENT rules for project structure
+  - Added 7-item Modular Architecture Compliance Checklist for PRs
+  - Enhanced rationale explaining why non-modular implementation creates technical debt
+
+Impact on Existing Work:
+  - All future features MUST verify compliance with strengthened modular requirements
+  - PR reviews MUST use new compliance checklist
+  - Code organization outside packages/ is now explicitly forbidden
+  - Package extraction strategy must be documented in package READMEs
+
+Follow-up TODOs:
+  - Update spec.md with strengthened modular requirements
+  - Update plan.md with modular compliance verification steps
+  - Consider adding ESLint rules to enforce packages/ structure
+  - Document package extraction process in PACKAGE-CREATION-GUIDE.md
+
+Reference:
+  - Based on universo-platformo-react modular architecture
+  - User requirement for unconditional modular implementation
+-->
+
+
+<!--
+SYNC IMPACT REPORT - Constitution Update
 Version Change: 1.1.0 → 1.2.0 (Architectural Patterns from Reference Implementation)
 Principles Added:
   9. Dependency Management & Consistency (NEW)
@@ -42,13 +83,26 @@ Reference:
 
 # Universo Platformo Total Constitution
 
+## Reference Implementation
+
+This project is based on the conceptual architecture of **Universo Platformo React** (https://github.com/teknokomo/universo-platformo-react), adapted for Total.js Platform v5 with TypeScript. All architectural decisions MUST be validated against the reference implementation's modular package structure while following Total.js best practices.
+
 ## Core Principles
 
-### I. Monorepo Package Architecture
+### I. Monorepo Package Architecture (NON-NEGOTIABLE)
 
-All functionality MUST be organized in a monorepo structure managed by PNPM. Packages are located in `packages/` directory. When functionality requires both frontend and backend components, they MUST be separated into distinct packages with suffixes `-frt` (frontend) and `-srv` (server). Each package MUST contain a root `base/` directory to support future alternative implementations.
+**CRITICAL**: ALL functionality MUST be organized in a monorepo structure managed by PNPM. Packages are located in `packages/` directory. **IT IS ABSOLUTELY PROHIBITED to implement functionality outside of the `packages/` directory**, except for:
+- Root build and launch configuration files (package.json, pnpm-workspace.yaml, tsconfig.json)
+- Repository-level tooling configuration (.eslintrc, .prettierrc, etc.)
+- Documentation files (README.md, README-RU.md)
+- GitHub configuration (.github/)
+- Specification and planning files (.specify/, specs/)
 
-**Rationale**: This structure enables clear separation of concerns, independent versioning of frontend and backend components, and allows multiple technology stack implementations while maintaining a unified codebase organization.
+When functionality requires both frontend and backend components, they MUST be separated into distinct packages with suffixes `-frt` (frontend) and `-srv` (server). Each package MUST contain a root `base/` directory to support future alternative implementations.
+
+**Future Extraction**: Each package MUST be designed as an independent, self-contained module that can be extracted to a separate repository in the future. This is NOT optional - packages will gradually move to separate repositories as the project evolves. All inter-package dependencies MUST use workspace protocol to facilitate this transition.
+
+**Rationale**: This structure enables clear separation of concerns, independent versioning of frontend and backend components, allows multiple technology stack implementations while maintaining a unified codebase organization, and facilitates future extraction of packages into separate repositories. Non-modular implementation creates technical debt that prevents the project's planned evolution into independently maintained repositories.
 
 ### II. Technology Stack Standardization
 
@@ -146,7 +200,13 @@ packages/
     └── base/              # Base implementation
 ```
 
-Each package MUST be independently maintainable and potentially extractable to separate repositories in the future.
+**ENFORCEMENT**:
+1. Each package MUST be independently maintainable and potentially extractable to separate repositories in the future
+2. ALL feature code MUST reside within `packages/` directory - no exceptions
+3. Packages MUST follow naming conventions: `-frt` for frontend, `-srv` for backend, or no suffix for shared packages
+4. Each package MUST contain a `base/` directory as the root implementation folder
+5. Code reviews MUST verify that no functionality is implemented outside of `packages/`
+6. Linting rules SHOULD be configured to warn against imports from outside the packages structure
 
 ## Development Workflow
 
@@ -206,6 +266,15 @@ Constitution amendments require:
 
 All Pull Requests MUST verify compliance with Constitution principles. Deviations from principles MUST be explicitly justified in PR description with explanation of why the principle cannot be followed and what alternative approach was taken.
 
+**Modular Architecture Compliance Checklist**:
+- [ ] All new functionality is implemented in `packages/` directory
+- [ ] Frontend and backend are properly separated (-frt/-srv packages)
+- [ ] Each package contains `base/` directory structure
+- [ ] No feature code exists at repository root (only config/docs)
+- [ ] Package is designed for future extraction to separate repository
+- [ ] Inter-package dependencies use workspace protocol (`workspace:*`)
+- [ ] Package README documents purpose and extraction strategy
+
 ### Complexity Justification
 
 Any architectural complexity MUST be justified against Constitution principles. Simpler alternatives MUST be documented and explained why they were rejected. The burden of proof is on complexity—simplicity is the default.
@@ -214,4 +283,4 @@ Any architectural complexity MUST be justified against Constitution principles. 
 
 The development team MUST monitor the universo-platformo-react reference repository and implement new features as they appear, adapted to Total.js technology stack while maintaining Constitution compliance.
 
-**Version**: 1.2.0 | **Ratified**: 2025-11-15 | **Last Amended**: 2025-11-17
+**Version**: 1.3.0 | **Ratified**: 2025-11-15 | **Last Amended**: 2025-11-17
