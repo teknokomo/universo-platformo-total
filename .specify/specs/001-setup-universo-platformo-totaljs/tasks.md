@@ -4,7 +4,7 @@ description: "Task list for Universo Platformo Total.js initialization"
 
 # Tasks: Initialize Universo Platformo Total.js Project
 
-**Input**: Design documents from `/.specify/specs/001-setup-universo-platformo-totaljs/`
+**Input**: Design documents from `.specify/specs/001-setup-universo-platformo-totaljs/`
 **Prerequisites**: plan.md (✅), spec.md (✅), research.md (✅), data-model.md (✅), contracts/ (✅), quickstart.md (✅)
 
 **Tests**: Tests are NOT explicitly requested in the feature specification, so test tasks are EXCLUDED per agent instructions.
