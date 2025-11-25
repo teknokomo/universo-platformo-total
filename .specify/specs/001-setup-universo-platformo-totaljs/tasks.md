@@ -1,380 +1,748 @@
 ---
-description: "Task list for Universo Platformo Total.js initialization"
+description: "Comprehensive task list for Universo Platformo Total.js - Complete Platform Implementation"
 ---
 
-# Tasks: Initialize Universo Platformo Total.js Project
+# Tasks: Initialize and Build Universo Platformo Total.js
 
 **Input**: Design documents from `.specify/specs/001-setup-universo-platformo-totaljs/`
 **Prerequisites**: plan.md (✅), spec.md (✅), research.md (✅), data-model.md (✅), contracts/ (✅), quickstart.md (✅)
 
+**Reference Architecture**: universo-platformo-react (https://github.com/teknokomo/universo-platformo-react)
+
 **Tests**: Tests are NOT explicitly requested in the feature specification, so test tasks are EXCLUDED per agent instructions.
 
-**Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
+**Organization**: Tasks are grouped by feature/package to enable independent implementation and optimal modular structure from day one.
 
 ## Format: `- [ ] [ID] [P?] [Story?] Description`
 
 - **Checkbox**: ALWAYS start with `- [ ]`
 - **[TaskID]**: Sequential number (T001, T002, T003...)
 - **[P]**: Can run in parallel (different files, no dependencies)
-- **[Story]**: Which user story this task belongs to (US1, US2, US3, US4, US5)
+- **[Story]**: Which feature this task belongs to (SETUP, AUTH, UNIKS, SPACES, NODES, etc.)
 - **Description**: Clear action with exact file path
 
 ## Path Conventions
 
 - **Monorepo packages**: `packages/{package-name}/base/src/`
 - **Shared packages**: `packages/shared-{name}/base/src/`
+- **Feature packages**: `packages/{feature}-frt/base/src/` and `packages/{feature}-srv/base/src/`
 - **Root files**: `/` (for package.json, tsconfig.json, etc.)
-- **GitHub instructions**: `.github/instructions/`
-- **Documentation**: Root README.md and README-RU.md
 
 ---
 
-## Phase 1: Setup (Repository Foundation)
+## Phase 1: Foundation Setup (Repository & Shared Infrastructure)
 
-**Purpose**: Initialize monorepo structure, PNPM workspace, and basic tooling per User Story 1 (P1)
+**Purpose**: Initialize monorepo, PNPM workspace, shared packages, and core infrastructure
 
-**User Story**: US1 - Repository Foundation Setup
+**User Story**: SETUP - Repository Foundation and Shared Infrastructure
 
-**Goal**: Create properly initialized monorepo with PNPM workspace configuration, basic project structure, and essential documentation
+### Repository Initialization
 
-- [ ] T001 Initialize root package.json with PNPM workspace configuration (private:true, workspace scripts)
-- [ ] T002 Create pnpm-workspace.yaml with packages/* pattern and PNPM catalog for centralized dependency versions
-- [ ] T003 Create root .gitignore with patterns for .env, .env.local, node_modules, dist, build, *.key, *.pem
-- [ ] T004 [P] Create root tsconfig.json with ES2022 target, ESNext module, strict mode, and path aliases for @packages/*
-- [ ] T005 [P] Create .eslintrc.js with TypeScript parser and @typescript-eslint plugins
-- [ ] T006 [P] Create .prettierrc with printWidth:100, semi:true, singleQuote:true, trailingComma:es5, tabWidth:2
-- [ ] T007 [P] Create .env.example with required variables: NODE_ENV, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, JWT_SECRET, JWT_EXPIRATION, REFRESH_TOKEN_EXPIRATION
-- [ ] T008 Create packages/ directory structure following Constitution Principle I (all feature code must be in packages/)
-- [ ] T009 [P] [US1] Create packages/shared-types/base/src/ directory structure for Total.js type definitions
-- [ ] T010 [P] [US1] Create packages/shared-common/base/src/ directory structure with types/, utils/, constants/ subdirectories
-- [ ] T011 [P] [US1] Create packages/shared-auth/base/src/ directory structure with passport/, strategies/, middleware/ subdirectories
-- [ ] T012 [P] [US1] Create packages/shared-database/base/src/ directory structure with repositories/, adapters/, migrations/ subdirectories
-- [ ] T013 [P] [US1] Create packages/shared-ui/base/src/ directory structure with theme/, components/, layouts/ subdirectories
-- [ ] T014 [P] [US1] Create package.json for shared-types package with TypeScript dependencies
-- [ ] T015 [P] [US1] Create package.json for shared-common package with dependencies and workspace:* references
-- [ ] T016 [P] [US1] Create package.json for shared-auth package with Passport.js, JWT dependencies
-- [ ] T017 [P] [US1] Create package.json for shared-database package with @supabase/supabase-js dependency
-- [ ] T018 [P] [US1] Create package.json for shared-ui package with @mui/material, @emotion/react, @emotion/styled dependencies
-- [ ] T019 [P] [US1] Create tsconfig.json for each shared package extending root configuration
-- [ ] T020 [US1] Create root README.md in English with sections: Project Overview, Relationship to Universo Platformo React, Technology Stack, Prerequisites, Installation, Project Structure, Getting Started, Contributing, License
-- [ ] T021 [US1] Create root README-RU.md in Russian (exact structural copy of README.md with same line count ±5)
-- [ ] T022 [P] [US1] Create packages/shared-types/README.md in English documenting package purpose and Total.js type definitions strategy
-- [ ] T023 [P] [US1] Create packages/shared-types/README-RU.md in Russian (exact structural copy)
-- [ ] T024 [P] [US1] Create packages/shared-common/README.md in English with shared utilities documentation
-- [ ] T025 [P] [US1] Create packages/shared-common/README-RU.md in Russian (exact structural copy)
-- [ ] T026 [P] [US1] Create packages/shared-auth/README.md in English with authentication strategy documentation
-- [ ] T027 [P] [US1] Create packages/shared-auth/README-RU.md in Russian (exact structural copy)
-- [ ] T028 [P] [US1] Create packages/shared-database/README.md in English with database abstraction documentation
-- [ ] T029 [P] [US1] Create packages/shared-database/README-RU.md in Russian (exact structural copy)
-- [ ] T030 [P] [US1] Create packages/shared-ui/README.md in English with MUI theme documentation
-- [ ] T031 [P] [US1] Create packages/shared-ui/README-RU.md in Russian (exact structural copy)
+- [ ] T001 [SETUP] Initialize root package.json with PNPM workspace configuration (private:true, workspace scripts)
+- [ ] T002 [SETUP] Create pnpm-workspace.yaml with packages/* pattern and PNPM catalog for centralized dependency versions
+- [ ] T003 [SETUP] Create root .gitignore with patterns for .env, .env.local, node_modules, dist, build, *.key, *.pem
+- [ ] T004 [P] [SETUP] Create root tsconfig.json with ES2022 target, ESNext module, strict mode, and path aliases for @packages/*
+- [ ] T005 [P] [SETUP] Create .eslintrc.js with TypeScript parser and @typescript-eslint plugins
+- [ ] T006 [P] [SETUP] Create .prettierrc with printWidth:100, semi:true, singleQuote:true, trailingComma:es5, tabWidth:2
+- [ ] T007 [P] [SETUP] Create .env.example with required variables: NODE_ENV, SUPABASE_URL, SUPABASE_ANON_KEY, JWT_SECRET, etc.
+- [ ] T008 [SETUP] Create packages/ directory structure
 
-**Checkpoint**: At this point, monorepo structure is initialized with all shared packages and documentation
+### Shared Types Package
 
----
+- [ ] T009 [P] [SETUP] Create packages/universo-types/base/src/ directory structure
+- [ ] T010 [P] [SETUP] Create packages/universo-types/base/src/totaljs-globals.d.ts with ROUTE, NEWACTION, DBMS type definitions
+- [ ] T011 [P] [SETUP] Create packages/universo-types/base/src/totaljs-controller.d.ts with Controller instance types
+- [ ] T012 [P] [SETUP] Create packages/universo-types/base/src/totaljs-schema.d.ts with Schema definitions
+- [ ] T013 [P] [SETUP] Create packages/universo-types/base/src/api-types.ts with ApiResponse, ApiError, PaginationParams
+- [ ] T014 [P] [SETUP] Create packages/universo-types/base/src/entity-types.ts with base entity interfaces
+- [ ] T015 [SETUP] Create packages/universo-types/base/src/index.ts exporting all types
+- [ ] T016 [SETUP] Create packages/universo-types/package.json with TypeScript dependencies
+- [ ] T017 [SETUP] Create packages/universo-types/tsconfig.json extending root config
+- [ ] T018 [P] [SETUP] Create packages/universo-types/README.md in English
+- [ ] T019 [P] [SETUP] Create packages/universo-types/README-RU.md in Russian
 
-## Phase 2: Foundational (Blocking Prerequisites)
+### Shared Utils Package
 
-**Purpose**: Core infrastructure that MUST be complete before ANY user story implementation. Includes TypeScript configuration, Total.js setup, and database foundation per User Stories 3 and 4.
+- [ ] T020 [P] [SETUP] Create packages/universo-utils/base/src/ directory structure
+- [ ] T021 [P] [SETUP] Create packages/universo-utils/base/src/logger.ts with structured JSON logging
+- [ ] T022 [P] [SETUP] Create packages/universo-utils/base/src/validation.ts with validation helpers
+- [ ] T023 [P] [SETUP] Create packages/universo-utils/base/src/env-validator.ts for environment variable validation
+- [ ] T024 [P] [SETUP] Create packages/universo-utils/base/src/constants/http-status.ts
+- [ ] T025 [P] [SETUP] Create packages/universo-utils/base/src/constants/error-codes.ts
+- [ ] T026 [SETUP] Create packages/universo-utils/package.json
+- [ ] T027 [P] [SETUP] Create packages/universo-utils/README.md and README-RU.md
 
-**⚠️ CRITICAL**: No user story work can begin until this phase is complete
+### Shared Database Package
 
-### TypeScript & Total.js Configuration (User Story 3 - P3)
+- [ ] T028 [P] [SETUP] Create packages/shared-database/base/src/ directory structure
+- [ ] T029 [P] [SETUP] Create packages/shared-database/base/src/repositories/BaseRepository.ts with CRUD using Total.js DBMS()
+- [ ] T030 [P] [SETUP] Create packages/shared-database/base/src/adapters/IDatabaseAdapter.ts interface
+- [ ] T031 [SETUP] Create packages/shared-database/base/src/adapters/SupabaseAdapter.ts implementation
+- [ ] T032 [P] [SETUP] Create packages/shared-database/base/src/config/database.config.ts
+- [ ] T033 [SETUP] Create packages/shared-database/base/src/connection/DatabaseConnection.ts
+- [ ] T034 [P] [SETUP] Create packages/shared-database/base/src/migrations/ directory
+- [ ] T035 [SETUP] Create packages/shared-database/package.json
+- [ ] T036 [P] [SETUP] Create packages/shared-database/README.md and README-RU.md
 
-- [ ] T032 [P] [US3] Create packages/shared-types/base/src/totaljs-globals.d.ts with type definitions for ROUTE, NEWACTION, DBMS, DATA, CACHE global functions
-- [ ] T033 [P] [US3] Create packages/shared-types/base/src/totaljs-controller.d.ts with Controller instance type definitions
-- [ ] T034 [P] [US3] Create packages/shared-types/base/src/totaljs-schema.d.ts with Schema definition types
-- [ ] T035 [P] [US3] Create packages/shared-types/base/src/totaljs-flow.d.ts with FlowStream type definitions
-- [ ] T036 [P] [US3] Create packages/shared-types/base/src/index.ts exporting all Total.js type definitions
-- [ ] T037 [US3] Configure TypeScript compilation scripts in root package.json: build:types, build:common, build:auth, build:database, build:ui
-- [ ] T038 [US3] Create build:all script in root package.json that builds all packages in dependency order
+### Shared Auth Package
 
-### Database Foundation (User Story 4 - P4)
+- [ ] T037 [P] [SETUP] Create packages/shared-auth/base/src/ directory structure
+- [ ] T038 [P] [SETUP] Create packages/shared-auth/base/src/strategies/jwt.strategy.ts with Passport.js JWT
+- [ ] T039 [P] [SETUP] Create packages/shared-auth/base/src/strategies/supabase.strategy.ts
+- [ ] T040 [SETUP] Create packages/shared-auth/base/src/passport/passport.config.ts
+- [ ] T041 [P] [SETUP] Create packages/shared-auth/base/src/middleware/auth.middleware.ts
+- [ ] T042 [P] [SETUP] Create packages/shared-auth/base/src/middleware/rls.middleware.ts
+- [ ] T043 [P] [SETUP] Create packages/shared-auth/base/src/utils/token.utils.ts
+- [ ] T044 [P] [SETUP] Create packages/shared-auth/base/src/utils/password.utils.ts
+- [ ] T045 [SETUP] Create packages/shared-auth/package.json
+- [ ] T046 [P] [SETUP] Create packages/shared-auth/README.md and README-RU.md
 
-- [ ] T039 [P] [US4] Create packages/shared-database/base/src/types/index.ts with base entity interfaces (IEntity, ITimestamped, IUserOwned)
-- [ ] T040 [P] [US4] Create packages/shared-database/base/src/repositories/BaseRepository.ts with generic CRUD operations using Total.js DBMS() API
-- [ ] T041 [P] [US4] Create packages/shared-database/base/src/adapters/IDatabaseAdapter.ts interface defining connection, query, transaction methods
-- [ ] T042 [US4] Create packages/shared-database/base/src/adapters/SupabaseAdapter.ts implementing IDatabaseAdapter using @supabase/supabase-js
-- [ ] T043 [P] [US4] Create packages/shared-database/base/src/config/database.config.ts with environment variable loading and validation
-- [ ] T044 [US4] Create packages/shared-database/base/src/connection/DatabaseConnection.ts managing Supabase client initialization and connection pool
-- [ ] T045 [P] [US4] Create Supabase migration for application_settings table in packages/shared-database/base/src/migrations/001_create_application_settings.sql
-- [ ] T046 [P] [US4] Create Supabase migration for package_registry table in packages/shared-database/base/src/migrations/002_create_package_registry.sql
-- [ ] T047 [P] [US4] Create Supabase migration for migration_history table in packages/shared-database/base/src/migrations/003_create_migration_history.sql
-- [ ] T048 [P] [US4] Create RLS policies for application_settings in packages/shared-database/base/src/migrations/004_rls_application_settings.sql
-- [ ] T049 [P] [US4] Create RLS policies for package_registry in packages/shared-database/base/src/migrations/005_rls_package_registry.sql
-- [ ] T050 [P] [US4] Create RLS policies for migration_history in packages/shared-database/base/src/migrations/006_rls_migration_history.sql
-- [ ] T051 [US4] Create packages/shared-database/base/src/migrations/index.ts exporting migration registry array
-- [ ] T052 [P] [US4] Create packages/shared-database/base/src/entities/ApplicationSetting.ts entity class matching data-model.md
-- [ ] T053 [P] [US4] Create packages/shared-database/base/src/entities/PackageRegistry.ts entity class matching data-model.md
-- [ ] T054 [P] [US4] Create packages/shared-database/base/src/entities/MigrationHistory.ts entity class matching data-model.md
-- [ ] T055 [US4] Create packages/shared-database/base/src/repositories/SettingsRepository.ts extending BaseRepository with findByKey, findByCategory, findPublicSettings methods
-- [ ] T056 [US4] Create packages/shared-database/base/src/repositories/PackageRepository.ts extending BaseRepository with findByName, findByType, findActive methods
-- [ ] T057 [US4] Create packages/shared-database/base/src/repositories/MigrationRepository.ts extending BaseRepository with findByName, findByPackage, findByBatch, getLastBatch methods
-- [ ] T058 [US4] Create packages/shared-database/base/src/index.ts exporting all repositories, adapters, entities, and connection manager
+### Universo Template MUI Package
 
-### Authentication Infrastructure (User Story 4 - P4 continued)
+- [ ] T047 [P] [SETUP] Create packages/universo-template-mui/base/src/ directory structure
+- [ ] T048 [P] [SETUP] Create packages/universo-template-mui/base/src/theme/palette.ts with MUI color palette
+- [ ] T049 [P] [SETUP] Create packages/universo-template-mui/base/src/theme/typography.ts
+- [ ] T050 [P] [SETUP] Create packages/universo-template-mui/base/src/theme/components.ts with MUI overrides
+- [ ] T051 [SETUP] Create packages/universo-template-mui/base/src/theme/index.ts with createTheme()
+- [ ] T052 [P] [SETUP] Create packages/universo-template-mui/base/src/layouts/MainLayout.tsx
+- [ ] T053 [P] [SETUP] Create packages/universo-template-mui/base/src/components/ErrorBoundary.tsx
+- [ ] T054 [P] [SETUP] Create packages/universo-template-mui/base/src/components/LoadingSpinner.tsx
+- [ ] T055 [SETUP] Create packages/universo-template-mui/package.json
+- [ ] T056 [P] [SETUP] Create packages/universo-template-mui/README.md and README-RU.md
 
-- [ ] T059 [P] [US4] Create packages/shared-auth/base/src/strategies/jwt.strategy.ts with Passport.js JWT strategy configuration
-- [ ] T060 [P] [US4] Create packages/shared-auth/base/src/strategies/supabase.strategy.ts for Supabase user verification integration
-- [ ] T061 [US4] Create packages/shared-auth/base/src/passport/passport.config.ts initializing all strategies and serialization
-- [ ] T062 [P] [US4] Create packages/shared-auth/base/src/middleware/auth.middleware.ts for JWT token verification using Passport.js
-- [ ] T063 [P] [US4] Create packages/shared-auth/base/src/middleware/rls.middleware.ts for setting Supabase RLS context (user_id)
-- [ ] T064 [US4] Create packages/shared-auth/base/src/utils/token.utils.ts with generateAccessToken, generateRefreshToken, verifyToken functions
-- [ ] T065 [US4] Create packages/shared-auth/base/src/utils/password.utils.ts with hashPassword, comparePassword functions using bcrypt
-- [ ] T066 [P] [US4] Create packages/shared-auth/base/src/types/auth.types.ts with JwtPayload, AuthUser, TokenPair interfaces
-- [ ] T067 [US4] Create packages/shared-auth/base/src/index.ts exporting all middleware, strategies, utilities, and types
+### Universo API Client Package
 
-### Common Utilities (User Story 3 - P3 continued)
+- [ ] T057 [P] [SETUP] Create packages/universo-api-client/base/src/ directory structure
+- [ ] T058 [P] [SETUP] Create packages/universo-api-client/base/src/client.ts with HTTP client configuration
+- [ ] T059 [P] [SETUP] Create packages/universo-api-client/base/src/interceptors.ts for auth token injection
+- [ ] T060 [SETUP] Create packages/universo-api-client/package.json
+- [ ] T061 [P] [SETUP] Create packages/universo-api-client/README.md and README-RU.md
 
-- [ ] T068 [P] [US3] Create packages/shared-common/base/src/utils/logger.ts with structured JSON logging functions (info, warn, error)
-- [ ] T069 [P] [US3] Create packages/shared-common/base/src/utils/validation.ts with common validation helper functions
-- [ ] T070 [P] [US3] Create packages/shared-common/base/src/constants/http-status.ts with HTTP status code constants
-- [ ] T071 [P] [US3] Create packages/shared-common/base/src/constants/error-codes.ts with application error code constants
-- [ ] T072 [P] [US3] Create packages/shared-common/base/src/types/api.types.ts with ApiResponse, ApiError, PaginationParams, PaginationMeta interfaces
-- [ ] T073 [US3] Create packages/shared-common/base/src/index.ts exporting all utilities, constants, and types
+### Universo i18n Package
 
-### UI Foundation (User Story 5 - P5)
+- [ ] T062 [P] [SETUP] Create packages/universo-i18n/base/src/ directory structure
+- [ ] T063 [P] [SETUP] Create packages/universo-i18n/base/src/config.ts with i18n configuration
+- [ ] T064 [P] [SETUP] Create packages/universo-i18n/base/src/locales/en.json
+- [ ] T065 [P] [SETUP] Create packages/universo-i18n/base/src/locales/ru.json
+- [ ] T066 [SETUP] Create packages/universo-i18n/package.json
+- [ ] T067 [P] [SETUP] Create packages/universo-i18n/README.md and README-RU.md
 
-- [ ] T074 [P] [US5] Create packages/shared-ui/base/src/theme/palette.ts with Material-UI color palette configuration
-- [ ] T075 [P] [US5] Create packages/shared-ui/base/src/theme/typography.ts with font family and typography configuration
-- [ ] T076 [P] [US5] Create packages/shared-ui/base/src/theme/components.ts with MUI component style overrides
-- [ ] T077 [US5] Create packages/shared-ui/base/src/theme/index.ts creating and exporting MUI theme using createTheme()
-- [ ] T078 [P] [US5] Create packages/shared-ui/base/src/layouts/MainLayout.tsx with AppBar, Drawer, and content area
-- [ ] T079 [P] [US5] Create packages/shared-ui/base/src/components/ErrorBoundary.tsx with error catching and user-friendly display
-- [ ] T080 [P] [US5] Create packages/shared-ui/base/src/components/LoadingSpinner.tsx using MUI CircularProgress
-- [ ] T081 [US5] Create packages/shared-ui/base/src/index.ts exporting theme, layouts, and common components
-- [ ] T082 [US5] Create packages/shared-ui/package.json with React, MUI, and Emotion dependencies
-- [ ] T083 [US5] Create packages/shared-ui/vite.config.ts for building UI library with Vite
+### Root Documentation
 
-**Checkpoint**: Foundation ready - all shared infrastructure complete, user story implementation can now begin in parallel
+- [ ] T068 [SETUP] Create root README.md in English with: Overview, Tech Stack, Prerequisites, Installation, Structure, Getting Started
+- [ ] T069 [SETUP] Create root README-RU.md in Russian (exact structural copy)
+
+**Checkpoint**: Foundation complete - shared infrastructure ready for feature development
 
 ---
 
-## Phase 3: User Story 2 - GitHub Repository Management (Priority: P2)
+## Phase 2: Authentication System (auth-frt, auth-srv)
 
-**Goal**: Set up well-organized GitHub repository with appropriate labels and clear contribution guidelines
+**Purpose**: Complete authentication system with login, session management, and protected routes
 
-**Independent Test**: View GitHub repository's issues section and verify all required labels are present with correct descriptions, and instruction files are accessible
+**User Story**: AUTH - Authentication and Authorization System
 
-### GitHub Instructions & Labels
+### Auth Backend (auth-srv)
 
-- [ ] T084 [P] [US2] Create .github/instructions/github-labels.md documenting all standard labels (type:, status:, priority:, package:) with names, colors, and descriptions
-- [ ] T085 [P] [US2] Create .github/instructions/github-issues.md with issue creation guidelines, template structure, and bilingual format requirements
-- [ ] T086 [P] [US2] Create .github/instructions/github-pr.md with pull request guidelines, required information, and bilingual format
-- [ ] T087 [P] [US2] Create .github/instructions/i18n-docs.md with bilingual documentation workflow (English first, Russian translation with structural parity validation)
-- [ ] T088 [US2] Create script to generate GitHub labels from github-labels.md definitions in .github/scripts/create-labels.sh
-- [ ] T089 [US2] Create .github/CONTRIBUTING.md in English with contribution guidelines referencing instruction files
-- [ ] T090 [US2] Create .github/CONTRIBUTING-RU.md in Russian (exact structural copy)
-- [ ] T091 [P] [US2] Create .github/ISSUE_TEMPLATE/bug_report.md with structured bug report template
-- [ ] T092 [P] [US2] Create .github/ISSUE_TEMPLATE/feature_request.md with structured feature request template
-- [ ] T093 [US2] Create .github/PULL_REQUEST_TEMPLATE.md with PR checklist and required sections
+- [ ] T070 [P] [AUTH] Create packages/auth-srv/base/src/ directory structure
+- [ ] T071 [P] [AUTH] Create packages/auth-srv/base/src/controllers/auth.controller.ts
+- [ ] T072 [P] [AUTH] Implement POST /auth/login endpoint in packages/auth-srv/base/src/routes/auth.routes.ts
+- [ ] T073 [P] [AUTH] Implement POST /auth/logout endpoint
+- [ ] T074 [P] [AUTH] Implement GET /auth/session endpoint for session validation
+- [ ] T075 [P] [AUTH] Implement POST /auth/refresh endpoint for token refresh
+- [ ] T076 [AUTH] Create packages/auth-srv/base/src/services/AuthService.ts
+- [ ] T077 [AUTH] Create packages/auth-srv/package.json
+- [ ] T078 [P] [AUTH] Create packages/auth-srv/README.md and README-RU.md
 
-**Checkpoint**: GitHub repository is well-organized with all labels and contribution guidelines in place
+### Auth Frontend (auth-frt)
 
----
+- [ ] T079 [P] [AUTH] Create packages/auth-frt/base/src/ directory structure
+- [ ] T080 [P] [AUTH] Create packages/auth-frt/base/src/components/LoginForm.tsx
+- [ ] T081 [P] [AUTH] Create packages/auth-frt/base/src/components/SessionGuard.tsx for route protection
+- [ ] T082 [P] [AUTH] Create packages/auth-frt/base/src/hooks/useAuth.ts
+- [ ] T083 [P] [AUTH] Create packages/auth-frt/base/src/hooks/useSession.ts
+- [ ] T084 [P] [AUTH] Create packages/auth-frt/base/src/api/authApi.ts
+- [ ] T085 [AUTH] Create packages/auth-frt/package.json
+- [ ] T086 [P] [AUTH] Create packages/auth-frt/README.md and README-RU.md
 
-## Phase 4: User Story 3 - TypeScript and Total.js Configuration (Priority: P3)
-
-**Goal**: Properly configure TypeScript settings and Total.js framework setup for type-safe development
-
-**Independent Test**: Create a sample TypeScript file in one of the packages, run TypeScript compiler, and verify it compiles successfully with proper type checking
-
-### Sample Backend Package with Total.js
-
-- [ ] T094 [US3] Create packages/health-srv/base/ directory structure for health check API backend
-- [ ] T095 [US3] Create packages/health-srv/package.json with Total.js, TypeScript, and workspace dependencies
-- [ ] T096 [US3] Create packages/health-srv/tsconfig.json extending root config with package-specific settings
-- [ ] T097 [P] [US3] Create packages/health-srv/base/src/controllers/ directory for Total.js route controllers
-- [ ] T098 [P] [US3] Create packages/health-srv/base/src/actions/ directory for Total.js NEWACTION definitions
-- [ ] T099 [US3] Create packages/health-srv/base/src/index.ts as Total.js application entry point
-- [ ] T100 [P] [US3] Create packages/health-srv/base/src/config/totaljs.config.ts with Total.js configuration (port: 8000)
-- [ ] T101 [US3] Implement GET /health endpoint in packages/health-srv/base/src/controllers/health.controller.ts using ROUTE()
-- [ ] T102 [US3] Implement GET /health/ready endpoint in packages/health-srv/base/src/controllers/health.controller.ts
-- [ ] T103 [US3] Implement GET /health/live endpoint in packages/health-srv/base/src/controllers/health.controller.ts
-- [ ] T104 [US3] Implement GET /status endpoint in packages/health-srv/base/src/actions/status.action.ts using NEWACTION() returning app version, uptime, and dependencies status
-- [ ] T105 [P] [US3] Create packages/health-srv/README.md in English documenting health check API
-- [ ] T106 [P] [US3] Create packages/health-srv/README-RU.md in Russian (exact structural copy)
-- [ ] T107 [US3] Add dev script to packages/health-srv/package.json for running Total.js with watch mode
-- [ ] T108 [US3] Add build script to packages/health-srv/package.json for TypeScript compilation
-- [ ] T109 [US3] Add health-srv to workspace build chain in root package.json scripts
-
-### Sample Frontend Package with React/MUI
-
-- [ ] T110 [US3] Create packages/health-frt/base/ directory structure for health dashboard frontend
-- [ ] T111 [US3] Create packages/health-frt/package.json with React, MUI, Vite, and workspace dependencies
-- [ ] T112 [US3] Create packages/health-frt/tsconfig.json extending root config for React
-- [ ] T113 [US3] Create packages/health-frt/vite.config.ts with proxy configuration to Total.js backend (port 8000)
-- [ ] T114 [P] [US3] Create packages/health-frt/base/src/pages/ directory for page components
-- [ ] T115 [P] [US3] Create packages/health-frt/base/src/services/ directory for API client services
-- [ ] T116 [US3] Create packages/health-frt/base/src/services/health.service.ts with functions to call health API endpoints
-- [ ] T117 [US3] Create packages/health-frt/base/src/pages/HealthDashboard.tsx displaying health status using MUI components
-- [ ] T118 [US3] Create packages/health-frt/base/src/App.tsx with ThemeProvider and routing
-- [ ] T119 [US3] Create packages/health-frt/index.html as entry HTML file
-- [ ] T120 [US3] Create packages/health-frt/base/src/main.tsx as React application entry point
-- [ ] T121 [P] [US3] Create packages/health-frt/README.md in English
-- [ ] T122 [P] [US3] Create packages/health-frt/README-RU.md in Russian (exact structural copy)
-- [ ] T123 [US3] Add dev script to packages/health-frt/package.json for Vite dev server
-- [ ] T124 [US3] Add build script to packages/health-frt/package.json for production build
-
-### TypeScript Configuration Validation
-
-- [ ] T125 [US3] Verify TypeScript compilation works across all packages by running build:all
-- [ ] T126 [US3] Verify ESLint runs successfully on all TypeScript files with zero errors
-- [ ] T127 [US3] Verify Prettier formatting is consistent across all files
-- [ ] T128 [US3] Test TypeScript path aliases work correctly by importing from @packages/* in sample code
-
-**Checkpoint**: TypeScript and Total.js are properly configured with working sample packages demonstrating frontend-backend integration
+**Checkpoint**: Authentication system complete - users can log in and access protected routes
 
 ---
 
-## Phase 5: User Story 4 - Database Integration Foundation (Priority: P4)
+## Phase 3: Profile System (profile-frt, profile-srv)
 
-**Goal**: Set up Supabase integration with authentication configuration for future features
+**Purpose**: User profile management and settings
 
-**Independent Test**: Configure Supabase credentials in .env file, run connection test, and verify authentication setup (Passport.js with Supabase connector) can successfully initialize
+**User Story**: PROFILE - User Profile Management
 
-### Database Connection & Migration Setup
+### Profile Backend (profile-srv)
 
-- [ ] T129 [US4] Create database migration runner script in packages/shared-database/base/src/migrations/runner.ts
-- [ ] T130 [US4] Create CLI command for running migrations in packages/shared-database/base/src/cli/migrate.ts
-- [ ] T131 [US4] Add migrate script to packages/shared-database/package.json: "migrate": "node dist/cli/migrate.js"
-- [ ] T132 [US4] Create Supabase connection test script in packages/shared-database/base/src/scripts/test-connection.ts
-- [ ] T133 [US4] Add connection test script to packages/shared-database/package.json: "test:connection"
-- [ ] T134 [US4] Document database setup process in packages/shared-database/README.md with Supabase project creation steps
-- [ ] T135 [US4] Document database setup process in packages/shared-database/README-RU.md (Russian translation)
+- [ ] T087 [P] [PROFILE] Create packages/profile-srv/base/src/database/entities/UserProfile.ts
+- [ ] T088 [P] [PROFILE] Create packages/profile-srv/base/src/database/migrations/create_user_profiles.sql
+- [ ] T089 [P] [PROFILE] Create packages/profile-srv/base/src/repositories/ProfileRepository.ts
+- [ ] T090 [P] [PROFILE] Create packages/profile-srv/base/src/services/ProfileService.ts
+- [ ] T091 [P] [PROFILE] Implement GET /profile endpoint
+- [ ] T092 [P] [PROFILE] Implement PUT /profile endpoint for profile updates
+- [ ] T093 [PROFILE] Create packages/profile-srv/package.json
+- [ ] T094 [P] [PROFILE] Create packages/profile-srv/README.md and README-RU.md
 
-### Authentication Integration
+### Profile Frontend (profile-frt)
 
-- [ ] T136 [US4] Create authentication test endpoint in packages/health-srv/base/src/controllers/auth-test.controller.ts
-- [ ] T137 [US4] Implement POST /auth/test-login endpoint returning JWT token for testing
-- [ ] T138 [US4] Implement GET /auth/test-protected endpoint requiring JWT authentication
-- [ ] T139 [US4] Integrate auth.middleware.ts into health-srv controllers using Total.js controller.authorize()
-- [ ] T140 [US4] Create authentication flow documentation in packages/shared-auth/README.md explaining JWT generation, RLS context, and middleware chain
-- [ ] T141 [US4] Create authentication flow documentation in packages/shared-auth/README-RU.md (Russian translation)
+- [ ] T095 [P] [PROFILE] Create packages/profile-frt/base/src/pages/ProfilePage.tsx
+- [ ] T096 [P] [PROFILE] Create packages/profile-frt/base/src/components/ProfileForm.tsx
+- [ ] T097 [P] [PROFILE] Create packages/profile-frt/base/src/api/profileApi.ts
+- [ ] T098 [PROFILE] Create packages/profile-frt/package.json
+- [ ] T099 [P] [PROFILE] Create packages/profile-frt/README.md and README-RU.md
 
-### Database Repository Implementation
-
-- [ ] T142 [US4] Implement SettingsRepository CRUD methods in packages/shared-database/base/src/repositories/SettingsRepository.ts
-- [ ] T143 [US4] Implement PackageRepository CRUD methods in packages/shared-database/base/src/repositories/PackageRepository.ts
-- [ ] T144 [US4] Implement MigrationRepository insert and query methods in packages/shared-database/base/src/repositories/MigrationRepository.ts
-- [ ] T145 [US4] Create repository factory in packages/shared-database/base/src/repositories/RepositoryFactory.ts for dependency injection
-- [ ] T146 [US4] Create sample usage examples in packages/shared-database/base/src/examples/ demonstrating repository patterns
-
-### Environment & Configuration
-
-- [ ] T147 [US4] Update .env.example with complete database and auth environment variables and descriptive comments
-- [ ] T148 [US4] Create environment validation script in packages/shared-common/base/src/utils/env-validator.ts checking required variables
-- [ ] T149 [US4] Add environment validation to application startup in packages/health-srv/base/src/index.ts
-- [ ] T150 [US4] Document environment configuration in root README.md with variable descriptions and where to obtain credentials
-- [ ] T151 [US4] Document environment configuration in root README-RU.md (Russian translation)
-
-**Checkpoint**: Database integration is complete with working connection, authentication, and repository patterns ready for feature development
+**Checkpoint**: Profile system complete - users can view and edit their profiles
 
 ---
 
-## Phase 6: User Story 5 - UI Framework Integration (Priority: P5)
+## Phase 4: Organizations (organizations-frt, organizations-srv)
 
-**Goal**: Integrate Material-UI (MUI) into frontend packages for consistent, professional user interfaces
+**Purpose**: Multi-user organization management
 
-**Independent Test**: Create sample frontend component using MUI components, run development server, and verify MUI styles and theming work correctly
+**User Story**: ORGS - Organization Management
 
-### MUI Theme Integration
+### Organizations Backend (organizations-srv)
 
-- [ ] T152 [US5] Verify MUI theme works in packages/health-frt by wrapping app with ThemeProvider
-- [ ] T153 [US5] Create sample MUI components in packages/health-frt/base/src/components/ demonstrating Button, TextField, Card, Dialog
-- [ ] T154 [US5] Create responsive layout example in packages/health-frt/base/src/layouts/DashboardLayout.tsx using AppBar, Drawer, Grid
-- [ ] T155 [US5] Implement dark/light theme toggle in packages/health-frt using MUI theme switching
-- [ ] T156 [US5] Create form example in packages/health-frt/base/src/components/SampleForm.tsx using MUI TextField, Button, validation
-- [ ] T157 [US5] Create data table example in packages/health-frt/base/src/components/SampleTable.tsx using MUI Table or DataGrid
-- [ ] T158 [US5] Document MUI component usage patterns in packages/shared-ui/README.md
-- [ ] T159 [US5] Document MUI component usage patterns in packages/shared-ui/README-RU.md (Russian translation)
+- [ ] T100 [P] [ORGS] Create packages/organizations-srv/base/src/database/entities/Organization.ts
+- [ ] T101 [P] [ORGS] Create packages/organizations-srv/base/src/database/entities/OrganizationMember.ts
+- [ ] T102 [P] [ORGS] Create packages/organizations-srv/base/src/database/migrations/create_organizations.sql
+- [ ] T103 [P] [ORGS] Create packages/organizations-srv/base/src/repositories/OrganizationRepository.ts
+- [ ] T104 [P] [ORGS] Create packages/organizations-srv/base/src/services/OrganizationService.ts
+- [ ] T105 [P] [ORGS] Implement CRUD endpoints for organizations
+- [ ] T106 [ORGS] Create packages/organizations-srv/package.json
+- [ ] T107 [P] [ORGS] Create packages/organizations-srv/README.md and README-RU.md
 
-### Responsive Design & Accessibility
+### Organizations Frontend (organizations-frt)
 
-- [ ] T160 [US5] Test responsive design on mobile, tablet, desktop viewports in packages/health-frt
-- [ ] T161 [US5] Verify MUI responsive breakpoints work correctly with Grid and Box components
-- [ ] T162 [US5] Add MUI responsive utilities documentation to packages/shared-ui/README.md
-- [ ] T163 [US5] Add MUI responsive utilities documentation to packages/shared-ui/README-RU.md (Russian translation)
+- [ ] T108 [P] [ORGS] Create packages/organizations-frt/base/src/pages/OrganizationsPage.tsx
+- [ ] T109 [P] [ORGS] Create packages/organizations-frt/base/src/components/OrganizationList.tsx
+- [ ] T110 [P] [ORGS] Create packages/organizations-frt/base/src/components/OrganizationForm.tsx
+- [ ] T111 [P] [ORGS] Create packages/organizations-frt/base/src/api/organizationsApi.ts
+- [ ] T112 [ORGS] Create packages/organizations-frt/package.json
+- [ ] T113 [P] [ORGS] Create packages/organizations-frt/README.md and README-RU.md
 
-### Frontend Development Workflow
-
-- [ ] T164 [US5] Document Vite dev server + Total.js backend simultaneous running in root README.md
-- [ ] T165 [US5] Document Vite dev server + Total.js backend simultaneous running in root README-RU.md (Russian translation)
-- [ ] T166 [US5] Create development startup script in root package.json: "dev:all" running both frontend and backend
-- [ ] T167 [US5] Create production build script in root package.json: "build:prod" building all packages
-- [ ] T168 [US5] Document production deployment strategy in root README.md (build React app, serve from Total.js or CDN)
-- [ ] T169 [US5] Document production deployment strategy in root README-RU.md (Russian translation)
-
-**Checkpoint**: Material-UI is fully integrated with working sample components, responsive design, and complete development workflow
+**Checkpoint**: Organizations complete - multi-user collaboration enabled
 
 ---
 
-## Phase 7: Polish & Cross-Cutting Concerns
+## Phase 5: Uniks - Workspaces (uniks-frt, uniks-srv)
 
-**Purpose**: Final improvements and validation affecting multiple user stories
+**Purpose**: Top-level workspace containers for organizing user content
+
+**User Story**: UNIKS - Workspace Management (Priority: P1 - Core Feature)
+
+### Uniks Backend (uniks-srv)
+
+- [ ] T114 [P] [UNIKS] Create packages/uniks-srv/base/src/database/entities/Unik.ts
+- [ ] T115 [P] [UNIKS] Create packages/uniks-srv/base/src/database/migrations/create_uniks.sql with RLS policies
+- [ ] T116 [P] [UNIKS] Create packages/uniks-srv/base/src/repositories/UnikRepository.ts
+- [ ] T117 [P] [UNIKS] Create packages/uniks-srv/base/src/services/UnikService.ts
+- [ ] T118 [P] [UNIKS] Implement GET /uniks endpoint (list user's workspaces)
+- [ ] T119 [P] [UNIKS] Implement POST /uniks endpoint (create workspace)
+- [ ] T120 [P] [UNIKS] Implement GET /uniks/:id endpoint
+- [ ] T121 [P] [UNIKS] Implement PUT /uniks/:id endpoint
+- [ ] T122 [P] [UNIKS] Implement DELETE /uniks/:id endpoint
+- [ ] T123 [UNIKS] Create packages/uniks-srv/package.json
+- [ ] T124 [P] [UNIKS] Create packages/uniks-srv/README.md and README-RU.md
+
+### Uniks Frontend (uniks-frt)
+
+- [ ] T125 [P] [UNIKS] Create packages/uniks-frt/base/src/pages/UniksListPage.tsx
+- [ ] T126 [P] [UNIKS] Create packages/uniks-frt/base/src/pages/UnikDetailPage.tsx
+- [ ] T127 [P] [UNIKS] Create packages/uniks-frt/base/src/components/UnikCard.tsx
+- [ ] T128 [P] [UNIKS] Create packages/uniks-frt/base/src/components/CreateUnikDialog.tsx
+- [ ] T129 [P] [UNIKS] Create packages/uniks-frt/base/src/api/uniksApi.ts
+- [ ] T130 [P] [UNIKS] Create packages/uniks-frt/base/src/hooks/useUniks.ts
+- [ ] T131 [UNIKS] Create packages/uniks-frt/package.json
+- [ ] T132 [P] [UNIKS] Create packages/uniks-frt/README.md and README-RU.md
+
+**Checkpoint**: Uniks complete - users can create and manage workspaces
+
+---
+
+## Phase 6: Spaces Management (spaces-frt, spaces-srv)
+
+**Purpose**: Logical grouping of related canvases within workspaces
+
+**User Story**: SPACES - Space Management (Priority: P2)
+
+### Spaces Backend (spaces-srv)
+
+- [ ] T133 [P] [SPACES] Create packages/spaces-srv/base/src/database/entities/Space.ts
+- [ ] T134 [P] [SPACES] Create packages/spaces-srv/base/src/database/migrations/create_spaces.sql
+- [ ] T135 [P] [SPACES] Create packages/spaces-srv/base/src/repositories/SpaceRepository.ts
+- [ ] T136 [P] [SPACES] Create packages/spaces-srv/base/src/services/SpaceService.ts
+- [ ] T137 [P] [SPACES] Implement CRUD endpoints for spaces under /uniks/:unikId/spaces
+- [ ] T138 [SPACES] Create packages/spaces-srv/package.json
+- [ ] T139 [P] [SPACES] Create packages/spaces-srv/README.md and README-RU.md
+
+### Spaces Frontend (spaces-frt)
+
+- [ ] T140 [P] [SPACES] Create packages/spaces-frt/base/src/pages/SpacesListPage.tsx
+- [ ] T141 [P] [SPACES] Create packages/spaces-frt/base/src/components/SpaceCard.tsx
+- [ ] T142 [P] [SPACES] Create packages/spaces-frt/base/src/components/CreateSpaceDialog.tsx
+- [ ] T143 [P] [SPACES] Create packages/spaces-frt/base/src/api/spacesApi.ts
+- [ ] T144 [SPACES] Create packages/spaces-frt/package.json
+- [ ] T145 [P] [SPACES] Create packages/spaces-frt/README.md and README-RU.md
+
+**Checkpoint**: Spaces complete - workspaces can contain organized spaces
+
+---
+
+## Phase 7: Canvas System (Foundation for Node-Based Workflows)
+
+**Purpose**: Canvas entities for visual programming workflows
+
+**User Story**: CANVAS - Canvas Management (Priority: P2)
+
+### Canvas Backend
+
+- [ ] T146 [P] [CANVAS] Create packages/spaces-srv/base/src/database/entities/Canvas.ts
+- [ ] T147 [P] [CANVAS] Create packages/spaces-srv/base/src/database/entities/CanvasVersion.ts
+- [ ] T148 [P] [CANVAS] Create packages/spaces-srv/base/src/database/migrations/create_canvases.sql
+- [ ] T149 [P] [CANVAS] Create packages/spaces-srv/base/src/repositories/CanvasRepository.ts
+- [ ] T150 [P] [CANVAS] Create packages/spaces-srv/base/src/services/CanvasService.ts
+- [ ] T151 [P] [CANVAS] Implement CRUD endpoints for canvases under /spaces/:spaceId/canvases
+- [ ] T152 [CANVAS] Update packages/spaces-srv package for canvas support
+
+### Canvas Frontend
+
+- [ ] T153 [P] [CANVAS] Create packages/spaces-frt/base/src/pages/CanvasListPage.tsx
+- [ ] T154 [P] [CANVAS] Create packages/spaces-frt/base/src/components/CanvasCard.tsx
+- [ ] T155 [P] [CANVAS] Create packages/spaces-frt/base/src/api/canvasesApi.ts
+- [ ] T156 [CANVAS] Update packages/spaces-frt for canvas support
+
+**Checkpoint**: Canvas system ready for node-based workflows
+
+---
+
+## Phase 8: Node Components - LangChain Integration
+
+**Purpose**: Node library for LangChain workflows (avoiding monolithic flowise-components)
+
+**User Story**: NODES-LC - LangChain Node Library (Priority: P3 - Core Feature)
+
+### LangChain Nodes Package (langchain-nodes)
+
+- [ ] T157 [P] [NODES-LC] Create packages/langchain-nodes/base/src/ directory structure
+- [ ] T158 [P] [NODES-LC] Create packages/langchain-nodes/base/src/nodes/llms/ directory
+- [ ] T159 [P] [NODES-LC] Create packages/langchain-nodes/base/src/nodes/llms/OpenAI.ts node definition
+- [ ] T160 [P] [NODES-LC] Create packages/langchain-nodes/base/src/nodes/llms/Anthropic.ts node definition
+- [ ] T161 [P] [NODES-LC] Create packages/langchain-nodes/base/src/nodes/chains/ directory
+- [ ] T162 [P] [NODES-LC] Create packages/langchain-nodes/base/src/nodes/chains/LLMChain.ts
+- [ ] T163 [P] [NODES-LC] Create packages/langchain-nodes/base/src/nodes/chains/ConversationChain.ts
+- [ ] T164 [P] [NODES-LC] Create packages/langchain-nodes/base/src/nodes/agents/ directory
+- [ ] T165 [P] [NODES-LC] Create packages/langchain-nodes/base/src/nodes/agents/Agent.ts
+- [ ] T166 [P] [NODES-LC] Create packages/langchain-nodes/base/src/nodes/memory/ directory
+- [ ] T167 [P] [NODES-LC] Create packages/langchain-nodes/base/src/nodes/memory/BufferMemory.ts
+- [ ] T168 [P] [NODES-LC] Create packages/langchain-nodes/base/src/nodes/tools/ directory
+- [ ] T169 [P] [NODES-LC] Create packages/langchain-nodes/base/src/nodes/tools/Calculator.ts
+- [ ] T170 [P] [NODES-LC] Create packages/langchain-nodes/base/src/nodes/tools/WebBrowser.ts
+- [ ] T171 [P] [NODES-LC] Create packages/langchain-nodes/base/src/types/NodeInterface.ts
+- [ ] T172 [P] [NODES-LC] Create packages/langchain-nodes/base/src/registry/NodeRegistry.ts
+- [ ] T173 [NODES-LC] Create packages/langchain-nodes/package.json
+- [ ] T174 [P] [NODES-LC] Create packages/langchain-nodes/README.md and README-RU.md
+
+### LangChain Nodes Backend Integration
+
+- [ ] T175 [P] [NODES-LC] Create packages/nodes-srv/base/src/ directory structure
+- [ ] T176 [P] [NODES-LC] Create packages/nodes-srv/base/src/services/NodeExecutionService.ts
+- [ ] T177 [P] [NODES-LC] Implement POST /canvases/:id/execute endpoint for running node graphs
+- [ ] T178 [NODES-LC] Create packages/nodes-srv/package.json
+- [ ] T179 [P] [NODES-LC] Create packages/nodes-srv/README.md and README-RU.md
+
+**Checkpoint**: LangChain nodes available for visual programming
+
+---
+
+## Phase 9: UPDL Node System (3D/AR/VR Scene Description)
+
+**Purpose**: UPDL nodes for universal 3D/AR/VR scene description
+
+**User Story**: NODES-UPDL - UPDL Node System (Priority: P3)
+
+### UPDL Package
+
+- [ ] T180 [P] [NODES-UPDL] Create packages/updl/base/src/ directory structure
+- [ ] T181 [P] [NODES-UPDL] Create packages/updl/base/src/interfaces/UPDLInterfaces.ts (flow, graph, properties)
+- [ ] T182 [P] [NODES-UPDL] Create packages/updl/base/src/nodes/core/ directory
+- [ ] T183 [P] [NODES-UPDL] Create packages/updl/base/src/nodes/core/SceneNode.ts
+- [ ] T184 [P] [NODES-UPDL] Create packages/updl/base/src/nodes/core/EntityNode.ts
+- [ ] T185 [P] [NODES-UPDL] Create packages/updl/base/src/nodes/core/ComponentNode.ts
+- [ ] T186 [P] [NODES-UPDL] Create packages/updl/base/src/nodes/core/GeometryNode.ts
+- [ ] T187 [P] [NODES-UPDL] Create packages/updl/base/src/nodes/core/MaterialNode.ts
+- [ ] T188 [P] [NODES-UPDL] Create packages/updl/base/src/nodes/core/LightNode.ts
+- [ ] T189 [P] [NODES-UPDL] Create packages/updl/base/src/nodes/core/CameraNode.ts
+- [ ] T190 [P] [NODES-UPDL] Create packages/updl/base/src/nodes/legacy/ directory for backward compatibility
+- [ ] T191 [P] [NODES-UPDL] Create packages/updl/base/src/processors/UPDLProcessor.ts
+- [ ] T192 [UPDL] Create packages/updl/package.json
+- [ ] T193 [P] [NODES-UPDL] Create packages/updl/README.md and README-RU.md
+
+**Checkpoint**: UPDL nodes available for 3D/AR/VR scene creation
+
+---
+
+## Phase 10: Canvas Editor (Visual Flow Editor)
+
+**Purpose**: React Flow-based visual editor for node-based workflows
+
+**User Story**: EDITOR - Canvas Visual Editor (Priority: P4)
+
+### Canvas Editor Frontend
+
+- [ ] T194 [P] [EDITOR] Create packages/canvas-editor-frt/base/src/ directory structure
+- [ ] T195 [P] [EDITOR] Create packages/canvas-editor-frt/base/src/components/CanvasEditor.tsx using React Flow
+- [ ] T196 [P] [EDITOR] Create packages/canvas-editor-frt/base/src/components/NodePalette.tsx
+- [ ] T197 [P] [EDITOR] Create packages/canvas-editor-frt/base/src/components/NodePropertiesPanel.tsx
+- [ ] T198 [P] [EDITOR] Create packages/canvas-editor-frt/base/src/hooks/useCanvasFlow.ts
+- [ ] T199 [P] [EDITOR] Create packages/canvas-editor-frt/base/src/hooks/useNodeExecution.ts
+- [ ] T200 [P] [EDITOR] Create packages/canvas-editor-frt/base/src/api/canvasEditorApi.ts
+- [ ] T201 [EDITOR] Create packages/canvas-editor-frt/package.json
+- [ ] T202 [P] [EDITOR] Create packages/canvas-editor-frt/README.md and README-RU.md
+
+**Checkpoint**: Visual canvas editor ready for creating node-based workflows
+
+---
+
+## Phase 11: Space Builder (AI-Powered Prompt-to-Flow)
+
+**Purpose**: AI-powered generation of canvases from natural language prompts
+
+**User Story**: BUILDER - Space Builder (Priority: P5)
+
+### Space Builder Backend (space-builder-srv)
+
+- [ ] T203 [P] [BUILDER] Create packages/space-builder-srv/base/src/ directory structure
+- [ ] T204 [P] [BUILDER] Create packages/space-builder-srv/base/src/services/LLMIntegrationService.ts
+- [ ] T205 [P] [BUILDER] Create packages/space-builder-srv/base/src/services/GraphValidationService.ts
+- [ ] T206 [P] [BUILDER] Implement POST /space-builder/generate endpoint
+- [ ] T207 [P] [BUILDER] Implement GET /space-builder/health endpoint
+- [ ] T208 [P] [BUILDER] Implement GET /space-builder/config endpoint
+- [ ] T209 [BUILDER] Create packages/space-builder-srv/package.json
+- [ ] T210 [P] [BUILDER] Create packages/space-builder-srv/README.md and README-RU.md
+
+### Space Builder Frontend (space-builder-frt)
+
+- [ ] T211 [P] [BUILDER] Create packages/space-builder-frt/base/src/ directory structure
+- [ ] T212 [P] [BUILDER] Create packages/space-builder-frt/base/src/components/PromptDialog.tsx
+- [ ] T213 [P] [BUILDER] Create packages/space-builder-frt/base/src/components/GenerateButton.tsx (FAB)
+- [ ] T214 [P] [BUILDER] Create packages/space-builder-frt/base/src/components/ModelSelector.tsx
+- [ ] T215 [P] [BUILDER] Create packages/space-builder-frt/base/src/api/spaceBuilderApi.ts
+- [ ] T216 [BUILDER] Create packages/space-builder-frt/package.json
+- [ ] T217 [P] [BUILDER] Create packages/space-builder-frt/README.md and README-RU.md
+
+**Checkpoint**: AI-powered space builder ready for prompt-to-flow generation
+
+---
+
+## Phase 12: Publishing System (Export & Share)
+
+**Purpose**: Export canvases to AR.js, PlayCanvas, and shareable URLs
+
+**User Story**: PUBLISH - Publishing System (Priority: P6)
+
+### Publishing Backend (publish-srv)
+
+- [ ] T218 [P] [PUBLISH] Create packages/publish-srv/base/src/ directory structure
+- [ ] T219 [P] [PUBLISH] Create packages/publish-srv/base/src/database/entities/Publication.ts
+- [ ] T220 [P] [PUBLISH] Create packages/publish-srv/base/src/database/migrations/create_publications.sql
+- [ ] T221 [P] [PUBLISH] Create packages/publish-srv/base/src/services/PublicationService.ts
+- [ ] T222 [P] [PUBLISH] Create packages/publish-srv/base/src/controllers/PublicationController.ts
+- [ ] T223 [P] [PUBLISH] Implement POST /publications endpoint
+- [ ] T224 [P] [PUBLISH] Implement GET /publications/:id endpoint
+- [ ] T225 [P] [PUBLISH] Implement GET /p/:uuid endpoint (public access)
+- [ ] T226 [PUBLISH] Create packages/publish-srv/package.json
+- [ ] T227 [P] [PUBLISH] Create packages/publish-srv/README.md and README-RU.md
+
+### Publishing Frontend (publish-frt)
+
+- [ ] T228 [P] [PUBLISH] Create packages/publish-frt/base/src/ directory structure
+- [ ] T229 [P] [PUBLISH] Create packages/publish-frt/base/src/processors/UPDLProcessor.ts for AR.js conversion
+- [ ] T230 [P] [PUBLISH] Create packages/publish-frt/base/src/processors/PlayCanvasProcessor.ts
+- [ ] T231 [P] [PUBLISH] Create packages/publish-frt/base/src/components/PublishDialog.tsx
+- [ ] T232 [P] [PUBLISH] Create packages/publish-frt/base/src/components/PublicationViewer.tsx
+- [ ] T233 [P] [PUBLISH] Create packages/publish-frt/base/src/api/PublicationApi.ts
+- [ ] T234 [P] [PUBLISH] Create packages/publish-frt/base/src/api/ARJSPublicationApi.ts
+- [ ] T235 [PUBLISH] Create packages/publish-frt/package.json
+- [ ] T236 [P] [PUBLISH] Create packages/publish-frt/README.md and README-RU.md
+
+**Checkpoint**: Publishing system complete - canvases can be exported and shared
+
+---
+
+## Phase 13: Application Templates
+
+**Purpose**: Reusable templates for common application types
+
+**User Story**: TEMPLATES - Application Templates (Priority: P7)
+
+### Quiz Template
+
+- [ ] T237 [P] [TEMPLATES] Create packages/template-quiz/base/src/ directory structure
+- [ ] T238 [P] [TEMPLATES] Create packages/template-quiz/base/src/components/QuizTemplate.tsx
+- [ ] T239 [P] [TEMPLATES] Create packages/template-quiz/base/src/builders/QuizBuilder.ts
+- [ ] T240 [TEMPLATES] Create packages/template-quiz/package.json
+- [ ] T241 [P] [TEMPLATES] Create packages/template-quiz/README.md and README-RU.md
+
+### MMO Template
+
+- [ ] T242 [P] [TEMPLATES] Create packages/template-mmoomm/base/src/ directory structure
+- [ ] T243 [P] [TEMPLATES] Create packages/template-mmoomm/base/src/components/MMOTemplate.tsx
+- [ ] T244 [P] [TEMPLATES] Create packages/template-mmoomm/base/src/builders/MMOBuilder.ts
+- [ ] T245 [TEMPLATES] Create packages/template-mmoomm/package.json
+- [ ] T246 [P] [TEMPLATES] Create packages/template-mmoomm/README.md and README-RU.md
+
+**Checkpoint**: Templates ready for quick application creation
+
+---
+
+## Phase 14: Metaverses System
+
+**Purpose**: Thematic collections of spaces
+
+**User Story**: METAVERSES - Metaverse Management (Priority: P8)
+
+### Metaverses Backend (metaverses-srv)
+
+- [ ] T247 [P] [METAVERSES] Create packages/metaverses-srv/base/src/database/entities/Metaverse.ts
+- [ ] T248 [P] [METAVERSES] Create packages/metaverses-srv/base/src/database/entities/MetaverseSection.ts
+- [ ] T249 [P] [METAVERSES] Create packages/metaverses-srv/base/src/database/migrations/create_metaverses.sql
+- [ ] T250 [P] [METAVERSES] Create packages/metaverses-srv/base/src/repositories/MetaverseRepository.ts
+- [ ] T251 [P] [METAVERSES] Create packages/metaverses-srv/base/src/services/MetaverseService.ts
+- [ ] T252 [P] [METAVERSES] Implement CRUD endpoints for metaverses
+- [ ] T253 [METAVERSES] Create packages/metaverses-srv/package.json
+- [ ] T254 [P] [METAVERSES] Create packages/metaverses-srv/README.md and README-RU.md
+
+### Metaverses Frontend (metaverses-frt)
+
+- [ ] T255 [P] [METAVERSES] Create packages/metaverses-frt/base/src/pages/MetaversesListPage.tsx
+- [ ] T256 [P] [METAVERSES] Create packages/metaverses-frt/base/src/components/MetaverseCard.tsx
+- [ ] T257 [P] [METAVERSES] Create packages/metaverses-frt/base/src/components/CreateMetaverseDialog.tsx
+- [ ] T258 [P] [METAVERSES] Create packages/metaverses-frt/base/src/api/metaversesApi.ts
+- [ ] T259 [METAVERSES] Create packages/metaverses-frt/package.json
+- [ ] T260 [P] [METAVERSES] Create packages/metaverses-frt/README.md and README-RU.md
+
+**Checkpoint**: Metaverses complete - thematic space collections enabled
+
+---
+
+## Phase 15: Clusters System (Infrastructure Management)
+
+**Purpose**: Infrastructure cluster management
+
+**User Story**: CLUSTERS - Cluster Management (Priority: P9)
+
+### Clusters Backend (clusters-srv)
+
+- [ ] T261 [P] [CLUSTERS] Create packages/clusters-srv/base/src/database/entities/Cluster.ts
+- [ ] T262 [P] [CLUSTERS] Create packages/clusters-srv/base/src/database/entities/Domain.ts
+- [ ] T263 [P] [CLUSTERS] Create packages/clusters-srv/base/src/database/entities/Resource.ts
+- [ ] T264 [P] [CLUSTERS] Create packages/clusters-srv/base/src/database/migrations/create_clusters.sql
+- [ ] T265 [P] [CLUSTERS] Create packages/clusters-srv/base/src/repositories/ClusterRepository.ts
+- [ ] T266 [P] [CLUSTERS] Create packages/clusters-srv/base/src/services/ClusterService.ts
+- [ ] T267 [P] [CLUSTERS] Implement CRUD endpoints for clusters
+- [ ] T268 [CLUSTERS] Create packages/clusters-srv/package.json
+- [ ] T269 [P] [CLUSTERS] Create packages/clusters-srv/README.md and README-RU.md
+
+### Clusters Frontend (clusters-frt)
+
+- [ ] T270 [P] [CLUSTERS] Create packages/clusters-frt/base/src/pages/ClustersListPage.tsx
+- [ ] T271 [P] [CLUSTERS] Create packages/clusters-frt/base/src/components/ClusterCard.tsx
+- [ ] T272 [P] [CLUSTERS] Create packages/clusters-frt/base/src/components/CreateClusterDialog.tsx
+- [ ] T273 [P] [CLUSTERS] Create packages/clusters-frt/base/src/api/clustersApi.ts
+- [ ] T274 [CLUSTERS] Create packages/clusters-frt/package.json
+- [ ] T275 [P] [CLUSTERS] Create packages/clusters-frt/README.md and README-RU.md
+
+**Checkpoint**: Clusters complete - infrastructure management enabled
+
+---
+
+## Phase 16: Projects System
+
+**Purpose**: Project management and organization
+
+**User Story**: PROJECTS - Project Management (Priority: P10)
+
+### Projects Backend (projects-srv)
+
+- [ ] T276 [P] [PROJECTS] Create packages/projects-srv/base/src/database/entities/Project.ts
+- [ ] T277 [P] [PROJECTS] Create packages/projects-srv/base/src/database/migrations/create_projects.sql
+- [ ] T278 [P] [PROJECTS] Create packages/projects-srv/base/src/repositories/ProjectRepository.ts
+- [ ] T279 [P] [PROJECTS] Create packages/projects-srv/base/src/services/ProjectService.ts
+- [ ] T280 [P] [PROJECTS] Implement CRUD endpoints for projects
+- [ ] T281 [PROJECTS] Create packages/projects-srv/package.json
+- [ ] T282 [P] [PROJECTS] Create packages/projects-srv/README.md and README-RU.md
+
+### Projects Frontend (projects-frt)
+
+- [ ] T283 [P] [PROJECTS] Create packages/projects-frt/base/src/pages/ProjectsListPage.tsx
+- [ ] T284 [P] [PROJECTS] Create packages/projects-frt/base/src/components/ProjectCard.tsx
+- [ ] T285 [P] [PROJECTS] Create packages/projects-frt/base/src/api/projectsApi.ts
+- [ ] T286 [PROJECTS] Create packages/projects-frt/package.json
+- [ ] T287 [P] [PROJECTS] Create packages/projects-frt/README.md and README-RU.md
+
+**Checkpoint**: Projects complete - project organization enabled
+
+---
+
+## Phase 17: Storages System
+
+**Purpose**: Storage and file management
+
+**User Story**: STORAGES - Storage Management (Priority: P11)
+
+### Storages Backend (storages-srv)
+
+- [ ] T288 [P] [STORAGES] Create packages/storages-srv/base/src/database/entities/Storage.ts
+- [ ] T289 [P] [STORAGES] Create packages/storages-srv/base/src/database/migrations/create_storages.sql
+- [ ] T290 [P] [STORAGES] Create packages/storages-srv/base/src/services/StorageService.ts
+- [ ] T291 [P] [STORAGES] Implement storage endpoints
+- [ ] T292 [STORAGES] Create packages/storages-srv/package.json
+- [ ] T293 [P] [STORAGES] Create packages/storages-srv/README.md and README-RU.md
+
+### Storages Frontend (storages-frt)
+
+- [ ] T294 [P] [STORAGES] Create packages/storages-frt/base/src/pages/StoragesPage.tsx
+- [ ] T295 [P] [STORAGES] Create packages/storages-frt/base/src/components/FileUpload.tsx
+- [ ] T296 [P] [STORAGES] Create packages/storages-frt/base/src/api/storagesApi.ts
+- [ ] T297 [STORAGES] Create packages/storages-frt/package.json
+- [ ] T298 [P] [STORAGES] Create packages/storages-frt/README.md and README-RU.md
+
+**Checkpoint**: Storages complete - file management enabled
+
+---
+
+## Phase 18: Analytics System
+
+**Purpose**: Analytics and reporting for quiz and other applications
+
+**User Story**: ANALYTICS - Analytics System (Priority: P12)
+
+### Analytics Frontend (analytics-frt)
+
+- [ ] T299 [P] [ANALYTICS] Create packages/analytics-frt/base/src/pages/AnalyticsPage.tsx
+- [ ] T300 [P] [ANALYTICS] Create packages/analytics-frt/base/src/components/AnalyticsChart.tsx
+- [ ] T301 [P] [ANALYTICS] Create packages/analytics-frt/base/src/api/analyticsApi.ts
+- [ ] T302 [ANALYTICS] Create packages/analytics-frt/package.json
+- [ ] T303 [P] [ANALYTICS] Create packages/analytics-frt/README.md and README-RU.md
+
+**Checkpoint**: Analytics complete - reporting enabled
+
+---
+
+## Phase 19: Multiplayer System (Optional Advanced Feature)
+
+**Purpose**: Real-time multiplayer using Colyseus
+
+**User Story**: MULTIPLAYER - Multiplayer System (Priority: P13 - Optional)
+
+### Multiplayer Backend (multiplayer-colyseus-srv)
+
+- [ ] T304 [P] [MULTIPLAYER] Create packages/multiplayer-colyseus-srv/src/ directory structure
+- [ ] T305 [P] [MULTIPLAYER] Create packages/multiplayer-colyseus-srv/src/rooms/GameRoom.ts
+- [ ] T306 [P] [MULTIPLAYER] Create packages/multiplayer-colyseus-srv/src/schemas/PlayerSchema.ts
+- [ ] T307 [P] [MULTIPLAYER] Implement Colyseus server configuration
+- [ ] T308 [MULTIPLAYER] Create packages/multiplayer-colyseus-srv/package.json
+- [ ] T309 [P] [MULTIPLAYER] Create packages/multiplayer-colyseus-srv/README.md and README-RU.md
+
+**Checkpoint**: Multiplayer enabled for real-time collaboration
+
+---
+
+## Phase 20: API Documentation
+
+**Purpose**: Auto-generated REST API documentation
+
+**User Story**: DOCS - API Documentation (Priority: P14)
+
+### API Documentation Package
+
+- [ ] T310 [P] [DOCS] Create packages/universo-rest-docs/ directory structure
+- [ ] T311 [P] [DOCS] Configure OpenAPI/Swagger documentation generation
+- [ ] T312 [P] [DOCS] Create packages/universo-rest-docs/base/src/index.html for API explorer
+- [ ] T313 [DOCS] Create packages/universo-rest-docs/package.json
+- [ ] T314 [P] [DOCS] Create packages/universo-rest-docs/README.md and README-RU.md
+
+**Checkpoint**: API documentation available
+
+---
+
+## Phase 21: GitHub Repository Management
+
+**Purpose**: Repository organization, labels, and contribution guidelines
+
+**User Story**: GITHUB - GitHub Management
+
+- [ ] T315 [P] [GITHUB] Create .github/instructions/github-labels.md
+- [ ] T316 [P] [GITHUB] Create .github/instructions/github-issues.md
+- [ ] T317 [P] [GITHUB] Create .github/instructions/github-pr.md
+- [ ] T318 [P] [GITHUB] Create .github/instructions/i18n-docs.md
+- [ ] T319 [GITHUB] Create script .github/scripts/create-labels.sh
+- [ ] T320 [P] [GITHUB] Create .github/CONTRIBUTING.md and CONTRIBUTING-RU.md
+- [ ] T321 [P] [GITHUB] Create .github/ISSUE_TEMPLATE/bug_report.md
+- [ ] T322 [P] [GITHUB] Create .github/ISSUE_TEMPLATE/feature_request.md
+- [ ] T323 [GITHUB] Create .github/PULL_REQUEST_TEMPLATE.md
+
+**Checkpoint**: GitHub repository well-organized
+
+---
+
+## Phase 22: Polish & Cross-Cutting Concerns
+
+**Purpose**: Final improvements and validation
 
 ### Documentation Validation
 
-- [ ] T170 [P] Validate English/Russian documentation parity for all README files (line count ±5, same structure)
-- [ ] T171 [P] Verify all package README files include required sections: Purpose, Features, Installation, Usage, API Reference, Configuration, Contributing
-- [ ] T172 [P] Verify root README includes all required sections per FR-009: Overview, Relationship to Universo Platformo React, Technology Stack, Prerequisites, Installation, Project Structure, Getting Started, Contributing, License
-- [ ] T173 Update root README with actual package structure showing all created packages
-- [ ] T174 Update root README-RU with synchronized changes (maintain structural parity)
+- [ ] T324 [P] [POLISH] Validate English/Russian documentation parity for all README files
+- [ ] T325 [P] [POLISH] Verify all package README files include required sections
+- [ ] T326 [POLISH] Update root README with actual package structure
+- [ ] T327 [POLISH] Update root README-RU with synchronized changes
 
-### Code Quality & Standards
+### Code Quality
 
-- [ ] T175 [P] Run ESLint on all packages and fix any errors
-- [ ] T176 [P] Run Prettier on all files to ensure consistent formatting
-- [ ] T177 [P] Verify TypeScript compilation succeeds for all packages with zero errors
-- [ ] T178 Add pre-commit hooks using husky and lint-staged to automatically run linting and formatting
-- [ ] T179 Document code quality tools and commands in root README.md
-- [ ] T180 Document code quality tools and commands in root README-RU.md (Russian translation)
+- [ ] T328 [P] [POLISH] Run ESLint on all packages and fix errors
+- [ ] T329 [P] [POLISH] Run Prettier on all files
+- [ ] T330 [P] [POLISH] Verify TypeScript compilation succeeds for all packages
+- [ ] T331 [POLISH] Add pre-commit hooks using husky and lint-staged
+- [ ] T332 [P] [POLISH] Document code quality tools in root README.md and README-RU.md
 
-### Build & Dependency Verification
+### Build & Dependencies
 
-- [ ] T181 Verify PNPM catalog in pnpm-workspace.yaml includes all major shared dependencies with versions
-- [ ] T182 Verify all packages use workspace:* protocol for inter-package dependencies
-- [ ] T183 Test build:all script executes successfully building all packages in dependency order
-- [ ] T184 Test clean script removes all dist/ and build/ directories from all packages
-- [ ] T185 Verify TypeScript compilation completes for all packages in under 2 minutes per FR-032
-- [ ] T186 Document build commands and troubleshooting in root README.md
-- [ ] T187 Document build commands and troubleshooting in root README-RU.md (Russian translation)
+- [ ] T333 [POLISH] Verify PNPM catalog includes all major shared dependencies
+- [ ] T334 [POLISH] Verify all packages use workspace:* protocol
+- [ ] T335 [POLISH] Test build:all script
+- [ ] T336 [POLISH] Test clean script
+- [ ] T337 [P] [POLISH] Document build commands in root README.md and README-RU.md
 
-### Security & Configuration
+### Security
 
-- [ ] T188 [P] Verify .gitignore properly excludes .env, .env.local, node_modules, dist, build, *.key, *.pem
-- [ ] T189 [P] Verify no sensitive credentials are committed to repository (scan for API keys, passwords, tokens)
-- [ ] T190 [P] Verify .env.example contains all required variables with placeholder values and descriptive comments
-- [ ] T191 Document security best practices in root README.md (credential management, JWT token security, RLS policies)
-- [ ] T192 Document security best practices in root README-RU.md (Russian translation)
+- [ ] T338 [P] [POLISH] Verify .gitignore properly excludes sensitive files
+- [ ] T339 [P] [POLISH] Verify no credentials committed
+- [ ] T340 [P] [POLISH] Verify .env.example contains all required variables
+- [ ] T341 [P] [POLISH] Document security best practices in root README.md and README-RU.md
 
-### Quickstart Validation
+### Final Integration
 
-- [ ] T193 Follow quickstart.md guide step-by-step on clean environment to verify all instructions work
-- [ ] T194 Update quickstart.md with any corrections or improvements discovered during validation
-- [ ] T195 Verify quickstart.md completion time is under 30 minutes per SC-006
-- [ ] T196 Add troubleshooting section to quickstart.md for common setup issues
-- [ ] T197 Document known issues and workarounds in root README.md
+- [ ] T342 [POLISH] Start all frontend and backend services simultaneously
+- [ ] T343 [POLISH] Verify frontend can call backend APIs
+- [ ] T344 [POLISH] Verify MUI components render correctly
+- [ ] T345 [POLISH] Verify authentication flow works
+- [ ] T346 [POLISH] Verify database connections succeed
+- [ ] T347 [POLISH] Create integration test checklist
+- [ ] T348 [POLISH] Document successful verification
 
-### Final Integration Testing
+### Architecture Compliance
 
-- [ ] T198 Start both frontend (Vite dev server on 5173) and backend (Total.js on 8000) simultaneously
-- [ ] T199 Verify frontend can successfully call backend API endpoints through Vite proxy
-- [ ] T200 Verify MUI components render correctly without console errors
-- [ ] T201 Verify health check endpoints return expected responses
-- [ ] T202 Verify authentication test endpoints work with JWT token generation and validation
-- [ ] T203 Verify database connection succeeds when valid Supabase credentials provided
-- [ ] T204 Create integration test checklist documenting all verification steps
-- [ ] T205 Document successful verification in project status report
+- [ ] T349 [POLISH] Verify all feature code resides in packages/
+- [ ] T350 [POLISH] Verify no business logic at repository root
+- [ ] T351 [POLISH] Verify all packages follow naming convention
+- [ ] T352 [POLISH] Verify each package contains base/ directory
+- [ ] T353 [P] [POLISH] Document modular architecture compliance in root README.md and README-RU.md
 
-### Repository Organization
-
-- [ ] T206 Verify all feature code resides in packages/ directory per Constitution Principle I (FR-000)
-- [ ] T207 Verify no business logic, UI components, or API routes exist at repository root (excluding allowed config/docs)
-- [ ] T208 Verify all packages follow naming convention: shared-* for shared packages, feature-frt/feature-srv for feature packages
-- [ ] T209 Verify each package contains base/ directory at package root per FR-004
-- [ ] T210 Document modular architecture compliance in root README.md
-- [ ] T211 Document modular architecture compliance in root README-RU.md (Russian translation)
+**Checkpoint**: Platform complete and validated
 
 ---
 
@@ -382,329 +750,159 @@ description: "Task list for Universo Platformo Total.js initialization"
 
 ### Phase Dependencies
 
-- **Setup (Phase 1)**: No dependencies - can start immediately
-  - Initializes monorepo structure, PNPM workspace, shared packages
-  - Creates documentation foundation
-  
-- **Foundational (Phase 2)**: Depends on Setup completion - BLOCKS all user stories
-  - TypeScript configuration (US3)
-  - Database foundation (US4)
-  - Authentication infrastructure (US4)
-  - Common utilities (US3)
-  - UI foundation (US5)
-  - **⚠️ CRITICAL**: This phase MUST complete before any user story implementation
-  
-- **User Story 2 - GitHub Management (Phase 3)**: Can start after Setup
-  - Requires Phase 1 (repository structure must exist)
-  - Independent of other user stories
-  
-- **User Story 3 - TypeScript/Total.js (Phase 4)**: Can start after Foundational
-  - Requires Phase 2 TypeScript and UI foundation
-  - Creates sample packages demonstrating the stack
-  
-- **User Story 4 - Database Integration (Phase 5)**: Can start after Foundational
-  - Requires Phase 2 database and authentication foundation
-  - Can run in parallel with US3
-  
-- **User Story 5 - UI Framework (Phase 6)**: Can start after Foundational
-  - Requires Phase 2 UI foundation
-  - Can run in parallel with US3 and US4
-  
-- **Polish (Phase 7)**: Depends on all desired user stories being complete
-  - Final validation and refinement
+- **Phase 1 (Foundation)**: No dependencies - start immediately
+- **Phase 2-22 (Features)**: Each phase depends on Phase 1 completion
+- **Feature phases can proceed in parallel** once foundation is complete
 
-### User Story Dependencies
+### Feature Implementation Order (Recommended)
 
-- **User Story 1 (P1) - Repository Foundation**: No dependencies on other stories
-  - Maps to Phase 1 (Setup)
-  - Foundation for all other work
-  
-- **User Story 2 (P2) - GitHub Management**: Depends on US1 being complete
-  - Requires repository structure to exist
-  - Maps to Phase 3
-  
-- **User Story 3 (P3) - TypeScript/Total.js**: Depends on US1 being complete
-  - Foundational work in Phase 2
-  - Implementation examples in Phase 4
-  
-- **User Story 4 (P4) - Database Integration**: Depends on US1 and US3 being complete
-  - Foundational work in Phase 2
-  - Implementation and testing in Phase 5
-  
-- **User Story 5 (P5) - UI Framework**: Depends on US1 and US3 being complete
-  - Foundational work in Phase 2
-  - Implementation and testing in Phase 6
+**MVP (Minimum Viable Product):**
+1. Phase 1: Foundation Setup ✅
+2. Phase 2: Authentication ✅
+3. Phase 3: Profile ✅
+4. Phase 5: Uniks (Workspaces) ✅
+5. Phase 6: Spaces ✅
 
-### Within Each Phase
+**Core Platform Features:**
+6. Phase 7: Canvas System ✅
+7. Phase 8: LangChain Nodes ✅
+8. Phase 9: UPDL Nodes ✅
+9. Phase 10: Canvas Editor ✅
 
-- **Setup (Phase 1)**: 
-  - Root configuration files can be created in parallel (T001-T008)
-  - Package structures can be created in parallel (T009-T013)
-  - Package.json files can be created in parallel (T014-T019)
-  - Documentation can be created in parallel (T020-T031)
-  
-- **Foundational (Phase 2)**:
-  - TypeScript type definitions can be created in parallel (T032-T036)
-  - Database entities can be created in parallel (T045-T054)
-  - Auth strategies can be created in parallel (T059-T067)
-  - UI theme files can be created in parallel (T074-T081)
-  - But repositories depend on entities (T055-T057 depend on T052-T054)
-  
-- **User Story Phases**:
-  - Documentation tasks marked [P] can run in parallel
-  - Frontend and backend packages can be developed in parallel
-  - Component creation can happen in parallel
-  - But services depend on entities, endpoints depend on services
+**Advanced Features:**
+10. Phase 11: Space Builder (AI)
+11. Phase 12: Publishing System
+12. Phase 13: Templates
+13. Phase 14: Metaverses
+14. Phase 15: Clusters
 
-### Parallel Opportunities
+**Supporting Features:**
+15. Phase 4: Organizations
+16. Phase 16: Projects
+17. Phase 17: Storages
+18. Phase 18: Analytics
+19. Phase 19: Multiplayer (Optional)
+20. Phase 20: API Docs
+21. Phase 21: GitHub Management
+22. Phase 22: Polish
 
-Tasks marked with **[P]** can run in parallel with other **[P]** tasks in the same phase:
+### Parallel Execution Opportunities
 
-**Phase 1 (Setup) - High Parallelism**:
-- T004, T005, T006, T007 (config files)
-- T009-T013 (package structures)
-- T014-T019 (package.json files)
-- T020-T031 (documentation - all README files)
+**High Parallelism:**
+- All [P] tasks within a phase can run simultaneously
+- Frontend and backend packages can be developed in parallel
+- Different feature teams can work on different phases after Phase 1
 
-**Phase 2 (Foundational) - Medium Parallelism**:
-- T032-T035 (TypeScript type definitions)
-- T039, T040, T041 (database interfaces)
-- T045-T050 (SQL migrations)
-- T052-T054 (entities)
-- T059, T060, T062, T063, T066 (auth components)
-- T068-T072 (utilities)
-- T074-T080 (UI components)
-
-**Phase 3-6 (User Stories) - High Parallelism**:
-- All documentation tasks can run in parallel
-- Frontend and backend work can proceed simultaneously
-- Different developers can work on different user stories after Phase 2
-
-**Phase 7 (Polish) - High Parallelism**:
-- T170-T172, T175-T177, T188-T190 (validation tasks)
-
----
-
-## Parallel Example: Setup Phase
-
+**Example Parallel Execution:**
 ```bash
-# These tasks can all run simultaneously:
-Task T004: "Create root tsconfig.json"
-Task T005: "Create .eslintrc.js"
-Task T006: "Create .prettierrc"
-Task T007: "Create .env.example"
+# Team 1: Authentication
+Phase 2: auth-frt + auth-srv
 
-# These package structures can run simultaneously:
-Task T009: "Create packages/shared-types/base/src/ structure"
-Task T010: "Create packages/shared-common/base/src/ structure"
-Task T011: "Create packages/shared-auth/base/src/ structure"
-Task T012: "Create packages/shared-database/base/src/ structure"
-Task T013: "Create packages/shared-ui/base/src/ structure"
+# Team 2: Workspaces
+Phase 5: uniks-frt + uniks-srv
 
-# All documentation can be written in parallel:
-Task T022: "Create packages/shared-types/README.md"
-Task T024: "Create packages/shared-common/README.md"
-Task T026: "Create packages/shared-auth/README.md"
-Task T028: "Create packages/shared-database/README.md"
-Task T030: "Create packages/shared-ui/README.md"
-```
+# Team 3: Spaces
+Phase 6: spaces-frt + spaces-srv
 
----
-
-## Parallel Example: Foundational Phase
-
-```bash
-# TypeScript type definitions (different files):
-Task T032: "Create totaljs-globals.d.ts"
-Task T033: "Create totaljs-controller.d.ts"
-Task T034: "Create totaljs-schema.d.ts"
-Task T035: "Create totaljs-flow.d.ts"
-
-# Database entities (different files):
-Task T052: "Create ApplicationSetting.ts entity"
-Task T053: "Create PackageRegistry.ts entity"
-Task T054: "Create MigrationHistory.ts entity"
-
-# Authentication components (different files):
-Task T059: "Create jwt.strategy.ts"
-Task T060: "Create supabase.strategy.ts"
-Task T062: "Create auth.middleware.ts"
-Task T063: "Create rls.middleware.ts"
-```
-
----
-
-## Parallel Example: User Story Implementation
-
-```bash
-# After Phase 2 completes, these user stories can proceed in parallel:
-
-# Developer A works on User Story 3 (TypeScript/Total.js):
-Task T094-T128: "Create sample health-srv and health-frt packages"
-
-# Developer B works on User Story 4 (Database Integration):
-Task T129-T151: "Implement database migrations, repositories, auth integration"
-
-# Developer C works on User Story 5 (UI Framework):
-Task T152-T169: "Create MUI components, responsive layouts, dev workflow"
-
-# All three developers work independently and integrate at the end
+# Team 4: Node Libraries
+Phase 8: langchain-nodes
+Phase 9: updl
 ```
 
 ---
 
 ## Implementation Strategy
 
-### MVP First (Minimum Viable Product)
+### MVP First Approach
 
-The MVP for this project consists of:
+1. **Phase 1**: Foundation Setup (T001-T069)
+2. **Phase 2**: Authentication (T070-T086)  
+3. **Phase 3**: Profile (T087-T099)
+4. **Phase 5**: Uniks (T114-T132)
+5. **Phase 6**: Spaces (T133-T145)
 
-1. **Phase 1: Setup** (T001-T031)
-   - Complete repository foundation
-   - All shared packages initialized
-   - Documentation in place
-   
-2. **Phase 2: Foundational** (T032-T083)
-   - TypeScript fully configured
-   - Database connection working
-   - Authentication infrastructure ready
-   - UI foundation in place
-   
-3. **Phase 3: GitHub Management** (T084-T093)
-   - Repository well-organized
-   - Labels and guidelines in place
-   
-4. **Phase 4: Sample Implementation** (T094-T128)
-   - Working health check API (backend)
-   - Working health dashboard (frontend)
-   - Demonstrates full stack integration
+**STOP and VALIDATE**: Test MVP functionality
+- Users can register, login
+- Users can create workspaces (Uniks)
+- Users can create spaces within workspaces
+- Profile management works
 
-**STOP and VALIDATE**: Test that you can:
-- Clone the repository
-- Run `pnpm install` successfully
-- Build all packages with `pnpm build:all`
-- Start backend with health check API
-- Start frontend with health dashboard
-- View MUI components working correctly
+### Core Feature Development
 
-This constitutes a working MVP demonstrating the architecture.
+6. **Phase 7**: Canvas System (T146-T156)
+7. **Phase 8**: LangChain Nodes (T157-T179)
+8. **Phase 9**: UPDL Nodes (T180-T193)
+9. **Phase 10**: Canvas Editor (T194-T202)
 
-### Incremental Delivery
+**VALIDATE**: Test core platform
+- Visual flow editor works
+- LangChain nodes can be used
+- UPDL nodes can be used
+- Canvases can be saved and executed
 
-After MVP validation:
+### Advanced Features
 
-1. **Add Database Features** (Phase 5: T129-T151)
-   - Run migrations
-   - Test repositories
-   - Validate authentication flow
-   - VALIDATE: Database connection and auth work
-   
-2. **Enhance UI** (Phase 6: T152-T169)
-   - More MUI components
-   - Responsive design
-   - Theme switching
-   - VALIDATE: UI enhancements work across devices
-   
-3. **Polish & Finalize** (Phase 7: T170-T211)
-   - Documentation validation
-   - Code quality checks
-   - Security verification
-   - Final integration testing
-   - VALIDATE: Everything works end-to-end
+Continue with phases 11-20 as needed
 
-Each phase adds value without breaking previous phases.
+### Final Polish
 
-### Parallel Team Strategy
-
-With multiple developers, work can be distributed after Phase 2:
-
-**Foundation Team** (2-3 developers):
-- Complete Phase 1 (Setup) together: ~1-2 days
-- Complete Phase 2 (Foundational) together: ~2-3 days
-- **Checkpoint**: Foundation is solid, team splits
-
-**After Foundation Complete**:
-- **Developer A**: Phase 3 (GitHub Management) - ~1 day
-- **Developer B**: Phase 4 (TypeScript/Total.js sample) - ~2-3 days
-- **Developer C**: Phase 5 (Database Integration) - ~2-3 days
-- **Developer D**: Phase 6 (UI Framework) - ~2-3 days
-
-**Integration Point**:
-- All developers reconvene
-- Integration testing
-- Phase 7 (Polish) together: ~1-2 days
-
-**Total Timeline**:
-- Sequential: ~10-12 days
-- Parallel (4 developers): ~6-8 days
-
----
-
-## Success Metrics
-
-Upon completion of all tasks:
-
-- ✅ **SC-001**: Developer can clone repository and run `pnpm install` successfully in under 5 minutes
-- ✅ **SC-002**: All README files exist in English and Russian with 100% structural parity
-- ✅ **SC-003**: Code compilation using `pnpm build:all` succeeds with zero TypeScript errors
-- ✅ **SC-004**: Project structure shows proper -frt/-srv package separation with base/ directories
-- ✅ **SC-004a**: 100% of feature code resides in packages/ directory
-- ✅ **SC-004b**: Each package README includes extraction strategy documentation
-- ✅ **SC-005**: 100% of required GitHub labels created in repository
-- ✅ **SC-006**: New developer can complete setup using README in under 30 minutes
-- ✅ **SC-007**: Database connection test succeeds with valid Supabase credentials
-- ✅ **SC-008**: Sample MUI component renders without errors
-- ✅ **SC-009**: Workspace build commands execute successfully
-- ✅ **SC-010**: ESLint produces zero errors, Prettier check passes, TypeScript compiles
-- ✅ **SC-011**: All environment variables documented in .env.example
-- ✅ **SC-012**: TypeScript compilation completes in under 2 minutes
-- ✅ **SC-013**: Development servers start successfully and respond to health checks
-- ✅ **SC-014**: PNPM catalog defined with centralized dependency versions
-- ✅ **SC-015**: Database entity registration system functional
-- ✅ **SC-016**: Authentication middleware chain executes in correct order
-- ✅ **SC-017**: API error responses follow standardized schema
-- ✅ **SC-019**: Structured JSON logging active for HTTP requests
-- ✅ **SC-020**: Test suite runs successfully (when tests are added in future)
-
----
-
-## Notes
-
-- **[P] marker**: Indicates tasks that can run in parallel (different files, no dependencies on incomplete tasks)
-- **[Story] label**: Maps task to specific user story for traceability (US1-US5)
-- **File paths**: All tasks include exact file paths for clarity
-- **Tests**: NOT included per agent instructions (no explicit test request in specification)
-- **Bilingual docs**: English created first, Russian as exact structural copy
-- **Checkpoints**: Stop at any checkpoint to validate story independently
-- **MVP focus**: Phases 1-4 constitute working MVP
-- **Incremental**: Each phase can be validated independently
-- **Constitution compliance**: All tasks follow Constitution Principle I (code in packages/)
+Complete Phase 21-22 for production readiness
 
 ---
 
 ## Task Count Summary
 
-- **Total Tasks**: 211
-- **Phase 1 (Setup)**: 31 tasks
-- **Phase 2 (Foundational)**: 52 tasks
-- **Phase 3 (US2 - GitHub)**: 10 tasks
-- **Phase 4 (US3 - TypeScript/Total.js)**: 35 tasks
-- **Phase 5 (US4 - Database)**: 23 tasks
-- **Phase 6 (US5 - UI Framework)**: 18 tasks
-- **Phase 7 (Polish)**: 42 tasks
+- **Total Tasks**: 353
+- **Phase 1 (Foundation)**: 69 tasks
+- **Phase 2 (Auth)**: 17 tasks
+- **Phase 3 (Profile)**: 13 tasks
+- **Phase 4 (Organizations)**: 14 tasks
+- **Phase 5 (Uniks)**: 19 tasks
+- **Phase 6 (Spaces)**: 13 tasks
+- **Phase 7 (Canvas)**: 11 tasks
+- **Phase 8 (LangChain)**: 23 tasks
+- **Phase 9 (UPDL)**: 14 tasks
+- **Phase 10 (Editor)**: 9 tasks
+- **Phase 11 (Builder)**: 15 tasks
+- **Phase 12 (Publishing)**: 19 tasks
+- **Phase 13 (Templates)**: 10 tasks
+- **Phase 14 (Metaverses)**: 14 tasks
+- **Phase 15 (Clusters)**: 15 tasks
+- **Phase 16 (Projects)**: 12 tasks
+- **Phase 17 (Storages)**: 11 tasks
+- **Phase 18 (Analytics)**: 5 tasks
+- **Phase 19 (Multiplayer)**: 6 tasks
+- **Phase 20 (API Docs)**: 5 tasks
+- **Phase 21 (GitHub)**: 9 tasks
+- **Phase 22 (Polish)**: 30 tasks
 
-**Parallel Tasks**: 89 tasks marked with [P] (42% can run in parallel)
+**MVP Tasks**: 131 tasks (Phases 1-3, 5-6)
+**Core Platform**: 57 tasks (Phases 7-10)
+**Advanced Features**: 135 tasks (Phases 11-20)
+**Supporting**: 30 tasks (Phases 21-22)
 
-**User Story Distribution**:
-- US1 (Repository Foundation): 31 tasks (Phase 1)
-- US2 (GitHub Management): 10 tasks (Phase 3)
-- US3 (TypeScript/Total.js): 42 tasks (Phase 2 partial + Phase 4)
-- US4 (Database Integration): 30 tasks (Phase 2 partial + Phase 5)
-- US5 (UI Framework): 24 tasks (Phase 2 partial + Phase 6)
-- Shared/Polish: 74 tasks (Phase 2 partial + Phase 7)
+**Parallel Tasks**: ~180 tasks marked with [P] (51% can run in parallel)
 
 ---
 
-**Generated**: 2025-11-18
-**Feature Branch**: 001-setup-universo-platformo-totaljs
+## Key Improvements Over Original
+
+1. ✅ **Complete feature coverage** - All features from universo-platformo-react included
+2. ✅ **Optimal package structure** - Each feature properly split into -frt/-srv packages
+3. ✅ **No monolithic packages** - Avoided flowise-components monolith pattern
+4. ✅ **Progressive implementation** - Clear path from MVP to full platform
+5. ✅ **Proper organization** - Features grouped logically by capability
+6. ✅ **LangChain nodes** - Dedicated package for LangChain integration
+7. ✅ **UPDL nodes** - Dedicated package for 3D/AR/VR nodes
+8. ✅ **Publishing system** - Complete AR.js and PlayCanvas export
+9. ✅ **Space builder** - AI-powered prompt-to-flow generation
+10. ✅ **Templates** - Reusable application templates
+11. ✅ **All domain entities** - Uniks, Spaces, Metaverses, Clusters complete
+
+---
+
+**Generated**: 2025-11-24
+**Feature Branch**: 001-setup-universo-platformo-totaljs  
 **Status**: Ready for implementation
+**Reference**: universo-platformo-react package structure
+**Improvement**: Addresses all gaps from original tasks.md
