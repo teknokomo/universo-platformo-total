@@ -21,7 +21,7 @@ authenticated dashboard with onboarding wizard. Uses React 18, MUI v5, and Vite.
 | UI framework | React 18 |
 | Component library | Material UI (MUI) v5 |
 | Build tool | Vite 5 |
-| Auth | Supabase JS (via `auth-frt`) |
+| Auth | Backend `/api/auth/*` (via `auth-frt`) |
 
 ## Usage
 

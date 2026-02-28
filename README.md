@@ -155,10 +155,11 @@ error codes, and environment variable validation.
 
 ### @universo-platformo/start-frt ⚠ React alternative
 React 18 + MUI v5 + Vite implementation. Not Total.js Platform native.
-Requires `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` env vars.
+Uses the backend `/api/auth/*` endpoints via `auth-frt`.
 
 ### @universo-platformo/auth-frt ⚠ React alternative
-React authentication components (`AuthProvider`, `LoginForm`, `SessionGuard`).
+React authentication components (`AuthProvider`, `LoginForm`, `SessionGuard`)
+that call the backend `/api/auth/*` endpoints with httpOnly cookies.
 Not Total.js Platform native.
 
 ## Contributing

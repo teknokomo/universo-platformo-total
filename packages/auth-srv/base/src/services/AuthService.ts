@@ -6,8 +6,12 @@ const SERVICE_NAME = 'auth-srv';
 
 export class AuthService {
   private supabase: SupabaseClient;
+  private supabaseUrl: string;
+  private supabaseKey: string;
 
   constructor(supabaseUrl: string, supabaseAnonKey: string) {
+    this.supabaseUrl = supabaseUrl;
+    this.supabaseKey = supabaseAnonKey;
     this.supabase = createClient(supabaseUrl, supabaseAnonKey);
   }
 
@@ -77,13 +81,38 @@ export class AuthService {
     };
   }
 
-  async logout(_accessToken: string): Promise<void> {
+  async logout(accessToken: string): Promise<void> {
     logger.info(SERVICE_NAME, 'Logout attempt');
 
-    const { error } = await this.supabase.auth.signOut();
-
-    if (error) {
-      logger.warn(SERVICE_NAME, 'Logout error', { error: error.message });
+    // Revoke the session via Supabase /auth/v1/logout using the caller's JWT.
+    // supabase.auth.signOut() only clears the *local client* session, which
+    // is meaningless on a stateless server. We call the Supabase endpoint
+    // directly with the bearer token so the JWT is actually invalidated.
+    if (accessToken) {
+      try {
+        const res = await fetch(`${this.supabaseUrl}/auth/v1/logout`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'apikey': this.supabaseKey,
+          },
+        });
+        if (!res.ok) {
+          logger.warn(SERVICE_NAME, 'Logout revocation returned non-OK status', {
+            status: res.status,
+          });
+        }
+      } catch (err) {
+        logger.warn(SERVICE_NAME, 'Logout revocation failed (best-effort)', {
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+    } else {
+      // Fallback: call signOut() on the client (clears local state only)
+      const { error } = await this.supabase.auth.signOut();
+      if (error) {
+        logger.warn(SERVICE_NAME, 'Logout error', { error: error.message });
+      }
     }
 
     logger.info(SERVICE_NAME, 'Logout successful');

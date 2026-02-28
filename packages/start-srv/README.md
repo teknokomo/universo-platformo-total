@@ -15,7 +15,7 @@ It uses **only** technologies from the Total.js Platform ecosystem — no React,
 | **Frontend UI** | [jComponent](https://www.totaljs.com/jcomponent/) (loaded from CDN, 300+ web components) |
 | **SPA Routing** | jComponent `NAV` / `ROUTE` (client-side navigation without page reloads) |
 | **State Management** | jComponent `SET` / `GET` / `UPD` / `WATCH` (path-based data binding) |
-| **Authentication** | [Supabase JS](https://supabase.com/) (loaded from CDN, anon key only in browser) |
+| **Authentication** | [Supabase](https://supabase.com/) (server-side only via `@supabase/supabase-js`, httpOnly cookies) |
 | **Styles** | Plain CSS with custom properties (no preprocessor needed) |
 
 > **Why no React/Vite/MUI?**  
@@ -29,9 +29,9 @@ It uses **only** technologies from the Total.js Platform ecosystem — no React,
 
 - **Guest start page** — hero section, features grid, testimonials, login/register form
 - **Authenticated start page** — navigation bar, onboarding wizard (step-by-step), dashboard with quick actions
-- **Supabase authentication** — sign-in, sign-up, sign-out, session restore on page reload
+- **Supabase authentication** — sign-in, sign-up, sign-out, session restore on page reload (all via server-side `/api/auth/*` routes)
 - **jComponent patterns** — `SET`/`GET` state, `ROUTE` SPA navigation, `ON('ready')` boot hook
-- **Server-side config injection** — Total.js templates inject the Supabase public anon key at serve time
+- **httpOnly cookie sessions** — Supabase credentials never leave the server; the browser receives only httpOnly cookies
 
 ---
 
@@ -65,8 +65,9 @@ SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
 ```
 
-The `SUPABASE_ANON_KEY` is intentionally exposed to the browser — it is the **public** anonymous key.
-Supabase Row Level Security (RLS) policies enforce data access permissions.
+The `SUPABASE_ANON_KEY` is used **only on the server** — it is never sent to the browser.
+All authentication goes through the backend `/api/auth/*` routes, and the browser receives
+only httpOnly session cookies.
 
 ---
 
@@ -97,7 +98,7 @@ packages/start-srv/
 │   │   └── default.js      ← Total.js routes (serve SPA for all GET requests)
 │   ├── public/
 │   │   ├── css/app.css     ← Application styles (plain CSS, no preprocessor)
-│   │   └── js/app.js       ← Client-side logic (jComponent + Supabase CDN)
+│   │   └── js/app.js       ← Client-side logic (jComponent, calls /api/auth/* routes)
 │   ├── views/
 │   │   └── index.html      ← SPA shell (Total.js template, jComponent components)
 │   └── index.js            ← Total.js v5 entry point
@@ -114,7 +115,8 @@ packages/start-srv/
 ┌─────────────────────────────────────────────────────────┐
 │ Total.js server (Node.js)                               │
 │  • Reads SUPABASE_URL and SUPABASE_ANON_KEY from env    │
-│  • Injects them into views/index.html via @{model.xxx}  │
+│  • Handles /api/auth/* routes (login, register, etc.)   │
+│  • Issues httpOnly session cookies to the browser        │
 │  • Serves index.html for ALL GET routes (SPA pattern)   │
 │  • Serves static files from public/ (/css/, /js/)       │
 └────────────────────────┬────────────────────────────────┘
@@ -124,11 +126,11 @@ packages/start-srv/
 │ Browser                                                 │
 │  jComponent (CDN) loads and fires ON('ready')           │
 │  → UP.init() runs                                       │
-│     → Supabase.auth.getSession() checks for active auth │
+│     → GET /api/auth/session checks for active session   │
 │     → Shows #page-guest (anonymous) or #page-auth       │
 │  jComponent SET/GET manages all UI state                │
 │  jComponent ROUTE handles back/forward navigation       │
-│  Supabase onAuthStateChange keeps UI in sync            │
+│  All auth operations go through /api/auth/* (backend)   │
 └─────────────────────────────────────────────────────────┘
 ```
 

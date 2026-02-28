@@ -2,10 +2,10 @@
   "name": "@universo-platformo/utils",
   "version": "0.1.0",
   "description": "Shared utilities for Universo Platformo",
-  "main": "base/src/index.ts",
+  "main": "base/dist/index.js",
   "types": "base/src/index.ts",
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit",
     "lint": "eslint base/src --ext .ts"
   },

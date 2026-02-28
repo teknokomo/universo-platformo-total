@@ -155,10 +155,11 @@ TypeScript модуль аутентификации для Total.js. Предо
 
 ### @universo-platformo/start-frt ⚠ Альтернатива на React
 Реализация на React 18 + MUI v5 + Vite. Не является нативным Total.js Platform.
-Требует переменных окружения `VITE_SUPABASE_URL` и `VITE_SUPABASE_ANON_KEY`.
+Использует бэкенд-эндпоинты `/api/auth/*` через `auth-frt`.
 
 ### @universo-platformo/auth-frt ⚠ Альтернатива на React
-React компоненты аутентификации (`AuthProvider`, `LoginForm`, `SessionGuard`).
+React компоненты аутентификации (`AuthProvider`, `LoginForm`, `SessionGuard`),
+вызывающие бэкенд-эндпоинты `/api/auth/*` с httpOnly cookies.
 Не является нативным Total.js Platform.
 
 ## Участие в разработке

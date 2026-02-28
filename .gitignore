@@ -35,6 +35,7 @@
 ## totaljs
 **/*.pid
 **/*.js.map
+**/index.js.json
 
 ## env
 .env.local

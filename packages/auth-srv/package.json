@@ -2,9 +2,9 @@
   "name": "@universo-platformo/auth-srv",
   "version": "0.1.0",
   "description": "Authentication backend service for Universo Platformo",
-  "main": "base/src/index.js",
+  "main": "base/dist/index.js",
   "scripts": {
-    "dev": "node base/src/index.js",
+    "dev": "pnpm run build && node base/dist/index.js",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit",
     "lint": "eslint base/src --ext .ts"

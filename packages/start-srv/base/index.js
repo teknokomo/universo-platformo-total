@@ -5,8 +5,9 @@
 // This package is the Total.js Platform native implementation
 // of the start experience. It serves HTML views using the
 // jComponent UI library (Total.js's own frontend library)
-// and handles authentication via the Supabase client loaded
-// from CDN — with NO React, NO Vite, NO MUI.
+// and handles authentication via Supabase on the server side
+// (@supabase/supabase-js) with httpOnly session cookies —
+// with NO React, NO Vite, NO MUI.
 //
 // Technology stack (100% Total.js Platform):
 //   Backend : Total.js v5 (Node.js)

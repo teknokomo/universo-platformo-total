@@ -3,8 +3,8 @@
 > ⚠️ **React-based alternative — not Total.js Platform native.**  
 > This package implements auth UI using **React + MUI + Vite**, which are outside
 > the Total.js Platform ecosystem. In the **Total.js Platform native** implementation
-> (`start-srv`), authentication is handled by Supabase JS loaded directly from CDN
-> inside Total.js HTML views — no React needed.
+> (`start-srv`), authentication is handled entirely on the server via `/api/auth/*`
+> routes with httpOnly cookies — no React needed.
 
 Part of the [Universo Platformo Total.js](../../README.md) monorepo.
 
@@ -13,7 +13,8 @@ Part of the [Universo Platformo Total.js](../../README.md) monorepo.
 ## Description
 
 React-based frontend authentication package. Provides `AuthProvider` context, `LoginForm` component,
-`SessionGuard`, and auth hooks powered by Supabase JS.
+`SessionGuard`, and auth hooks. All auth operations go through the backend `/api/auth/*` endpoints;
+sessions are managed via httpOnly cookies set by the server.
 
 **Technology stack:**
 
@@ -21,7 +22,7 @@ React-based frontend authentication package. Provides `AuthProvider` context, `L
 |-------|-----------|
 | UI framework | React 18 |
 | Component library | Material UI (MUI) v5 |
-| Auth | Supabase JS |
+| Auth | Backend `/api/auth/*` (httpOnly cookies) |
 
 ## Usage
 

@@ -76,12 +76,19 @@ if (e) { e.classList.add('hidden'); }
 }
 
 function showPage(pageId) {
-// Remove 'visible' from all pages
+// Remove 'visible' and add 'hidden' to all pages
 var pages = document.querySelectorAll('.page');
-pages.forEach(function (p) { p.classList.remove('visible'); });
+pages.forEach(function (p) {
+p.classList.remove('visible');
+p.classList.add('hidden');
+});
 
+// Show the target page: remove 'hidden', add 'visible'
 var page = el(pageId);
-if (page) { page.classList.add('visible'); }
+if (page) {
+page.classList.remove('hidden');
+page.classList.add('visible');
+}
 }
 
 function showError(id, msg) {
