@@ -11,7 +11,7 @@
 // Technology stack (100% Total.js Platform):
 //   Backend : Total.js v5 (Node.js)
 //   Frontend: jComponent (cdn.componentator.com)
-//   Auth    : Supabase JS (CDN, anon key only)
+//   Auth    : Supabase (server-side only via @supabase/supabase-js, httpOnly cookies)
 //   Styling : Plain CSS (public/css/app.css)
 // ===================================================
 

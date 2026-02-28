@@ -68,7 +68,7 @@ export function AuthenticatedStartPage() {
     ? userEmail.split('@')[0]
     : null;
   const displayName: string =
-    (user?.user_metadata?.display_name as string | undefined) ??
+    user?.display_name ??
     emailUsername ??
     'User';
   const avatarInitial = displayName.charAt(0).toUpperCase();

@@ -59,14 +59,15 @@ declare global {
     query: Record<string, string>;
     params: Record<string, string>;
     headers: Record<string, string>;
+    response: { status: number; headers: Record<string, unknown> };
     ip: string;
     url: string;
     method: string;
     json(data: unknown): void;
-    status(code: number): this;
     invalid(error: string): void;
     success(value?: unknown): void;
     redirect(url: string, permanent?: boolean): void;
+    cookie(name: string, value?: string, expires?: string | Date, options?: unknown): string;
   }
 
   interface TotaljsAction {

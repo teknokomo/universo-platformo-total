@@ -1,12 +1,17 @@
 // Total.js v5 auth controller
-// This file defines routes and actions for authentication
+// This file defines routes and actions for authentication.
+//
+// Note: In Total.js v5, HTTP status codes are set via:
+//   this.response.status = code;
+//   this.json(data);
+// The chainable this.status(code).json() pattern does NOT exist in Total.js v5.
 
 import { AuthService } from '../services/AuthService';
 
 const SERVICE_NAME = 'auth-controller';
-const supabaseUrl = process.env.SUPABASE_URL ?? '';
+const supabaseUrl     = process.env.SUPABASE_URL     ?? '';
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY ?? '';
-const authService = new AuthService(supabaseUrl, supabaseAnonKey);
+const authService     = new AuthService(supabaseUrl, supabaseAnonKey);
 
 function logError(context: string, error: unknown): void {
   const message = error instanceof Error ? error.message : String(error);
@@ -21,13 +26,14 @@ export function registerRoutes() {
 
     try {
       const session = await authService.login({
-        email: body.email,
+        email:    body.email,
         password: body.password,
       });
       this.json({ success: true, data: session });
     } catch (error) {
       logError('login', error);
-      this.status(401).json({
+      this.response.status = 401;
+      this.json({
         success: false,
         error: { code: 'AUTH_INVALID_CREDENTIALS', message: 'Invalid email or password' },
       });
@@ -40,15 +46,16 @@ export function registerRoutes() {
 
     try {
       const session = await authService.register({
-        email: body.email,
-        password: body.password,
+        email:        body.email,
+        password:     body.password,
         display_name: body.display_name,
       });
       this.json({ success: true, data: session });
     } catch (error) {
       logError('register', error);
       const errorCode = error instanceof Error ? error.message : 'REGISTRATION_FAILED';
-      this.status(400).json({
+      this.response.status = 400;
+      this.json({
         success: false,
         error: { code: errorCode, message: 'Registration failed' },
       });
@@ -58,7 +65,7 @@ export function registerRoutes() {
   // POST /auth/logout
   ROUTE('POST /auth/logout', async function (this: TotaljsController) {
     const authHeader = this.headers['authorization'];
-    const token = authHeader?.replace('Bearer ', '') ?? '';
+    const token      = authHeader?.replace('Bearer ', '') ?? '';
 
     try {
       await authService.logout(token);
@@ -71,10 +78,11 @@ export function registerRoutes() {
   // GET /auth/session
   ROUTE('GET /auth/session', async function (this: TotaljsController) {
     const authHeader = this.headers['authorization'];
-    const token = authHeader?.replace('Bearer ', '') ?? '';
+    const token      = authHeader?.replace('Bearer ', '') ?? '';
 
     if (!token) {
-      this.status(401).json({
+      this.response.status = 401;
+      this.json({
         success: false,
         error: { code: 'AUTH_UNAUTHORIZED', message: 'No token provided' },
       });
@@ -84,7 +92,8 @@ export function registerRoutes() {
     const session = await authService.getSession(token);
 
     if (!session) {
-      this.status(401).json({
+      this.response.status = 401;
+      this.json({
         success: false,
         error: { code: 'AUTH_TOKEN_INVALID', message: 'Invalid token' },
       });
@@ -103,7 +112,8 @@ export function registerRoutes() {
       this.json({ success: true, data: session });
     } catch (error) {
       logError('refresh', error);
-      this.status(401).json({
+      this.response.status = 401;
+      this.json({
         success: false,
         error: { code: 'AUTH_TOKEN_EXPIRED', message: 'Refresh token expired' },
       });

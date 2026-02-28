@@ -11,8 +11,16 @@
 
 'use strict';
 
+// ── Validation helpers ────────────────────────────────────────────────────────
+
+var EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function isValidEmail(email) {
+return typeof email === 'string' && EMAIL_REGEX.test(email);
+}
+
 // ── Server-side Supabase client ───────────────────────────────────────────────
-// Initialized once. Credentials come from environment variables only.
+// Initialized once on first use. Credentials come from environment variables only.
 // They are NEVER sent to the browser.
 
 var _supabaseModule = null;
@@ -69,8 +77,7 @@ $.cookie(COOKIE_REFRESH, '', PAST_DATE, cookieOpts('/api/auth'));
 
 // ── User mapper ───────────────────────────────────────────────────────────────
 // Returns only the non-sensitive user fields the frontend needs.
-// Note: display_name is flattened from user_metadata so the frontend
-// can access it directly as user.display_name without knowing Supabase internals.
+// display_name is flattened from user_metadata for clean API surface.
 
 function mapUser(user) {
 return {
@@ -105,6 +112,11 @@ jsonResponse($, 400, { success: false, error: { code: 'INVALID_INPUT', message: 
 return;
 }
 
+if (!isValidEmail(email)) {
+jsonResponse($, 400, { success: false, error: { code: 'INVALID_EMAIL', message: 'Invalid email address' } });
+return;
+}
+
 var result = await sb.auth.signInWithPassword({ email: email, password: password });
 
 if (result.error || !result.data || !result.data.session) {
@@ -134,8 +146,18 @@ jsonResponse($, 400, { success: false, error: { code: 'INVALID_INPUT', message: 
 return;
 }
 
+if (!isValidEmail(email)) {
+jsonResponse($, 400, { success: false, error: { code: 'INVALID_EMAIL', message: 'Invalid email address' } });
+return;
+}
+
 if (password.length < 8) {
 jsonResponse($, 400, { success: false, error: { code: 'INVALID_PASSWORD', message: 'Password must be at least 8 characters' } });
+return;
+}
+
+if (displayName.length > 100) {
+jsonResponse($, 400, { success: false, error: { code: 'INVALID_INPUT', message: 'Display name must be 100 characters or fewer' } });
 return;
 }
 
@@ -144,13 +166,11 @@ var result = await sb.auth.signUp({ email: email, password: password, options: s
 
 if (result.error || !result.data || !result.data.user) {
 var code = 'REGISTRATION_FAILED';
-var msg  = 'Registration failed';
+var msg  = 'Registration failed. Please try again.';
 if (result.error && result.error.message) {
 if (result.error.message.toLowerCase().includes('already registered')) {
 code = 'AUTH_EMAIL_TAKEN';
 msg  = 'Email already in use';
-} else {
-msg = result.error.message;
 }
 }
 jsonResponse($, 400, { success: false, error: { code: code, message: msg } });
@@ -168,7 +188,26 @@ $.json({ success: true, data: { user: mapUser(result.data.user), requires_confir
 });
 
 // ── Auth API — POST /api/auth/logout ──────────────────────────────────────────
-ROUTE('POST /api/auth/logout', function ($) {
+// Clears session cookies and best-effort revokes the token on Supabase side.
+ROUTE('POST /api/auth/logout', async function ($) {
+var token = $.cookie(COOKIE_ACCESS);
+
+// Best-effort: revoke the session on Supabase so the JWT stops working
+// even before its natural 1-hour expiry.
+// Intentionally fire-and-forget (not awaited): the cookie is cleared and the
+// response is sent immediately; the revocation call runs in the background.
+// This keeps logout fast for the user. Errors are intentionally swallowed.
+if (token && process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
+var supabaseLogoutUrl = process.env.SUPABASE_URL.replace(/\/$/, '') + '/auth/v1/logout';
+fetch(supabaseLogoutUrl, {
+method: 'POST',
+headers: {
+'Authorization': 'Bearer ' + token,
+'apikey':         process.env.SUPABASE_ANON_KEY
+}
+}).catch(function () { /* ignore network errors on logout */ });
+}
+
 clearAuthCookies($);
 $.json({ success: true });
 });
