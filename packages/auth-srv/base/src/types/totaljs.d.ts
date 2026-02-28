@@ -20,6 +20,10 @@ declare global {
   const DATA: TotaljsDBMS;
   const NOW: Date;
 
+  const Total: {
+    run(options?: { port?: number; release?: boolean; [key: string]: unknown }): void;
+  };
+
   interface TotaljsActionConfig {
     name?: string;
     input?: string;

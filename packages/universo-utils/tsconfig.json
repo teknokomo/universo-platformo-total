@@ -3,6 +3,8 @@
   "compilerOptions": {
     "outDir": "base/dist",
     "rootDir": "base/src",
+    "module": "CommonJS",
+    "moduleResolution": "node",
     "noEmit": false,
     "types": ["node"]
   },

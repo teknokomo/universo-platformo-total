@@ -66,6 +66,17 @@ timestamp:  new Date().toISOString()
 };
 }
 
+// Normalize error shape: backend may only send { code, message } without
+// statusCode / timestamp. Ensure the fields expected by ApiError are present.
+if (!data.success && data.error) {
+if (data.error.statusCode == null) {
+data.error.statusCode = res.status;
+}
+if (!data.error.timestamp) {
+data.error.timestamp = new Date().toISOString();
+}
+}
+
 return data;
 }
 
