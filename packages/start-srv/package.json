@@ -1,0 +1,27 @@
+{
+	"name": "@universo-platformo/start-srv",
+	"version": "0.1.0",
+	"description": "Universo Platformo start experience — Total.js v5 server with jComponent-based frontend (guest start page, authenticated start page, Supabase auth). 100% Total.js Platform stack, no React/Vite/MUI.",
+	"main": "base/index.js",
+	"scripts": {
+		"dev":   "node base/index.js",
+		"start": "node base/index.js --release",
+		"lint":  "node --check base/index.js base/controllers/default.js base/public/js/app.js"
+	},
+	"keywords": [
+		"universo-platformo",
+		"totaljs",
+		"jcomponent",
+		"start-page",
+		"supabase"
+	],
+	"author": "Vladimir Levadnij and Teknokomo",
+	"license": "Omsk Open License",
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"dependencies": {
+		"total5": "^0.0.15",
+		"@supabase/supabase-js": "^2.38.0"
+	}
+}

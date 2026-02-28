@@ -1,0 +1,26 @@
+{
+  "name": "@universo-platformo/auth-srv",
+  "version": "0.1.0",
+  "description": "Authentication backend service for Universo Platformo",
+  "main": "base/dist/index.js",
+  "scripts": {
+    "dev": "pnpm run build && node base/dist/index.js",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint base/src --ext .ts"
+  },
+  "dependencies": {
+    "@universo-platformo/types": "workspace:*",
+    "@universo-platformo/utils": "workspace:*",
+    "@supabase/supabase-js": "^2.38.0",
+    "total5": "^0.0.15",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/node": "^20.10.0",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/bcryptjs": "^2.4.6"
+  }
+}

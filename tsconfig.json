@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@universo-types/*": ["packages/universo-types/base/src/*"],
+      "@universo-utils/*": ["packages/universo-utils/base/src/*"],
+      "@auth-frt/*": ["packages/auth-frt/base/src/*"],
+      "@auth-srv/*": ["packages/auth-srv/base/src/*"],
+      "@start-frt/*": ["packages/start-frt/base/src/*"]
+    }
+  },
+  "exclude": ["node_modules", "**/dist", "**/build", "**/coverage"]
+}

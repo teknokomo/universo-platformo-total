@@ -1,0 +1,463 @@
+@{layout(false)}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Universo Platformo</title>
+
+	<!-- ── Total.js Platform UI (jComponent) from CDN ────────────────────── -->
+	<!-- jComponent v20 includes: UI components, SPA routing (NAV/ROUTE),    -->
+	<!-- data binding (SET/GET/UPD/WATCH), Tangular templating, and helpers.  -->
+	<link rel="stylesheet" href="https://cdn.componentator.com/spa.min@20.css" />
+	<script src="https://cdn.componentator.com/spa.min@20.js"></script>
+
+	<!-- ── Application styles ────────────────────────────────────────────── -->
+	<link rel="stylesheet" href="/css/app.css" />
+
+	<!-- ── NOTE: No Supabase JS loaded in the browser ───────────────────── -->
+	<!-- All Supabase credentials and API calls are handled by the server.   -->
+	<!-- The frontend communicates with Supabase ONLY via /api/auth/* routes. -->
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!--  jComponent built-in utility components                                -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- Loading indicator (shown by SETTER('loading/show')) -->
+<ui-component name="loading" config="style:2" class="hidden"></ui-component>
+
+<!-- Notify toasts (SETTER('notify/success', '...')) -->
+<ui-component name="LAZY notify" config="position:bottom right"></ui-component>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!--  Application shell                                                     -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div id="app">
+
+	<!-- ── Loading screen (shown while checking auth state) ──────────────── -->
+	<div id="loading-screen" class="loading-screen">
+		<div class="loading-spinner"></div>
+		<p class="loading-text">Universo Platformo</p>
+	</div>
+
+	<!-- ── Guest start page (unauthenticated users) ──────────────────────── -->
+	<div id="page-guest" class="page hidden">
+
+		<!-- Hero section -->
+		<section class="hero">
+			<div class="hero-inner">
+				<h1 class="hero-title">Universo Platformo</h1>
+				<p class="hero-subtitle">
+					Build immersive AR/VR/AI experiences with the power of
+					Universal Platform Description Language (UPDL)
+				</p>
+				<div class="hero-actions">
+					<button class="btn btn-primary btn-lg" onclick="UP.showAuthSection()">
+						Get Started — it's free
+					</button>
+					<button class="btn btn-outline btn-lg" onclick="UP.scrollToFeatures()">
+						Learn more ↓
+					</button>
+				</div>
+			</div>
+		</section>
+
+		<!-- Features section -->
+		<section id="features-section" class="features-section">
+			<div class="container">
+				<h2 class="section-title">Everything You Need to Build</h2>
+				<p class="section-subtitle">
+					From AR/VR scenes to AI workflows, Universo Platformo has
+					the tools to bring your vision to life
+				</p>
+				<div class="features-grid">
+					<div class="feature-card">
+						<div class="feature-icon">🎨</div>
+						<h3>Visual Node Editor</h3>
+						<p>Drag-and-drop canvas editor with real-time preview</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">🥽</div>
+						<h3>UPDL Scene Nodes</h3>
+						<p>Universal nodes for 3D/AR/VR scene description</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">🤖</div>
+						<h3>AI Integration</h3>
+						<p>AI-powered nodes for building intelligent workflows</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">🌐</div>
+						<h3>Multiplayer Support</h3>
+						<p>Real-time collaboration with WebSocket technology</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">🗂️</div>
+						<h3>Workspace Management</h3>
+						<p>Organize projects with Uniks, Spaces, and Canvases</p>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">🚀</div>
+						<h3>One-Click Publishing</h3>
+						<p>Export to AR.js or PlayCanvas with shareable URLs</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Testimonials section -->
+		<section class="testimonials-section">
+			<div class="container">
+				<h2 class="section-title">Trusted by Builders</h2>
+				<div class="testimonials-grid">
+					<div class="testimonial-card">
+						<p class="testimonial-text">
+							"Universo Platformo lets me build AR experiences in minutes,
+							not days. The node-based editor is incredibly intuitive."
+						</p>
+						<div class="testimonial-author">
+							<span class="author-avatar">AK</span>
+							<div>
+								<strong>Alex K.</strong>
+								<small>AR Developer</small>
+							</div>
+						</div>
+					</div>
+					<div class="testimonial-card">
+						<p class="testimonial-text">
+							"Finally a platform that unifies AR, VR, and AI workflows
+							in one place. The UPDL concept is brilliant."
+						</p>
+						<div class="testimonial-author">
+							<span class="author-avatar">MS</span>
+							<div>
+								<strong>Maria S.</strong>
+								<small>XR Researcher</small>
+							</div>
+						</div>
+					</div>
+					<div class="testimonial-card">
+						<p class="testimonial-text">
+							"The LangChain integration saved us weeks of development.
+							Our AI-driven metaverse is live in production."
+						</p>
+						<div class="testimonial-author">
+							<span class="author-avatar">DL</span>
+							<div>
+								<strong>Dmitri L.</strong>
+								<small>Startup Founder</small>
+							</div>
+						</div>
+					</div>
+					<div class="testimonial-card">
+						<p class="testimonial-text">
+							"Total.js backend + Universo Platformo UI = perfect combo.
+							Full-stack without the usual headaches."
+						</p>
+						<div class="testimonial-author">
+							<span class="author-avatar">VN</span>
+							<div>
+								<strong>Valeria N.</strong>
+								<small>Full-stack Engineer</small>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Authentication section (shown on "Get Started" click) -->
+		<section id="auth-section" class="auth-section hidden">
+			<div class="container">
+				<div class="auth-card">
+					<h2 class="auth-title" id="auth-title">Welcome to Universo Platformo</h2>
+					<p class="auth-subtitle" id="auth-subtitle">
+						Create a free account to start building
+					</p>
+
+					<!-- Tab switcher -->
+					<div class="auth-tabs">
+						<button id="tab-login" class="auth-tab active" onclick="UP.switchTab('login')">
+							Sign In
+						</button>
+						<button id="tab-register" class="auth-tab" onclick="UP.switchTab('register')">
+							Register
+						</button>
+					</div>
+
+					<!-- Login form -->
+					<form id="login-form" class="auth-form" onsubmit="UP.handleLogin(event)">
+						<div class="form-group">
+							<label for="login-email">Email</label>
+							<input
+								id="login-email"
+								type="email"
+								class="form-input"
+								placeholder="you@example.com"
+								required
+								autocomplete="email"
+							/>
+						</div>
+						<div class="form-group">
+							<label for="login-password">Password</label>
+							<input
+								id="login-password"
+								type="password"
+								class="form-input"
+								placeholder="Your password"
+								required
+								autocomplete="current-password"
+							/>
+						</div>
+						<div id="login-error" class="form-error hidden"></div>
+						<button type="submit" id="login-btn" class="btn btn-primary btn-block">
+							Sign In
+						</button>
+					</form>
+
+					<!-- Register form (hidden by default) -->
+					<form id="register-form" class="auth-form hidden" onsubmit="UP.handleRegister(event)">
+						<div class="form-group">
+							<label for="reg-name">Display Name (optional)</label>
+							<input
+								id="reg-name"
+								type="text"
+								class="form-input"
+								placeholder="Your name"
+								autocomplete="name"
+							/>
+						</div>
+						<div class="form-group">
+							<label for="reg-email">Email</label>
+							<input
+								id="reg-email"
+								type="email"
+								class="form-input"
+								placeholder="you@example.com"
+								required
+								autocomplete="email"
+							/>
+						</div>
+						<div class="form-group">
+							<label for="reg-password">Password</label>
+							<input
+								id="reg-password"
+								type="password"
+								class="form-input"
+								placeholder="Minimum 8 characters"
+								required
+								minlength="8"
+								autocomplete="new-password"
+							/>
+						</div>
+						<div id="reg-error" class="form-error hidden"></div>
+						<div id="reg-success" class="form-success hidden"></div>
+						<button type="submit" id="reg-btn" class="btn btn-primary btn-block">
+							Create Account
+						</button>
+					</form>
+
+					<!-- Back to hero link -->
+					<p class="auth-back">
+						<a href="#" onclick="UP.hideAuthSection(); return false;">← Back</a>
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Footer -->
+		<footer class="footer">
+			<div class="container">
+				<div class="footer-inner">
+					<span class="footer-brand">Universo Platformo</span>
+					<nav class="footer-nav">
+						<a href="#">About</a>
+						<a href="#">Documentation</a>
+						<a href="#">GitHub</a>
+						<a href="#">Contact</a>
+					</nav>
+					<small class="footer-copy">
+						Built with Total.js Platform v5 + jComponent
+					</small>
+				</div>
+			</div>
+		</footer>
+	</div><!-- /#page-guest -->
+
+	<!-- ── Authenticated start page (logged-in users) ────────────────────── -->
+	<div id="page-auth" class="page hidden">
+
+		<!-- App bar -->
+		<nav class="appbar">
+			<div class="appbar-inner container">
+				<a class="appbar-brand" href="#">Universo Platformo</a>
+				<div class="appbar-user">
+					<span id="appbar-email" class="appbar-email"></span>
+					<button class="btn btn-outline btn-sm" onclick="UP.handleLogout()">
+						Sign Out
+					</button>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Onboarding wizard (shown on first login) -->
+		<div id="onboarding-section" class="container onboarding">
+			<div class="onboarding-card">
+				<div class="onboarding-header">
+					<h2>Welcome to Universo Platformo! 🎉</h2>
+					<p>Let's get you set up. This only takes a minute.</p>
+				</div>
+
+				<!-- Step indicators -->
+				<div class="steps">
+					<div class="step active" id="step-indicator-1">
+						<div class="step-dot">1</div>
+						<span>Interests</span>
+					</div>
+					<div class="step-line"></div>
+					<div class="step" id="step-indicator-2">
+						<div class="step-dot">2</div>
+						<span>Use Case</span>
+					</div>
+					<div class="step-line"></div>
+					<div class="step" id="step-indicator-3">
+						<div class="step-dot">3</div>
+						<span>Done</span>
+					</div>
+				</div>
+
+				<!-- Step 1: Project interests -->
+				<div id="onboarding-step-1" class="onboarding-step">
+					<h3>What are you interested in?</h3>
+					<div class="option-grid">
+						<label class="option-card">
+							<input type="checkbox" name="interest" value="ar" />
+							<span class="option-icon">🥽</span>
+							<span>Augmented Reality</span>
+						</label>
+						<label class="option-card">
+							<input type="checkbox" name="interest" value="vr" />
+							<span class="option-icon">🎮</span>
+							<span>Virtual Reality</span>
+						</label>
+						<label class="option-card">
+							<input type="checkbox" name="interest" value="ai" />
+							<span class="option-icon">🤖</span>
+							<span>AI Workflows</span>
+						</label>
+						<label class="option-card">
+							<input type="checkbox" name="interest" value="collab" />
+							<span class="option-icon">🌐</span>
+							<span>Collaboration</span>
+						</label>
+					</div>
+					<button class="btn btn-primary" onclick="UP.onboardingNext(2)">
+						Continue →
+					</button>
+				</div>
+
+				<!-- Step 2: Use case -->
+				<div id="onboarding-step-2" class="onboarding-step hidden">
+					<h3>What best describes your use case?</h3>
+					<div class="option-grid">
+						<label class="option-card">
+							<input type="radio" name="usecase" value="education" />
+							<span class="option-icon">🎓</span>
+							<span>Education</span>
+						</label>
+						<label class="option-card">
+							<input type="radio" name="usecase" value="entertainment" />
+							<span class="option-icon">🎬</span>
+							<span>Entertainment</span>
+						</label>
+						<label class="option-card">
+							<input type="radio" name="usecase" value="enterprise" />
+							<span class="option-icon">🏢</span>
+							<span>Enterprise</span>
+						</label>
+						<label class="option-card">
+							<input type="radio" name="usecase" value="research" />
+							<span class="option-icon">🔬</span>
+							<span>Research</span>
+						</label>
+					</div>
+					<div class="step-nav">
+						<button class="btn btn-outline" onclick="UP.onboardingNext(1)">← Back</button>
+						<button class="btn btn-primary" onclick="UP.onboardingComplete()">
+							Finish Setup ✓
+						</button>
+					</div>
+				</div>
+
+				<!-- Step 3: Completion -->
+				<div id="onboarding-step-3" class="onboarding-step hidden">
+					<div class="completion">
+						<div class="completion-icon">✅</div>
+						<h3>You're all set!</h3>
+						<p>Your Universo Platformo workspace is ready.</p>
+						<button class="btn btn-primary btn-lg" onclick="UP.showDashboard()">
+							Go to Dashboard →
+						</button>
+					</div>
+				</div>
+			</div>
+		</div><!-- /#onboarding-section -->
+
+		<!-- Dashboard (shown after onboarding) -->
+		<div id="dashboard-section" class="container dashboard hidden">
+
+			<div class="dashboard-header">
+				<div>
+					<h2>Welcome back, <span id="dashboard-name">User</span>! 👋</h2>
+					<p class="text-muted">Continue building your immersive experiences</p>
+				</div>
+			</div>
+
+			<!-- Quick actions -->
+			<h3 class="section-label">Quick Actions</h3>
+			<div class="quick-actions">
+				<div class="action-card" style="--card-color:#e8eaf6">
+					<span class="action-icon">🗂️</span>
+					<strong>New Workspace</strong>
+					<small>Create a new Unik workspace</small>
+				</div>
+				<div class="action-card" style="--card-color:#e8f5e9">
+					<span class="action-icon">🎨</span>
+					<strong>New Canvas</strong>
+					<small>Start a blank visual canvas</small>
+				</div>
+				<div class="action-card" style="--card-color:#fff3e0">
+					<span class="action-icon">🥽</span>
+					<strong>AR Scene</strong>
+					<small>Build an AR experience</small>
+				</div>
+				<div class="action-card" style="--card-color:#fce4ec">
+					<span class="action-icon">🤖</span>
+					<strong>AI Workflow</strong>
+					<small>Create LangChain workflow</small>
+				</div>
+			</div>
+
+			<!-- Workspaces empty state -->
+			<h3 class="section-label">Your Workspaces</h3>
+			<div class="empty-state">
+				<div class="empty-icon">🗂️</div>
+				<h4>No workspaces yet</h4>
+				<p>Create your first workspace (Unik) to organize your projects and canvases</p>
+				<button class="btn btn-primary">+ Create Workspace</button>
+			</div>
+
+		</div><!-- /#dashboard-section -->
+
+	</div><!-- /#page-auth -->
+
+</div><!-- /#app -->
+
+<!-- ── Application logic ─────────────────────────────────────────────────── -->
+<script src="/js/app.js"></script>
+
+</body>
+</html>

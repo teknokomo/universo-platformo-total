@@ -38,39 +38,39 @@ description: "Comprehensive task list for Universo Platformo Total.js - Complete
 
 ### Repository Initialization
 
-- [ ] T001 [SETUP] Initialize root package.json with PNPM workspace configuration (private:true, workspace scripts)
-- [ ] T002 [SETUP] Create pnpm-workspace.yaml with packages/* pattern and PNPM catalog for centralized dependency versions
-- [ ] T003 [SETUP] Create root .gitignore with patterns for .env, .env.local, node_modules, dist, build, *.key, *.pem
-- [ ] T004 [P] [SETUP] Create root tsconfig.json with ES2022 target, ESNext module, strict mode, and path aliases for @packages/*
-- [ ] T005 [P] [SETUP] Create .eslintrc.js with TypeScript parser and @typescript-eslint plugins
-- [ ] T006 [P] [SETUP] Create .prettierrc with printWidth:100, semi:true, singleQuote:true, trailingComma:es5, tabWidth:2
-- [ ] T007 [P] [SETUP] Create .env.example with required variables: NODE_ENV, SUPABASE_URL, SUPABASE_ANON_KEY, JWT_SECRET, etc.
-- [ ] T008 [SETUP] Create packages/ directory structure
+- [X] T001 [SETUP] Initialize root package.json with PNPM workspace configuration (private:true, workspace scripts)
+- [X] T002 [SETUP] Create pnpm-workspace.yaml with packages/* pattern and PNPM catalog for centralized dependency versions
+- [X] T003 [SETUP] Create root .gitignore with patterns for .env, .env.local, node_modules, dist, build, *.key, *.pem
+- [X] T004 [P] [SETUP] Create root tsconfig.json with ES2022 target, ESNext module, strict mode, and path aliases for @packages/*
+- [X] T005 [P] [SETUP] Create .eslintrc.js with TypeScript parser and @typescript-eslint plugins
+- [X] T006 [P] [SETUP] Create .prettierrc with printWidth:100, semi:true, singleQuote:true, trailingComma:es5, tabWidth:2
+- [X] T007 [P] [SETUP] Create .env.example with required variables: NODE_ENV, SUPABASE_URL, SUPABASE_ANON_KEY, JWT_SECRET, etc.
+- [X] T008 [SETUP] Create packages/ directory structure
 
 ### Shared Types Package
 
-- [ ] T009 [P] [SETUP] Create packages/universo-types/base/src/ directory structure
-- [ ] T010 [P] [SETUP] Create packages/universo-types/base/src/totaljs-globals.d.ts with ROUTE, NEWACTION, DBMS type definitions
-- [ ] T011 [P] [SETUP] Create packages/universo-types/base/src/totaljs-controller.d.ts with Controller instance types
-- [ ] T012 [P] [SETUP] Create packages/universo-types/base/src/totaljs-schema.d.ts with Schema definitions
-- [ ] T013 [P] [SETUP] Create packages/universo-types/base/src/api-types.ts with ApiResponse, ApiError, PaginationParams
-- [ ] T014 [P] [SETUP] Create packages/universo-types/base/src/entity-types.ts with base entity interfaces
-- [ ] T015 [SETUP] Create packages/universo-types/base/src/index.ts exporting all types
-- [ ] T016 [SETUP] Create packages/universo-types/package.json with TypeScript dependencies
-- [ ] T017 [SETUP] Create packages/universo-types/tsconfig.json extending root config
-- [ ] T018 [P] [SETUP] Create packages/universo-types/README.md in English
-- [ ] T019 [P] [SETUP] Create packages/universo-types/README-RU.md in Russian
+- [X] T009 [P] [SETUP] Create packages/universo-types/base/src/ directory structure
+- [X] T010 [P] [SETUP] Create packages/universo-types/base/src/totaljs-globals.d.ts with ROUTE, NEWACTION, DBMS type definitions
+- [X] T011 [P] [SETUP] Create packages/universo-types/base/src/totaljs-controller.d.ts with Controller instance types
+- [X] T012 [P] [SETUP] Create packages/universo-types/base/src/totaljs-schema.d.ts with Schema definitions
+- [X] T013 [P] [SETUP] Create packages/universo-types/base/src/api-types.ts with ApiResponse, ApiError, PaginationParams
+- [X] T014 [P] [SETUP] Create packages/universo-types/base/src/entity-types.ts with base entity interfaces
+- [X] T015 [SETUP] Create packages/universo-types/base/src/index.ts exporting all types
+- [X] T016 [SETUP] Create packages/universo-types/package.json with TypeScript dependencies
+- [X] T017 [SETUP] Create packages/universo-types/tsconfig.json extending root config
+- [X] T018 [P] [SETUP] Create packages/universo-types/README.md in English
+- [X] T019 [P] [SETUP] Create packages/universo-types/README-RU.md in Russian
 
 ### Shared Utils Package
 
-- [ ] T020 [P] [SETUP] Create packages/universo-utils/base/src/ directory structure
-- [ ] T021 [P] [SETUP] Create packages/universo-utils/base/src/logger.ts with structured JSON logging
-- [ ] T022 [P] [SETUP] Create packages/universo-utils/base/src/validation.ts with validation helpers
-- [ ] T023 [P] [SETUP] Create packages/universo-utils/base/src/env-validator.ts for environment variable validation
-- [ ] T024 [P] [SETUP] Create packages/universo-utils/base/src/constants/http-status.ts
-- [ ] T025 [P] [SETUP] Create packages/universo-utils/base/src/constants/error-codes.ts
-- [ ] T026 [SETUP] Create packages/universo-utils/package.json
-- [ ] T027 [P] [SETUP] Create packages/universo-utils/README.md and README-RU.md
+- [X] T020 [P] [SETUP] Create packages/universo-utils/base/src/ directory structure
+- [X] T021 [P] [SETUP] Create packages/universo-utils/base/src/logger.ts with structured JSON logging
+- [X] T022 [P] [SETUP] Create packages/universo-utils/base/src/validation.ts with validation helpers
+- [X] T023 [P] [SETUP] Create packages/universo-utils/base/src/env-validator.ts for environment variable validation
+- [X] T024 [P] [SETUP] Create packages/universo-utils/base/src/constants/http-status.ts
+- [X] T025 [P] [SETUP] Create packages/universo-utils/base/src/constants/error-codes.ts
+- [X] T026 [SETUP] Create packages/universo-utils/package.json
+- [X] T027 [P] [SETUP] Create packages/universo-utils/README.md and README-RU.md
 
 ### Shared Database Package
 
@@ -129,8 +129,8 @@ description: "Comprehensive task list for Universo Platformo Total.js - Complete
 
 ### Root Documentation
 
-- [ ] T068 [SETUP] Create root README.md in English with: Overview, Tech Stack, Prerequisites, Installation, Structure, Getting Started
-- [ ] T069 [SETUP] Create root README-RU.md in Russian (exact structural copy)
+- [X] T068 [SETUP] Create root README.md in English with: Overview, Tech Stack, Prerequisites, Installation, Structure, Getting Started
+- [X] T069 [SETUP] Create root README-RU.md in Russian (exact structural copy)
 
 **Checkpoint**: Foundation complete - shared infrastructure ready for feature development
 
@@ -144,26 +144,26 @@ description: "Comprehensive task list for Universo Platformo Total.js - Complete
 
 ### Auth Backend (auth-srv)
 
-- [ ] T070 [P] [AUTH] Create packages/auth-srv/base/src/ directory structure
-- [ ] T071 [P] [AUTH] Create packages/auth-srv/base/src/controllers/auth.controller.ts
-- [ ] T072 [P] [AUTH] Implement POST /auth/login endpoint in packages/auth-srv/base/src/routes/auth.routes.ts
-- [ ] T073 [P] [AUTH] Implement POST /auth/logout endpoint
-- [ ] T074 [P] [AUTH] Implement GET /auth/session endpoint for session validation
-- [ ] T075 [P] [AUTH] Implement POST /auth/refresh endpoint for token refresh
-- [ ] T076 [AUTH] Create packages/auth-srv/base/src/services/AuthService.ts
-- [ ] T077 [AUTH] Create packages/auth-srv/package.json
-- [ ] T078 [P] [AUTH] Create packages/auth-srv/README.md and README-RU.md
+- [X] T070 [P] [AUTH] Create packages/auth-srv/base/src/ directory structure
+- [X] T071 [P] [AUTH] Create packages/auth-srv/base/src/controllers/auth.controller.ts
+- [X] T072 [P] [AUTH] Implement POST /auth/login endpoint in packages/auth-srv/base/src/routes/auth.routes.ts
+- [X] T073 [P] [AUTH] Implement POST /auth/logout endpoint
+- [X] T074 [P] [AUTH] Implement GET /auth/session endpoint for session validation
+- [X] T075 [P] [AUTH] Implement POST /auth/refresh endpoint for token refresh
+- [X] T076 [AUTH] Create packages/auth-srv/base/src/services/AuthService.ts
+- [X] T077 [AUTH] Create packages/auth-srv/package.json
+- [X] T078 [P] [AUTH] Create packages/auth-srv/README.md and README-RU.md
 
 ### Auth Frontend (auth-frt)
 
-- [ ] T079 [P] [AUTH] Create packages/auth-frt/base/src/ directory structure
-- [ ] T080 [P] [AUTH] Create packages/auth-frt/base/src/components/LoginForm.tsx
-- [ ] T081 [P] [AUTH] Create packages/auth-frt/base/src/components/SessionGuard.tsx for route protection
-- [ ] T082 [P] [AUTH] Create packages/auth-frt/base/src/hooks/useAuth.ts
-- [ ] T083 [P] [AUTH] Create packages/auth-frt/base/src/hooks/useSession.ts
-- [ ] T084 [P] [AUTH] Create packages/auth-frt/base/src/api/authApi.ts
-- [ ] T085 [AUTH] Create packages/auth-frt/package.json
-- [ ] T086 [P] [AUTH] Create packages/auth-frt/README.md and README-RU.md
+- [X] T079 [P] [AUTH] Create packages/auth-frt/base/src/ directory structure
+- [X] T080 [P] [AUTH] Create packages/auth-frt/base/src/components/LoginForm.tsx
+- [X] T081 [P] [AUTH] Create packages/auth-frt/base/src/components/SessionGuard.tsx for route protection
+- [X] T082 [P] [AUTH] Create packages/auth-frt/base/src/hooks/useAuth.ts
+- [X] T083 [P] [AUTH] Create packages/auth-frt/base/src/hooks/useSession.ts
+- [X] T084 [P] [AUTH] Create packages/auth-frt/base/src/api/authApi.ts
+- [X] T085 [AUTH] Create packages/auth-frt/package.json
+- [X] T086 [P] [AUTH] Create packages/auth-frt/README.md and README-RU.md
 
 **Checkpoint**: Authentication system complete - users can log in and access protected routes
 
