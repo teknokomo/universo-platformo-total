@@ -1,0 +1,15 @@
+{
+  "name": "@universo-platformo/types",
+  "version": "0.1.0",
+  "description": "Shared TypeScript types for Universo Platformo",
+  "main": "base/src/index.ts",
+  "types": "base/src/index.ts",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint base/src --ext .ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}
