@@ -63,8 +63,14 @@ export function AuthenticatedStartPage() {
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const displayName =
-    user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'User';
+  const rawEmail = user?.email;
+  const emailUsername = typeof rawEmail === 'string' && rawEmail.includes('@')
+    ? rawEmail.split('@')[0]
+    : null;
+  const displayName: string =
+    (user?.user_metadata?.display_name as string | undefined) ??
+    emailUsername ??
+    'User';
   const avatarInitial = displayName.charAt(0).toUpperCase();
 
   if (isLoading) return null;

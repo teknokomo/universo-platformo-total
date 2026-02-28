@@ -1,12 +1,7 @@
 import axios from 'axios';
 import { ApiResponse, AuthSession, AuthCredentials, RegisterCredentials } from '@universo-platformo/types';
 
-const apiUrl =
-  (typeof window !== 'undefined'
-    ? (window as unknown as Record<string, string>).__VITE_API_URL__
-    : undefined) ??
-  (typeof import.meta !== 'undefined' ? import.meta.env?.VITE_API_URL : undefined) ??
-  'http://localhost:4000';
+const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
 
 const client = axios.create({
   baseURL: `${apiUrl}/auth`,

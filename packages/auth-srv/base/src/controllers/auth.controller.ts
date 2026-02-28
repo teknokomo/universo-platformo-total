@@ -3,9 +3,15 @@
 
 import { AuthService } from '../services/AuthService';
 
+const SERVICE_NAME = 'auth-controller';
 const supabaseUrl = process.env.SUPABASE_URL ?? '';
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY ?? '';
 const authService = new AuthService(supabaseUrl, supabaseAnonKey);
+
+function logError(context: string, error: unknown): void {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(JSON.stringify({ service: SERVICE_NAME, context, error: message, ts: new Date().toISOString() }));
+}
 
 // These will be registered when Total.js loads this controller
 export function registerRoutes() {
@@ -19,7 +25,8 @@ export function registerRoutes() {
         password: body.password,
       });
       this.json({ success: true, data: session });
-    } catch (_error) {
+    } catch (error) {
+      logError('login', error);
       this.status(401).json({
         success: false,
         error: { code: 'AUTH_INVALID_CREDENTIALS', message: 'Invalid email or password' },
@@ -39,10 +46,11 @@ export function registerRoutes() {
       });
       this.json({ success: true, data: session });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+      logError('register', error);
+      const errorCode = error instanceof Error ? error.message : 'REGISTRATION_FAILED';
       this.status(400).json({
         success: false,
-        error: { code: errorMessage, message: 'Registration failed' },
+        error: { code: errorCode, message: 'Registration failed' },
       });
     }
   });
@@ -52,7 +60,11 @@ export function registerRoutes() {
     const authHeader = this.headers['authorization'];
     const token = authHeader?.replace('Bearer ', '') ?? '';
 
-    await authService.logout(token);
+    try {
+      await authService.logout(token);
+    } catch (error) {
+      logError('logout', error);
+    }
     this.json({ success: true });
   });
 
@@ -89,7 +101,8 @@ export function registerRoutes() {
     try {
       const session = await authService.refreshSession(body.refresh_token);
       this.json({ success: true, data: session });
-    } catch (_error) {
+    } catch (error) {
+      logError('refresh', error);
       this.status(401).json({
         success: false,
         error: { code: 'AUTH_TOKEN_EXPIRED', message: 'Refresh token expired' },
