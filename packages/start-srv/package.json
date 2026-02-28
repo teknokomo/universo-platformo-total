@@ -21,6 +21,7 @@
 		"node": ">=18.0.0"
 	},
 	"dependencies": {
-		"total5": "^0.0.15"
+		"total5": "^0.0.15",
+		"@supabase/supabase-js": "^2.38.0"
 	}
 }

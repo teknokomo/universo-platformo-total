@@ -13,22 +13,12 @@
 	<link rel="stylesheet" href="https://cdn.componentator.com/spa.min@20.css" />
 	<script src="https://cdn.componentator.com/spa.min@20.js"></script>
 
-	<!-- ── Supabase JS client from CDN ───────────────────────────────────── -->
-	<!-- Only the anon key is used here. RLS policies enforce access control. -->
-	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-
 	<!-- ── Application styles ────────────────────────────────────────────── -->
 	<link rel="stylesheet" href="/css/app.css" />
 
-	<!-- ── Server-injected configuration ────────────────────────────────── -->
-	<!-- Total.js injects the Supabase public anon key from env at serve time -->
-	<script>
-		/* global APP */
-		window.APP = {
-			supabaseUrl: '@{model.supabaseUrl}',
-			supabaseAnonKey: '@{model.supabaseAnonKey}'
-		};
-	</script>
+	<!-- ── NOTE: No Supabase JS loaded in the browser ───────────────────── -->
+	<!-- All Supabase credentials and API calls are handled by the server.   -->
+	<!-- The frontend communicates with Supabase ONLY via /api/auth/* routes. -->
 </head>
 <body>
 

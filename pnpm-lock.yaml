@@ -158,6 +158,9 @@ importers:
 
   packages/start-srv:
     dependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.38.0
+        version: 2.98.0
       total5:
         specifier: ^0.0.15
         version: 0.0.15
