@@ -156,6 +156,12 @@ importers:
         specifier: ^5.0.0
         version: 5.4.21
 
+  packages/start-srv:
+    dependencies:
+      total5:
+        specifier: ^0.0.15
+        version: 0.0.15
+
   packages/universo-types:
     devDependencies:
       typescript:

@@ -32,6 +32,10 @@
 # misc
 .DS_Store
 
+## totaljs
+**/*.pid
+**/*.js.map
+
 ## env
 .env.local
 .env.development.local
