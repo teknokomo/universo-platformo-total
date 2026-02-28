@@ -16,7 +16,6 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@packages/*": ["packages/*/base/src/*"],
       "@universo-types/*": ["packages/universo-types/base/src/*"],
       "@universo-utils/*": ["packages/universo-utils/base/src/*"],
       "@auth-frt/*": ["packages/auth-frt/base/src/*"],

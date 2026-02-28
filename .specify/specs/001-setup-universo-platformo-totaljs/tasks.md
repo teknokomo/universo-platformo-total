@@ -40,7 +40,7 @@ description: "Comprehensive task list for Universo Platformo Total.js - Complete
 
 - [X] T001 [SETUP] Initialize root package.json with PNPM workspace configuration (private:true, workspace scripts)
 - [X] T002 [SETUP] Create pnpm-workspace.yaml with packages/* pattern and PNPM catalog for centralized dependency versions
-- [ ] T003 [SETUP] Create root .gitignore with patterns for .env, .env.local, node_modules, dist, build, *.key, *.pem
+- [X] T003 [SETUP] Create root .gitignore with patterns for .env, .env.local, node_modules, dist, build, *.key, *.pem
 - [X] T004 [P] [SETUP] Create root tsconfig.json with ES2022 target, ESNext module, strict mode, and path aliases for @packages/*
 - [X] T005 [P] [SETUP] Create .eslintrc.js with TypeScript parser and @typescript-eslint plugins
 - [X] T006 [P] [SETUP] Create .prettierrc with printWidth:100, semi:true, singleQuote:true, trailingComma:es5, tabWidth:2
@@ -129,8 +129,8 @@ description: "Comprehensive task list for Universo Platformo Total.js - Complete
 
 ### Root Documentation
 
-- [ ] T068 [SETUP] Create root README.md in English with: Overview, Tech Stack, Prerequisites, Installation, Structure, Getting Started
-- [ ] T069 [SETUP] Create root README-RU.md in Russian (exact structural copy)
+- [X] T068 [SETUP] Create root README.md in English with: Overview, Tech Stack, Prerequisites, Installation, Structure, Getting Started
+- [X] T069 [SETUP] Create root README-RU.md in Russian (exact structural copy)
 
 **Checkpoint**: Foundation complete - shared infrastructure ready for feature development
 
