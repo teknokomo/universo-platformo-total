@@ -63,9 +63,9 @@ export function AuthenticatedStartPage() {
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const rawEmail = user?.email;
-  const emailUsername = typeof rawEmail === 'string' && rawEmail.includes('@')
-    ? rawEmail.split('@')[0]
+  const userEmail = user?.email;
+  const emailUsername = typeof userEmail === 'string' && userEmail.includes('@')
+    ? userEmail.split('@')[0]
     : null;
   const displayName: string =
     (user?.user_metadata?.display_name as string | undefined) ??

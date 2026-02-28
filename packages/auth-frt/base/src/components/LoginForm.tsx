@@ -12,6 +12,9 @@ import {
 } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
 
+// Must match PASSWORD_MIN_LENGTH in packages/universo-utils/base/src/validation.ts
+const PASSWORD_MIN_LENGTH = 8;
+
 interface LoginFormProps {
   onSuccess?: () => void;
   onRegisterSuccess?: (requiresConfirmation: boolean) => void;
@@ -127,7 +130,7 @@ export function LoginForm({ onSuccess, onRegisterSuccess }: LoginFormProps) {
           value={password}
           onChange={e => setPassword(e.target.value)}
           autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
-          helperText={tab === 'register' ? 'Minimum 8 characters' : undefined}
+          helperText={tab === 'register' ? `Minimum ${PASSWORD_MIN_LENGTH} characters` : undefined}
         />
 
         <Button
